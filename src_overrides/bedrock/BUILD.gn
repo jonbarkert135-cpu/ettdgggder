@@ -42,8 +42,26 @@ source_set("extensions") {
   ]
 }
 
+source_set("catalog") {
+  sources = [
+    "catalog/extension_catalog.cc",
+    "catalog/extension_catalog.h",
+    "catalog/recommendation_engine.cc",
+    "catalog/recommendation_engine.h",
+  ]
+}
+
+source_set("knowledge") {
+  sources = [
+    "knowledge/knowledge_base.cc",
+    "knowledge/knowledge_base.h",
+  ]
+}
+
 source_set("stats") {
   sources = [
+    "stats/privacy_posture.cc",
+    "stats/privacy_posture.h",
     "stats/privacy_center.cc",
     "stats/privacy_center.h",
     "stats/privacy_event_log.cc",

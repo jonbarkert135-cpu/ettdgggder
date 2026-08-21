@@ -93,3 +93,28 @@ obligation, source-disclosure obligation, trademark note, compatibility note.
 2. a row has an unpinned version (`main`, `master`, `latest`, empty);
 3. a row uses a GPL-family license with a reuse mode other than `separate-artifact` or `not-used`;
 4. the Chromium pin in `build/chromium.pin` is malformed.
+5. `scripts/check_catalog.py` fails CI when a catalog entry lacks its own license, official
+   source or attribution, when a third-party extension is presented as a Bedrock one, when a
+   PrivacyTools.io recommendation does not credit PrivacyTools.io, or when an entry's
+   `last_verified` date is missing, in the future, or older than 180 days.
+
+## 8. Curated content and recommendations (PrivacyTools.io)
+
+Recommending a tool is not the same as shipping it, but it still carries obligations.
+
+- **A site's license covers that site's own work.** PrivacyTools.io publishes under the VERNAM
+  License — permissive, with one binding condition: a clear, visible, working credit link back to
+  https://www.privacytools.io, and no implication of endorsement. Their names and marks are not
+  granted with it. That condition is met in the extension store and Knowledge Center headers, and
+  the catalog gate fails the build if the attribution string disappears.
+- **It does not cover the tools they link to.** uBlock Origin stays GPL-3.0, ClearURLs stays
+  LGPL-3.0, Cookie AutoDelete stays MIT, Decentraleyes stays MPL-2.0. Every catalog entry
+  therefore carries its own `license`, `official_source` and `attribution`. Treating a curator's
+  license as covering everything it mentions is the exact mistake this section exists to prevent.
+- **Concept vs. text.** The Covered / Hardened / Targeted model is used as a *concept*, with
+  Bedrock's own wording. Copying their prose or branding would need more than a credit link — it
+  would need us to be honest that it is theirs, which a browser UI is a poor place to do.
+- **Layer A / Layer B** (`docs/design/040`): Bedrock only stores an article locally when its
+  provenance record says redistribution is allowed. Everything else is a link card with a source
+  badge. `KnowledgeBase::Add()` refuses the alternative, so "we will fix the licensing later"
+  cannot ship.

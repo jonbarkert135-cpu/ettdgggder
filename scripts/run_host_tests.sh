@@ -29,5 +29,6 @@ done
 
 python3 scripts/check_fp_docs.py || status=1
 python3 scripts/check_ui_style.py || status=1
+python3 scripts/check_catalog.py || status=1
 
 exit $status
