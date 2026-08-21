@@ -1,0 +1,30 @@
+PrivacyTools.io
+Repository / site: https://www.privacytools.io
+Snapshot referenced: catalog-snapshot-2026-08-21
+License:   VERNAM License (https://privacytools.io/license)
+Copyright: Copyright (C) 2026 PrivacyTools.io
+
+Reuse mode: vendored (metadata only).
+
+What Bedrock uses:
+  - the set of privacy browser extensions PrivacyTools.io recommends, as catalog
+    metadata in src_overrides/bedrock/catalog/bedrock_privacy_catalog.json;
+  - the Covered / Hardened / Targeted threat-level concept, expressed in Bedrock's
+    own words;
+  - links to their guides, shown as external reference cards.
+
+What Bedrock does NOT do:
+  - copy their article text into the browser;
+  - use their name, logo or the VERNAM name as its own branding;
+  - imply that PrivacyTools.io endorses Bedrock.
+
+Attribution (required by the license, shown with a working link wherever this
+material is used):
+
+  Privacy recommendations and selected reference materials: PrivacyTools.io
+  https://www.privacytools.io
+
+The VERNAM License covers PrivacyTools.io's own work only. Third-party tools,
+guides and trademarks they reference keep their own licenses; Bedrock records
+those per catalog entry (license, official_source, attribution) and
+scripts/check_catalog.py fails the build when one is missing.

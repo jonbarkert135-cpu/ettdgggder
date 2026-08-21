@@ -14,6 +14,7 @@ Versions verified against upstream on **2026-08-21**.
 | Privacy Badger | https://github.com/EFForg/privacybadger | release-2026.8.7 | GPL-3.0-or-later | separate-artifact | privacy-badger.txt |
 | Tor Browser (tor-browser) | https://gitlab.torproject.org/tpo/applications/tor-browser | not-pinned-yet | MPL-2.0 | reimplement | tor-browser.txt |
 | Firefox (mozilla-central) | https://github.com/mozilla-firefox/firefox | not-pinned-yet | MPL-2.0 | reimplement | firefox.txt |
+| PrivacyTools.io | https://www.privacytools.io | catalog-snapshot-2026-08-21 | VERNAM License | vendored | privacytools-io.txt |
 <!-- END INVENTORY -->
 
 `not-pinned-yet` is only legal for reuse mode `reimplement` (no code enters the tree, so there
@@ -105,3 +106,29 @@ is nothing to pin); the checker enforces this.
   isolation, Enhanced Tracking Protection tiering, container-style profile separation). Gecko code
   is not portable to Chromium; if any MPL-2.0 file were ever ported it would move to reuse mode
   `port` with a pinned revision.
+
+## PrivacyTools.io — `vendored`
+
+- **Copyright:** © 2026 PrivacyTools.io.
+- **What we use:** their *recommendations and reference metadata* — which extensions they list,
+  the threat-level concept, and links to their guides. Curated into
+  `src_overrides/bedrock/catalog/bedrock_privacy_catalog.json`. No article text is copied into
+  the browser; external material is shown as a link card (`docs/design/040`).
+- **Attribution:** required. The VERNAM License is permissive (a WTFPL derivative) with one
+  binding condition: a clear, visible, working credit link back to https://www.privacytools.io
+  wherever the work is used, with no implication of endorsement. Bedrock shows
+  `Privacy recommendations and selected reference materials: PrivacyTools.io` with that link in
+  the extension store and the Knowledge Center, and `scripts/check_catalog.py` fails the build if
+  the attribution is missing.
+- **Redistribution:** allowed under the same condition.
+- **Source disclosure:** none required.
+- **Trademark:** "PrivacyTools.io" and "VERNAM" are their names, not ours. Used descriptively
+  only; Bedrock never implies they endorse it, and never brands its own UI with their marks.
+- **Compatibility:** compatible with MPL-2.0; their material stays under their license and is
+  labelled as theirs.
+- **Third-party material:** their license covers *their* work. Every tool, guide or trademark
+  they link to (uBlock Origin, ClearURLs, Cookie AutoDelete, Decentraleyes, Tor Project, Mozilla,
+  EFF …) keeps its own license, and each catalog entry carries its own `license`,
+  `official_source` and `attribution` fields — enforced by `scripts/check_catalog.py`.
+- **Verified:** 2026-08-21 against https://privacytools.io/license and
+  https://www.privacytools.io/privacy-browser-addons.
