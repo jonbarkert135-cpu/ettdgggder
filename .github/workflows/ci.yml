@@ -17,3 +17,5 @@ jobs:
       - run: python3 scripts/check_provenance.py
       - name: build/sync.py is valid python
         run: python3 -m py_compile build/sync.py scripts/check_provenance.py
+      - name: host tests (C++, no Chromium needed)
+        run: ./scripts/run_host_tests.sh
