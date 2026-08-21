@@ -42,6 +42,13 @@ source_set("extensions") {
   ]
 }
 
+source_set("update") {
+  sources = [
+    "update/update_provider.cc",
+    "update/update_provider.h",
+  ]
+}
+
 source_set("catalog") {
   sources = [
     "catalog/extension_catalog.cc",
@@ -171,6 +178,8 @@ source_set("privacy") {
     "privacy/privacy_engine.h",
     "privacy/protection_controller.cc",
     "privacy/protection_controller.h",
+    "privacy/telemetry_policy.cc",
+    "privacy/telemetry_policy.h",
   ]
 }
 
