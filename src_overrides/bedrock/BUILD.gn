@@ -20,6 +20,20 @@ source_set("search") {
   ]
 }
 
+source_set("net") {
+  sources = [
+    "net/dns_settings.cc",
+    "net/dns_settings.h",
+    "net/https_policy.cc",
+    "net/https_policy.h",
+    "net/storage_isolation.cc",
+    "net/storage_isolation.h",
+    "net/webrtc_policy.cc",
+    "net/webrtc_policy.h",
+  ]
+  deps = [ ":privacy" ]
+}
+
 source_set("blocking") {
   sources = [
     "blocking/blocking_pipeline.cc",
