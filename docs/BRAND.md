@@ -6,33 +6,51 @@ of that a script can check.
 
 ## Name
 
-**Bedrock** — the layer under everything else that does not move. It says what the project is (a
-browser built on a solid base) without claiming what it cannot prove; nothing in the name promises
-anonymity, and no browser vendor's word appears in it.
+Full name **Bedrock Browser**; short form **Bedrock** inside the product, where the window title
+and the toolbar have no room for two words.
 
-The engine is Chromium and the project says so in prose — "Bedrock, a Chromium-derived browser" —
-but never as a name (no "Bedrock Chrome", no "Chromium Bedrock"). Written **Bedrock**, one word,
-capital B, never "BedRock" or "bedrock browser" as a proper noun. The Russian and Ukrainian
-materials transliterate it as *Бедрок* and keep the Latin form for anything a user types.
+**The name is written in Latin script in every language — always.** Not translated, not
+transliterated into Cyrillic, no localised variant in Russian, Ukrainian or German copy. This is what Firefox, Brave and Tor do, and the reason is practical rather than
+stylistic: a user searching for the browser, typing its name into a package manager, or checking a
+signature must find one spelling. A transliterated name splits the search results and the trust.
+Written **Bedrock**, one word, capital B — never "BedRock", never lowercase as a proper noun.
+
+The meaning survives translation without help: bedrock is the layer under everything else that does
+not move. It says what the project is (a browser on a solid base) without claiming what it cannot
+prove — nothing in the name promises anonymity, and no browser vendor's word appears in it.
+
+The engine is Chromium and the project says so in prose — "Bedrock Browser, a Chromium-derived
+browser" — but never as part of the name (no "Bedrock Chrome", no "Chromium Bedrock").
 
 ## Mark
 
 | Asset | Use |
 | --- | --- |
-| [`branding/bedrock-mark.svg`](../branding/bedrock-mark.svg) | The mark. Anything 32 px and up: about box, installer, site, README. |
-| [`branding/bedrock-mark-small.svg`](../branding/bedrock-mark-small.svg) | 16–32 px: tab strip, tray, favicon, taskbar. Three bands instead of six. |
-| [`branding/bedrock-logo.png`](../branding/bedrock-logo.png) | Raster fallback for contexts that cannot take SVG. |
+| [`branding/bedrock-logo.png`](../branding/bedrock-logo.png) | **The logo.** Opaque original, 1254 px. About box, installer, site, press. |
+| [`branding/bedrock-logo-transparent.png`](../branding/bedrock-logo-transparent.png) | The same mark without a background. Source for every application icon, and for any surface whose background is not black — README, packaging, avatars. |
+| [`branding/bedrock-mark-small.svg`](../branding/bedrock-mark-small.svg) | **Only** 16–32 px: tab strip, tray, favicon, taskbar. Three bands, derived from the logo. |
 
-Strata of stone seen in section, clipped to a circle, with one copper seam. The seam is the same
-accent the UI uses for protection state, so the brand and the product agree on what the colour
-means — an identity that contradicts the interface teaches the user to ignore both.
+The mark is a sphere of fractured strata — rock seen in section, layers offset along their faults.
+It is the project's own artwork and it does not change: no recolouring, no gradient overlay, no
+outline variant, no rotation, no drop shadow, no placing it inside another shape.
 
 Two rules that exist because icons are usually reviewed at the wrong size:
 
-- **Below 32 px the mark changes, not shrinks.** Six seams under 32 px fall beneath a pixel and
-  the icon becomes a grey dot. The small variant is a separate file for that reason.
+- **Below 32 px the mark changes, not shrinks.** Downscaled to 16 px the strata average out into a
+  grey circle — verified, not assumed. The small variant keeps three bands so the silhouette still
+  reads in a tab strip; everywhere at 32 px and up, the logo itself is used.
 - **The mark is never recoloured to signal state.** State lives in the UI, not in the app icon;
   a browser whose icon changes colour has taught the user nothing they can act on.
+
+Application icons are generated, not hand-cut and not committed:
+
+```
+python3 scripts/gen_icons.py --out out/branding      # 16…512 px PNG, Windows .ico, Linux hicolor
+```
+
+The generator trims the transparent margin before resizing, so the mark fills the icon box instead
+of floating in it — the source art has ~15 % padding on each side, which at 32 px costs five pixels
+of the only thing anyone can see.
 
 Not permitted, anywhere: another browser's mark, a mark derived from one, a "shield" borrowed from
 a privacy product, a lion, a fox, a globe-with-orbit, or a rounded-square gradient that reads as
@@ -59,8 +77,9 @@ System-stack UI type — Inter, SF Pro Text, Segoe UI Variable, then `system-ui`
 ships with the browser: a font file is a dependency with a licence, a download and a fingerprinting
 surface, and the browser's own chrome is not where a project should spend that.
 
-The wordmark is set in the UI face at semibold with tight tracking. There is no separate logotype
-file, because a wordmark that cannot be rebuilt from the token set is a wordmark that will drift.
+The wordmark — "Bedrock Browser", Latin script in every locale — is set in the UI face at semibold
+with tight tracking. There is no separate logotype file, because a wordmark that cannot be rebuilt
+from the token set is a wordmark that will drift.
 
 ## UI identity
 

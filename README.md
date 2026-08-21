@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="branding/bedrock-logo.png" width="140" alt="Bedrock Browser">
+  <img src="branding/bedrock-logo-transparent.png" width="140" alt="Bedrock Browser">
 </p>
 
 <h1 align="center">Bedrock Browser</h1>
