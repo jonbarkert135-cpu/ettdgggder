@@ -101,7 +101,21 @@ enum class MessageId {
   kImportPreviewHeading,
   kImportRefusedReason,           // has {reason}
   kAdvancedGuardRejected,         // has {guard} and {reason}
-  kMaxValue = kAdvancedGuardRejected,
+  // Errors (item 80). Each error has a sentence and the step that follows it;
+  // an error without an action is a dead end, so the pair is never split.
+  kErrorNetworkUnreachable,
+  kErrorNetworkUnreachableAction,
+  kErrorCertificateInvalid,       // has {site}
+  kErrorCertificateInvalidAction,
+  kErrorProfileLocked,
+  kErrorProfileLockedAction,
+  kErrorDownloadRefused,          // has {reason}
+  kErrorDownloadRefusedAction,
+  kErrorExtensionBlocked,         // has {extension}
+  kErrorExtensionBlockedAction,
+  kErrorConfigInvalid,
+  kErrorConfigInvalidAction,
+  kMaxValue = kErrorConfigInvalidAction,
 };
 
 struct Message {

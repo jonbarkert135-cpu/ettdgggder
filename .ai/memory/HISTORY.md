@@ -4,6 +4,26 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #23 — Roadmap 78–81: no UI frameworks, debug logging, error handling, crash diagnostics
+- **78** ADR 0006 (`docs/adr/0006-no-ui-frameworks.md`): WebUI is custom elements, shadow DOM and
+  plain CSS over Chromium's own infrastructure — no React/Vue/Angular, no bundler, no npm step,
+  no CDN asset. Gate `scripts/check_frameworks.py`. Note it must **not** name the two application
+  shells: `check_languages.py` fails on the mere word in any file but its own.
+- **79** `diagnostics/debug_log`: level `kOff` by default, two sinks (bounded memory ring, file
+  *inside the profile*), `kUploadSupported = false`, and the `Sink` enum has no network member.
+  Lines are scrubbed **on the way in**, so an export cannot leak what was never stored.
+- **80** `errors/error_catalog`: six `BR-` codes, each with a localized title *and* action in all
+  four locales (12 new message ids), and a hard split between `user_text` and `log_detail`. Five
+  codes are `kDiagnosticOnly`; only the invalid-config error may show its detail, and even that is
+  scrubbed first.
+- **81** `diagnostics/crash_report`: `UploadConsent::kNever` default, per-report consent that also
+  requires the user to have opened the report, an 11-key whitelist, 12 field names refused by name,
+  frames scrubbed but source locations kept, 30-day expiry.
+- Shared `diagnostics/scrubber` for all three — a redaction rule present in two of the three is the
+  one that leaks. It keeps `chrome://`/`bedrock://`, loopback and source paths on purpose.
+- Gate `scripts/check_diagnostics.py` (both new gates verified by breaking them: a removed
+  `"cookies"` refusal, a deleted Russian error string, a `react` import).
+
 ## PR #22 — Roadmap 74–77: testing matrix, privacy regression suite, fuzzing, zero-trust deps
 - **74** `tests/matrix.json` (26 required cases, each with runner + honest status) +
   `tests/MATRIX.md` + `scripts/check_test_matrix.py`. New `tests/browser/run.py`: launch,

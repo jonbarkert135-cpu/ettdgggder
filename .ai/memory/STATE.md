@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** roadmap 70–73 merged (PR #21); brand assets finalised (PR #20).
+**As of:** roadmap 78–81 merged (PR #23).
 
 ## Position on the roadmap
 
@@ -50,15 +50,19 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 | 75 Privacy regression suite | done |
 | 76 Security fuzzing | done |
 | 77 Zero-trust dependencies | done |
-| 78+ | **not yet specified — waiting on the project owner** |
+| 78 No unnecessary frameworks (ADR 0006 + gate) | done |
+| 79 Local debug logging, off by default | done |
+| 80 Error handling: meaningful, actionable, localized, security-conscious | done |
+| 81 Local crash diagnostics, upload off by default | done — policy layer only; Crashpad needs the Chromium build |
+| 82+ | **not yet specified — waiting on the project owner** |
 
 ## What is real vs. what is documented
 
 - **Nothing is `Status::kEnforced`** in the feature registry, so the settings UI
   renders no protection switches yet. That is item 55 working, not a gap to paper over:
   enforcement needs a Chromium build, and `build/ENFORCEMENT.md` must record it.
-- **Runs in CI today:** 48 host test binaries, 9 fuzz smoke harnesses (~860
-  inputs each), 6 measured performance metrics, 22 static gates.
+- **Runs in CI today:** 47 host test binaries, 9 fuzz smoke harnesses (~860
+  inputs each), 6 measured performance metrics, 25 static gates.
 - **Runs against a real browser binary (not in CI):**
   `tests/browser/run.py` (5/5 pass on Chrome-for-Testing 151) and
   `tests/privacy/run.py` (13 scenarios; stock-Chromium baseline committed as
@@ -95,7 +99,7 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 
 ## Open threads
 
-- Roadmap items 78+ awaited from the project owner.
+- Roadmap items 82+ awaited from the project owner.
 - **Default filter lists are empty** until each list's licence is verified and dated in
   `docs/privacy/FILTER_LISTS.md` (item 52 rule). This is a deliberate blocker, not an oversight.
 - Research queue, highest value first: CNAME uncloaking · query stripping + debouncing ·
@@ -108,3 +112,12 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 - No real Chromium build has been run in CI; everything requiring one is marked
   as such in `docs/security/TESTING.md` and `docs/performance/BUDGETS.md`.
 - Fuzz corpora are seed-sized only; no long campaign has run yet.
+- No WebUI file exists yet (`settings/`, `ui/`, `devtools/` are C++ so far), so
+  ADR 0006's framework ban is currently enforced against an empty set plus the
+  test fixtures. It matters the day the first Settings page is written.
+- `src_overrides/bedrock/BUILD.gn` still lists the pre-item-47 flat paths and is
+  not checked by any gate. Harmless until a real Chromium build runs; fix it in
+  the same change that first builds against Chromium.
+- Crash reporting has a policy layer and no handler: catching a real signal
+  needs Crashpad from the Chromium build. Never describe item 81 as "crash
+  reporting works".

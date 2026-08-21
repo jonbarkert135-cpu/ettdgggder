@@ -26,6 +26,7 @@ where GitHub looks for them; `check_open_source.py` enforces their presence and 
 | [`privacy/FILTER_LISTS.md`](privacy/FILTER_LISTS.md) | which filter lists, under which licences |
 | [`privacy/fingerprinting/README.md`](privacy/fingerprinting/README.md) | every fingerprinting surface and its mitigation |
 | [`security/TESTING.md`](security/TESTING.md) | sanitizers, fuzzing, and what CI runs |
+| [`DIAGNOSTICS.md`](DIAGNOSTICS.md) | local debug logs and crash reports, and why neither is telemetry |
 
 ## Building, releasing, maintaining
 
@@ -52,6 +53,7 @@ where GitHub looks for them; `check_open_source.py` enforces their presence and 
 | [`CONFIGURATION.md`](CONFIGURATION.md) | every setting across GUI, config file, policy and CLI |
 | [`FORMATS.md`](FORMATS.md) | import/export formats, versioned |
 | [`ACCESSIBILITY.md`](ACCESSIBILITY.md) | keyboard, screen readers, contrast, motion, focus |
+| [`ERRORS.md`](ERRORS.md) | what an error says, what it never shows, and how to add one |
 | [`LOCALIZATION.md`](LOCALIZATION.md) | the string catalog and how locales are added |
 | [`BRAND.md`](BRAND.md) | name, mark, colour, typography, UI voice |
 | [`performance/BUDGETS.md`](performance/BUDGETS.md) | the performance budgets measured per commit |

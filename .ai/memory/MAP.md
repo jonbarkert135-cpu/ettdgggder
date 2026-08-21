@@ -28,6 +28,20 @@ Added DevTools privacy panels. Rule zero: never break an upstream Chromium panel
 | `privacy_devtools.h` | Privacy panels for DevTools (roadmap item 36). |
 | `privacy_devtools_test.cc` | Host test, no Chromium. |
 
+### `src_overrides/bedrock/diagnostics/`
+Local debug log and crash diagnostics plus the shared scrubber. Off by default, no sink that can reach the network, whitelisted crash fields. Items 79 and 81.
+
+| File | What it is |
+| --- | --- |
+| `crash_report.cc` | implementation |
+| `crash_report.h` | Local crash diagnostics (roadmap item 81). |
+| `crash_report_test.cc` | Host test, no Chromium. |
+| `debug_log.cc` | implementation |
+| `debug_log.h` | Local debug logging (roadmap item 79). |
+| `debug_log_test.cc` | Host test, no Chromium. |
+| `scrubber.cc` | implementation |
+| `scrubber.h` | The scrubber (roadmap items 79, 80 and 81). |
+
 ### `src_overrides/bedrock/downloads/`
 Download manager: honest pause/resume derived from Accept-Ranges, attacker-chosen names and MIME types treated as untrusted. Item 33.
 
@@ -36,6 +50,15 @@ Download manager: honest pause/resume derived from Accept-Ranges, attacker-chose
 | `download_manager.cc` | implementation |
 | `download_manager.h` | Download manager (roadmap item 33). |
 | `download_manager_test.cc` | Host test, no Chromium. |
+
+### `src_overrides/bedrock/errors/`
+Error catalog: stable BR- codes, localized title and action per error, internal detail routed to the log instead of the UI. Item 80.
+
+| File | What it is |
+| --- | --- |
+| `error_catalog.cc` | implementation |
+| `error_catalog.h` | Error presentation (roadmap item 80). |
+| `error_catalog_test.cc` | Host test, no Chromium. |
 
 ### `src_overrides/bedrock/extensions/`
 Chromium-compatible extension API plus generated capability disclosure; an update can never grow an extension's powers. Item 23.
@@ -338,6 +361,8 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/BUILD.md`](../../docs/BUILD.md) | Building Bedrock |
 | [`docs/CONFIGURATION.md`](../../docs/CONFIGURATION.md) | Configuration |
 | [`docs/DEPENDENCIES.md`](../../docs/DEPENDENCIES.md) | Dependency policy |
+| [`docs/DIAGNOSTICS.md`](../../docs/DIAGNOSTICS.md) | Diagnostics: debug logs and crash reports |
+| [`docs/ERRORS.md`](../../docs/ERRORS.md) | Errors: what the user sees when something fails |
 | [`docs/FORMATS.md`](../../docs/FORMATS.md) | Import and export formats |
 | [`docs/LICENSING.md`](../../docs/LICENSING.md) | Bedrock Browser — Licensing & Provenance Policy |
 | [`docs/LOCALIZATION.md`](../../docs/LOCALIZATION.md) | Localization |
@@ -356,6 +381,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/adr/0003-source-layout.md`](../../docs/adr/0003-source-layout.md) | ADR 0003 — Source layout: subsystem tree where it helps, Chromium's layout where it must |
 | [`docs/adr/0004-languages.md`](../../docs/adr/0004-languages.md) | ADR 0004 — Languages: C++ for the engine, Rust behind an FFI boundary, TypeScript for UI, never Electron |
 | [`docs/adr/0005-platform-abstraction.md`](../../docs/adr/0005-platform-abstraction.md) | ADR 0005 — Platform support and the abstraction that keeps it honest |
+| [`docs/adr/0006-no-ui-frameworks.md`](../../docs/adr/0006-no-ui-frameworks.md) | ADR 0006 — No JavaScript UI framework |
 | [`docs/design/006-search-system.md`](../../docs/design/006-search-system.md) | 006 — Search engine system |
 | [`docs/design/007-omnibox.md`](../../docs/design/007-omnibox.md) | 007 — Address bar / omnibox |
 | [`docs/design/008-privacy-engine.md`](../../docs/design/008-privacy-engine.md) | 008 — Privacy Engine |
@@ -433,8 +459,10 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | `scripts/check_branding.py` | Branding gate (roadmap item 65). |
 | `scripts/check_catalog.py` | Validate the privacy extension catalog. Run: python3 scripts/check_catalog.py |
 | `scripts/check_config_surface.py` | Fail if the configuration surface and its documentation disagree (item 56). |
+| `scripts/check_diagnostics.py` | Gate: debug logs stay logs, crashes stay local, errors stay localized. |
 | `scripts/check_docs.py` | Documentation gate (roadmap item 72). |
 | `scripts/check_fp_docs.py` | Every anti-fingerprinting surface must have a documented rationale. |
+| `scripts/check_frameworks.py` | Gate: no JS framework where Chromium's own infrastructure is the answer. |
 | `scripts/check_languages.py` | Fail if the language policy of ADR 0004 is broken. |
 | `scripts/check_memory.py` | Fail if the project memory in `.ai/` is missing, stale or out of sync. |
 | `scripts/check_no_fake_features.py` | Fail if the browser would claim something it does not do (roadmap item 55). |
