@@ -1,0 +1,13 @@
+Firefox (mozilla-central)
+Repository: https://github.com/mozilla-firefox/firefox
+Version referenced: none (no code used)
+License:    MPL-2.0
+Copyright:  Copyright (c) Mozilla Foundation and contributors
+
+Reuse mode: reimplement. Architectural inspiration only: Total Cookie Protection
+(dynamic first-party isolation of network + storage state), Enhanced Tracking Protection
+tiering, and container-style profile separation. Gecko source is not portable to Chromium.
+If any MPL-2.0 file is ever ported, this entry moves to reuse mode "port" with a pinned
+revision and a per-file list.
+
+Trademark: "Firefox" and "Mozilla" are trademarks of the Mozilla Foundation; not used.

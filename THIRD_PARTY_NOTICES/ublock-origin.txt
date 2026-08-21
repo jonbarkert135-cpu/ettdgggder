@@ -1,0 +1,18 @@
+uBlock Origin
+Repository: https://github.com/gorhill/uBlock
+Version referenced: 1.73.0
+License:    GPL-3.0-or-later
+Copyright:  Copyright (C) 2014-present Raymond Hill
+
+Reuse mode: separate-artifact. NO uBlock Origin code, list data or asset is copied,
+ported, linked or vendored into Bedrock. GPL-3.0 would relicense the browser binary,
+which is incompatible with the Chromium base (see docs/LICENSING.md section 3).
+
+Permitted and actually done instead:
+  1. Bedrock supports uBlock Origin as a user-installed WebExtension (mere aggregation).
+  2. The ABP/uBO filter syntax is a documented data format; Bedrock parses it via
+     adblock-rust (MPL-2.0).
+Filter lists (EasyList, EasyPrivacy, uBO lists) are separate works under their own
+licenses (CC BY-SA 3.0 / GPL-3.0) and are downloaded at runtime, never compiled in.
+
+Trademark: "uBlock Origin" is used descriptively only; no endorsement implied.

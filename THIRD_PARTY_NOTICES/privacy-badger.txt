@@ -1,0 +1,17 @@
+Privacy Badger
+Repository: https://github.com/EFForg/privacybadger
+Version referenced: release-2026.8.7
+License:    GPL-3.0-or-later (LICENSE file: "Privacy Badger, Copyright (C) 2015 Electronic
+            Frontier Foundation and other contributors", GPLv3 terms)
+Copyright:  Copyright (C) 2015 Electronic Frontier Foundation and other contributors
+
+Reuse mode: separate-artifact. NO Privacy Badger code, heuristic data, yellow list or
+asset is copied into Bedrock, for the same GPL-3.0 reason as uBlock Origin.
+
+Permitted and actually done instead: Bedrock independently implements a tracker-learning
+heuristic described in EFF's public documentation (third-party origin observed storing
+identifying state across >= 3 first-party sites becomes blocked / cookie-blocked). Source
+files implementing it are marked "inspired by Privacy Badger's published heuristic; not
+derived from its source".
+
+Trademark: EFF and Privacy Badger names and logos are not used in Bedrock branding.

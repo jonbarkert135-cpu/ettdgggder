@@ -1,0 +1,20 @@
+brave-core
+Repository: https://github.com/brave/brave-core
+Pinned:     v1.96.5
+License:    MPL-2.0
+Copyright:  Copyright (c) The Brave Authors
+
+Reuse mode: port. Individual files are adapted into Bedrock. Every ported file:
+  - keeps its original MPL-2.0 header,
+  - gains a line: "Portions Copyright (c) The Brave Authors. Modified by the Bedrock authors.",
+  - is listed below with upstream path and revision.
+
+Ported files (append one line per file; empty until the first port lands):
+  # <bedrock path>  <=  <upstream path> @ <tag/commit>
+
+MPL-2.0 obligations: source of these files, including our modifications, must be made
+available under MPL-2.0. Satisfied by this repository being public.
+Full license text: ../LICENSE (the project uses the same MPL-2.0 text).
+
+Trademark: "Brave" is a trademark of Brave Software, Inc. Not licensed, not used in Bedrock
+branding. Brave Rewards/BAT, Brave Search defaults and Brave update services are not ported.

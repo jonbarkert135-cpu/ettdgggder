@@ -1,0 +1,9 @@
+ungoogled-chromium
+Repository: https://github.com/ungoogled-software/ungoogled-chromium
+Pinned:     151.0.7922.169-1
+License:    BSD-3-Clause
+Copyright:  Copyright (c) The ungoogled-chromium contributors
+
+Reuse mode: port. De-Google patches adopted verbatim live in patches/upstream/ungoogled/
+with the upstream patch path recorded in the patch header. BSD-3-Clause notice applies
+(same three conditions as the Chromium notice in chromium.txt).

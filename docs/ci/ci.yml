@@ -1,0 +1,23 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  provenance:
+    # Licensing gate. Runs on every change; no Chromium build here (see docs/adr/0001).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 scripts/check_provenance.py --selftest
+      - run: python3 scripts/check_provenance.py
+      - name: build/sync.py is valid python
+        run: python3 -m py_compile build/sync.py scripts/check_provenance.py
+
+# NOTE: copy this file to .github/workflows/ci.yml in the GitHub UI.
+# The bot's GitHub App lacks the `workflows` permission, so it cannot push files
+# under .github/workflows/ itself.

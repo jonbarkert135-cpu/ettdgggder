@@ -1,0 +1,7 @@
+# Chromium base pin for Bedrock Browser.
+# Format: KEY=VALUE, one per line. Parsed by build/sync.py and scripts/check_provenance.py.
+# Verified against https://chromiumdash.appspot.com/fetch_releases (Stable/Linux) on 2026-08-21.
+version=151.0.7922.173
+commit=a96602f30358e9b5d256a0464e7e4d4bec223004
+milestone=151
+channel=stable

@@ -1,0 +1,32 @@
+# Bedrock Browser — release GN args (Linux x64 reference).
+# Autonomy rules (master prompt section 4/5) are enforced here at build time:
+# no Google API keys, no Google-bound services, no vendor backend.
+
+is_debug = false
+is_official_build = true
+symbol_level = 1
+blink_symbol_level = 0
+
+# Identity: Chromium branding is a trademark, not licensed. Bedrock ships its own.
+is_chrome_branded = false
+chrome_pgo_phase = 0
+
+# No developer backend, no telemetry, no vendor infrastructure.
+enable_reporting = false
+safe_browsing_mode = 0            # Google Safe Browsing is a Google service
+enable_remoting = false
+enable_service_discovery = false
+enable_hangout_services_extension = false
+enable_widevine = false           # proprietary CDM; opt-in build flag only
+use_official_google_api_keys = false
+google_api_key = ""
+google_default_client_id = ""
+google_default_client_secret = ""
+enable_mdns = false
+
+# Extensions stay: local extension support is required by master prompt section 4.
+enable_extensions = true
+
+# Build ergonomics
+use_sysroot = true
+treat_warnings_as_errors = false

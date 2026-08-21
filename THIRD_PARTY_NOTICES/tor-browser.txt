@@ -1,0 +1,13 @@
+Tor Browser
+Repository: https://gitlab.torproject.org/tpo/applications/tor-browser
+Version referenced: none (no code used)
+License:    MPL-2.0 (Firefox-derived)
+Copyright:  Copyright (c) The Tor Project, Inc. and Mozilla contributors
+
+Reuse mode: reimplement. Tor Browser's patches target Gecko and are not applicable to a
+Chromium base. Bedrock takes anti-fingerprinting DESIGN only, from the public Tor Browser
+design document: uniformity over randomisation, viewport quantisation (letterboxing),
+timer coarsening, locale/timezone/language normalisation, restricted font enumeration.
+
+Trademark: The Tor Project restricts use of the "Tor" name for modified builds. Bedrock
+ships no feature named "Tor" and bundles no Tor network integration.

@@ -1,0 +1,6 @@
+# Bedrock Browser — developer build. Same autonomy flags, faster iteration.
+import("//build/args/bedrock-release.gn")
+is_debug = true
+is_official_build = false
+symbol_level = 2
+is_component_build = true

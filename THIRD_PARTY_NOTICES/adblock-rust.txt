@@ -1,0 +1,13 @@
+adblock-rust (crate: adblock)
+Repository: https://github.com/brave/adblock-rust
+Pinned:     v0.13.3
+License:    MPL-2.0
+Copyright:  Copyright (c) The Brave Authors
+
+Reuse mode: vendored, unmodified, consumed as a pinned Rust crate by Bedrock's content
+blocker. If a patch ever becomes necessary it moves to reuse mode "port" and the patch is
+kept in patches/third_party/adblock-rust/.
+
+MPL-2.0 obligations: unmodified redistribution requires the license notice; any modified
+file must be published under MPL-2.0.
+Full license text: ../LICENSE (same MPL-2.0 text).
