@@ -14,7 +14,8 @@ cxx=(g++ -std=c++17 -O1 -Wall -Wextra -Werror -I src_overrides)
 # the suite scale quadratically.
 objs=()
 for src in src_overrides/bedrock/**/*.cc; do
-  case "$src" in *_test.cc) continue;; esac
+  # Fuzz harnesses each define LLVMFuzzerTestOneInput and are linked separately.
+  case "$src" in *_test.cc|src_overrides/bedrock/fuzz/*) continue;; esac
   obj="$out/$(echo "${src#src_overrides/}" | tr / _).o"
   "${cxx[@]}" -c "$src" -o "$obj"
   objs+=("$obj")
@@ -27,9 +28,20 @@ for test in src_overrides/bedrock/**/*_test.cc; do
   "$out/$name" || status=1
 done
 
+# Fuzz harnesses: prove each still builds and survives the seed corpus.
+for fuzzer in src_overrides/bedrock/fuzz/*_fuzzer.cc; do
+  name=$(basename "${fuzzer%.cc}")
+  echo "== $name"
+  "${cxx[@]}" "$fuzzer" src_overrides/bedrock/fuzz/fuzz_smoke_main.cc "${objs[@]}" \
+      -o "$out/$name"
+  "$out/$name" || status=1
+done
+
 python3 scripts/check_fp_docs.py || status=1
 python3 scripts/check_ui_style.py || status=1
 python3 scripts/check_catalog.py || status=1
+python3 scripts/check_security_testing.py || status=1
+python3 scripts/check_perf_claims.py || status=1
 python3 scripts/check_no_telemetry.py || status=1
 python3 scripts/check_open_source.py || status=1
 python3 scripts/generate_sbom.py --check || status=1

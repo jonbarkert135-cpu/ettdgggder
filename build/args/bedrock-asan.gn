@@ -1,0 +1,17 @@
+# Bedrock — AddressSanitizer + UndefinedBehaviorSanitizer build (roadmap item 43).
+# Used for the nightly sanitizer run and for reproducing crash reports.
+import("//build/args/bedrock-release.gn")
+
+is_debug = false
+is_official_build = false
+symbol_level = 1
+dcheck_always_on = true
+
+is_asan = true
+is_lsan = true          # leaks, on Linux
+is_ubsan = true
+is_ubsan_no_recover = true   # a UB report fails the run instead of continuing
+
+# ASan needs the sandbox relaxed only for its own allocator bookkeeping; site
+# isolation stays on, because turning it off would test a browser we do not ship.
+enable_full_stack_frames_for_profiling = true

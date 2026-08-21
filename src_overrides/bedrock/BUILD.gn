@@ -42,6 +42,13 @@ source_set("extensions") {
   ]
 }
 
+source_set("perf") {
+  sources = [
+    "perf/perf_budgets.cc",
+    "perf/perf_budgets.h",
+  ]
+}
+
 source_set("update") {
   sources = [
     "update/update_provider.cc",
@@ -178,6 +185,8 @@ source_set("privacy") {
     "privacy/privacy_engine.h",
     "privacy/protection_controller.cc",
     "privacy/protection_controller.h",
+    "privacy/security_levels.cc",
+    "privacy/security_levels.h",
     "privacy/telemetry_policy.cc",
     "privacy/telemetry_policy.h",
   ]

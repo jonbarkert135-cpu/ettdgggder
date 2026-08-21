@@ -37,10 +37,14 @@
 namespace bedrock {
 namespace stats {
 
+// Mirrors privacy::SecurityLevel (item 45); the preset definitions live
+// there, this enum only exists so the dashboard does not depend on the
+// settings vocabulary changing underneath it.
 enum class ProtectionLevel {
   kStandard,
   kBalanced,
   kStrict,
+  kMaximum,
   kCustom,
 };
 

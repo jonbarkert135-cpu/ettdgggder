@@ -5,11 +5,10 @@
 
 #include "bedrock/stats/privacy_center.h"
 
+#include "bedrock/privacy/security_levels.h"
+
 namespace bedrock {
 namespace stats {
-
-using privacy::Control;
-using privacy::Value;
 
 PrivacyCenter::PrivacyCenter(const PrivacyEventLog* log,
                              const privacy::ProtectionController* controls)
@@ -55,38 +54,21 @@ std::vector<DashboardRow> PrivacyCenter::Rows() const {
 
 ProtectionLevel PrivacyCenter::Level() const {
   // Derived, never stored: the badge describes the current settings, so it
-  // cannot fall out of step with them. The presets below are the same three
-  // the settings page offers; anything else is honestly CUSTOM.
-  const Value ads = controls_->Get(Control::kAds, "", "");
-  const Value trackers = controls_->Get(Control::kTrackers, "", "");
-  const Value fp = controls_->Get(Control::kFingerprinting, "", "");
-  const Value cookies = controls_->Get(Control::kCookies, "", "");
-  const Value scripts = controls_->Get(Control::kScripts, "", "");
-
-  const bool strict = (ads == Value::kBlock || ads == Value::kBlockStrict) &&
-                      trackers == Value::kBlock &&
-                      (fp == Value::kBlock || fp == Value::kBlockStrict) &&
-                      (cookies == Value::kBlock ||
-                       cookies == Value::kBlockStrict) &&
-                      scripts == Value::kBlock;
-  if (strict)
-    return ProtectionLevel::kStrict;
-
-  // Balanced is what Bedrock ships with (item 11 defaults).
-  if (ads == Value::kBlock && trackers == Value::kBlock &&
-      fp == Value::kReduce && cookies == Value::kReduce &&
-      scripts == Value::kAllow) {
-    return ProtectionLevel::kBalanced;
+  // cannot fall out of step with them. The preset table itself lives in
+  // privacy/security_levels (item 45) — a second copy here is how a browser
+  // ends up shipping two different definitions of "Balanced".
+  switch (privacy::SecurityLevels::Detect(*controls_)) {
+    case privacy::SecurityLevel::kStandard:
+      return ProtectionLevel::kStandard;
+    case privacy::SecurityLevel::kBalanced:
+      return ProtectionLevel::kBalanced;
+    case privacy::SecurityLevel::kStrict:
+      return ProtectionLevel::kStrict;
+    case privacy::SecurityLevel::kMaximum:
+      return ProtectionLevel::kMaximum;
+    case privacy::SecurityLevel::kCustom:
+      break;
   }
-
-  // Standard: compatibility first — trackers still go, ads and fingerprinting
-  // protection do not.
-  if (ads == Value::kAllow && trackers == Value::kBlock &&
-      fp == Value::kAllow && cookies == Value::kReduce &&
-      scripts == Value::kAllow) {
-    return ProtectionLevel::kStandard;
-  }
-
   return ProtectionLevel::kCustom;
 }
 
@@ -98,6 +80,8 @@ const char* PrivacyCenter::LevelName(ProtectionLevel level) {
       return "BALANCED";
     case ProtectionLevel::kStrict:
       return "STRICT";
+    case ProtectionLevel::kMaximum:
+      return "MAXIMUM";
     case ProtectionLevel::kCustom:
       return "CUSTOM";
   }
