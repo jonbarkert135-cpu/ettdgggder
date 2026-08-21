@@ -78,3 +78,48 @@ mechanism — no Bedrock-run management service exists, and none is planned (inv
 document, when this document names a switch that no longer exists, or when a documented value
 is not in the allowed set. The CLI is documented because it is checked, not because we
 remembered.
+
+## Advanced settings
+
+**Roadmap item 57.** Power users and administrators get their own filter lists, resolver, proxy,
+user-agent policy, per-site permissions, per-site policies and CSP-like rules. Every one of those
+inputs goes through `AdvancedSettings::Evaluate`, which answers **accepted**, **accepted with a
+warning**, or **rejected with a reason** — never a silent shrug.
+
+The warning verdict exists because some legitimate choices cost the user something they would not
+guess: a custom user agent makes them *more* identifiable, a plain-DNS resolver hands every
+hostname to their network, an HTTP proxy sees every unencrypted request.
+
+Guards — rules no advanced setting can break, from the GUI **or** from enterprise policy:
+
+| Guard | Rule |
+| --- | --- |
+| G1 | No advanced setting can enable reporting or a management server |
+| G2 | Remote configuration (filter lists, rules) must be fetched over HTTPS |
+| G3 | A DoH endpoint must be HTTPS |
+| G4 | Proxies are limited to http, https and socks5 |
+| G5 | Credentials never live in a URL |
+| G6 | No global custom user agent |
+| G7 | No wildcard permission grant |
+| G8 | User content policy may only tighten, never relax, a site's CSP |
+| G9 | Nothing can disable certificate validation, the sandbox or site isolation |
+
+Rejection messages name the guard, so a refusal can be looked up rather than argued with.
+
+## Reset and recovery
+
+**Roadmap item 58.** Five actions, each stating both what it changes *and* what it leaves alone —
+the second list is why people are willing to press the first button.
+
+| Action | Confirmation | Leaves alone |
+| --- | --- | --- |
+| Reset privacy settings | dialog | bookmarks, history, passwords, tabs, extensions, site data |
+| Reset browser settings | dialog | bookmarks, history, passwords, downloads, other profiles |
+| Create new profile | none — nothing is lost | everything in the current profile |
+| Clear all local data | type the profile name | bookmarks, passwords, downloaded files, settings |
+| Restore defaults | type the profile name | bookmarks, passwords, other profiles, downloaded files |
+
+Anything irreversible requires the profile name typed in, so the confirmation cannot be given for
+the wrong profile, and offers an [export](FORMATS.md) first. The dialogs also say what a reset
+cannot do: Bedrock erases what is on this computer — sites keep their own logs, and so does the
+network.

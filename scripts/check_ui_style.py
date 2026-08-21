@@ -11,6 +11,11 @@ checks that the mockups and tokens actually obey them:
   * gradients         <= 2 per file, and none on interactive chrome
   * no decorative shadows beyond the three defined elevations
 
+Item 60 adds the accessibility rules a mockup can be held to: a lang attribute,
+a visible focus ring, a reduced-motion rule, real controls instead of clickable
+divs, a name on every icon-only button, and decorative glyphs hidden from the
+accessibility tree.
+
 Run: python3 scripts/check_ui_style.py
 """
 import json
@@ -72,6 +77,45 @@ def check_mockup(path: pathlib.Path, errors: list[str]) -> None:
             errors.append(f"{where}: references {brand}")
 
 
+# Roadmap item 60. A mockup is the specification the UI is built from, so an
+# inaccessible mockup becomes an inaccessible browser.
+INTERACTIVE_CLASSES = ("btn", "tab", "icon", "newtab", "item", "ic", "shield", "tsearch")
+
+
+def check_accessibility(path: pathlib.Path, errors: list[str]) -> None:
+    html = path.read_text()
+    where = path.name
+
+    if not re.search(r"<html[^>]+lang=", html):
+        errors.append(f"{where}: <html> has no lang attribute — screen readers guess the language")
+    if ":focus-visible" not in html:
+        errors.append(f"{where}: no :focus-visible rule — keyboard users cannot see where they are")
+    if re.search(r"outline:\s*(none|0)", html) and ":focus-visible" not in html:
+        errors.append(f"{where}: removes the focus outline without replacing it")
+    if re.search(r"transition|animation", html) and "prefers-reduced-motion" not in html:
+        errors.append(f"{where}: animates but has no prefers-reduced-motion rule")
+
+    # Something the user clicks has to be a control, not a styled <div>: that is
+    # what gives it keyboard focus and a role in the accessibility tree.
+    for cls in INTERACTIVE_CLASSES:
+        for match in re.finditer(rf'<div class="{cls}(?:\s[^"]*)?"', html):
+            errors.append(f"{where}: <div class=\"{cls}\"> is clickable but is not a control "
+                          f"(use <button>) at offset {match.start()}")
+
+    # An icon-only control needs a name; a glyph is not a label.
+    for match in re.finditer(r"<button([^>]*)>(.*?)</button>", html, re.S):
+        attrs, body = match.group(1), re.sub(r"<[^>]+>", "", match.group(2)).strip()
+        words = re.sub(r"[^A-Za-z0-9 ]", "", body).strip()
+        if len(words) < 2 and "aria-label" not in attrs:
+            errors.append(f"{where}: icon-only button {body!r} has no aria-label")
+
+    # Decorative glyphs must be hidden from the tree, or they are read aloud.
+    for match in re.finditer(r'<i class="(fav|sq|glyph|dot|d)"([^>]*)>', html):
+        if "aria-hidden" not in match.group(2):
+            errors.append(f"{where}: decorative <i class=\"{match.group(1)}\"> "
+                          f"is not aria-hidden")
+
+
 def main() -> int:
     errors: list[str] = []
     if not MOCKUPS:
@@ -80,9 +124,11 @@ def main() -> int:
     check_tokens(errors)
     for mockup in MOCKUPS:
         check_mockup(mockup, errors)
+        check_accessibility(mockup, errors)
     for error in errors:
         print("FAIL:", error, file=sys.stderr)
-    print(f"ui style OK: {len(MOCKUPS)} mockups within the item 27 limits")
+    print(f"ui style OK: {len(MOCKUPS)} mockups within the item 27 limits "
+          f"and the item 60 accessibility rules")
     return 1 if errors else 0
 
 

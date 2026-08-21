@@ -134,7 +134,11 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 54 "Origin Tools" | searched, no such project exists — [docs/research/ORIGIN_TOOLS.md](docs/research/ORIGIN_TOOLS.md); nothing invented |
 | 55 No fake features | feature registry carries a Status; UI renders only enforced features; `scripts/check_no_fake_features.py` |
 | 56 Configuration system | GUI / config file / policy / CLI from one table, strict parsing, [docs/CONFIGURATION.md](docs/CONFIGURATION.md) |
-| 57+ | awaiting specification |
+| 57 Enterprise / power user | advanced settings with 9 guards no setting or policy can break — [docs/CONFIGURATION.md](docs/CONFIGURATION.md#advanced-settings) |
+| 58 Reset / recovery | five actions, each stating what it leaves alone; typed confirmation + export offer before anything irreversible |
+| 59 Import / export | five documented formats, versioned, secret-free — [docs/FORMATS.md](docs/FORMATS.md) |
+| 60 Accessibility | eight requirements with evidence, mockups gated — [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md) |
+| 61+ | awaiting specification |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host
 tests — `./scripts/run_host_tests.sh` builds and runs them with plain `g++`, no Chromium

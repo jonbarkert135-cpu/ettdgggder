@@ -4,6 +4,32 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #17 — Roadmap 57–60: advanced settings, reset/recovery, import/export, accessibility
+- **57** `settings/advanced_settings.{h,cc}`: one evaluator for custom filter lists, DNS, proxy,
+  UA policy, per-site permissions/policies, CSP-like rules and managed profiles. Three verdicts —
+  accepted / accepted-with-warning / rejected-with-reason — and nine named guards (G1–G9) that
+  hold for enterprise policy as well as the GUI. G9 refuses the forum classics
+  (`ignore-certificate-errors`, `no-sandbox`, `disable-site-isolation`) from every control.
+  Warnings exist for choices that are legitimate but costly: a per-site UA override is allowed and
+  is told plainly that it is *not* a privacy feature; a global one is refused.
+- **58** `settings/reset_controls.{h,cc}`: the five roadmap actions, each with a changes list *and*
+  an untouched list; `Confirmation::kTypeToConfirm` for the two irreversible ones, with the profile
+  name typed so a confirmation cannot be given for the wrong profile, and an export offered first.
+  Clear-all reuses `NewIdentity::PlanForPrivateWindowClose()` rather than retyping the target list.
+- **59** `settings/portability.{h,cc}` + `docs/FORMATS.md`: five versioned formats. A newer file is
+  refused, never half-read. Imports are previewed, cannot enable telemetry, forge policy, override
+  a policy-locked key or point updates at plain HTTP, and every advanced value in a file goes
+  through the item 57 guards. Exports never carry cookies/tokens; passwords need request *and*
+  passphrase; third-party filter lists export as URLs, not contents (licences).
+- **60** `ui/accessibility.{h,cc}` + `docs/ACCESSIBILITY.md`: eight requirements, each with evidence
+  and a status; `Controls()` is built from the sidebar, reset and advanced tables so a nameless
+  control fails the build. Destructive dialogs are alertdialogs focused on the safe button.
+  `scripts/check_ui_style.py` gained the mockup rules — and both mockups needed fixing: clickable
+  `<div>`s became real `<button>`s with aria-labels, decorative glyphs got `aria-hidden`, and a
+  focus ring plus a `prefers-reduced-motion` block were added. Renders verified unchanged.
+- Gate extension: `check_config_surface.py` now also holds guards ↔ CONFIGURATION.md and formats ↔
+  FORMATS.md in sync (verified by breaking each direction).
+
 ## PR #16 — Roadmap 53–56: Privacy Badger research, "Origin Tools", no fake features, configuration
 - **53** `docs/research/PRIVACY_BADGER.md`: GPL-3.0, ideas only. Queued: cookie-blocking
   (`kReduce`) as the *default* learned outcome, no learning inside private/Tor windows (a leak,
