@@ -71,6 +71,10 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 16 HTTPS | upgrade / HTTPS-Only, mixed content, per-host cert exceptions only |
 | 17 DNS | system default, named DoH providers, fail-closed strict mode |
 | 18 WebRTC | Default / Privacy / Strict, no local IP outside Default |
+| 19 Browsing modes | Normal / Private / Tor transport, circuit isolation, no "anonymous" claims |
+| 20 Private window | one teardown path, shared with New Identity |
+| 21 Profiles | Personal/Work/School/Temporary/Custom, nothing shared |
+| 22 New Identity | plan shown up front, partial results reported honestly |
 | Extension catalog | designed ([009](docs/design/009-extension-catalog.md)) |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host

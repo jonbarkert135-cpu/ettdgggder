@@ -20,6 +20,21 @@ source_set("search") {
   ]
 }
 
+source_set("session") {
+  sources = [
+    "session/browsing_mode.cc",
+    "session/browsing_mode.h",
+    "session/new_identity.cc",
+    "session/new_identity.h",
+    "session/profile_manager.cc",
+    "session/profile_manager.h",
+  ]
+  deps = [
+    ":net",
+    ":privacy",
+  ]
+}
+
 source_set("net") {
   sources = [
     "net/dns_settings.cc",
