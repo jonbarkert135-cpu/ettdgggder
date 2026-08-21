@@ -25,6 +25,29 @@ read, not skimmed. Anything longer belongs in a doc, linked from here.
 - Gates: `check_branding.py` and `check_upstream.py` (code ↔ docs for deadlines, stages, patch
   header fields). Six negative cases verified by deliberate breakage.
 
+## PR #21 — Roadmap 70–73: supply chain, release channels, documentation set, build instructions
+- **70** `docs/SUPPLY_CHAIN.md`: the chain from upstream archive to installed binary, link by link,
+  with honest status per link (provenance format and signing keys are defined but **not yet
+  produced** — no release exists). Trusted-source rule is four ordered checks; provenance is an
+  in-toto/SLSA statement carrying the same nine values as the reproducibility manifest, so a second
+  builder can compare instead of trusting. `scripts/verify_release.py` (stdlib only, offline)
+  verifies manifest completeness, artifact digests, the OpenSSH detached signature via
+  `ssh-keygen -Y verify`, and that the provenance is about this artifact — smoke-tested end to end
+  with a real Ed25519 key.
+- **71** `updater/release_channels.{h,cc,_test.cc}` + `docs/RELEASES.md` + release-notes template:
+  nightly/beta/stable with cadence, soak (7/14 days), one-step promotion, and six mandatory note
+  fields on every channel. Nightly may carry open blockers and an incomplete pipeline (that is what
+  it is for) but may never be unsigned or undocumented.
+- **72** `docs/README.md` index, new `docs/ARCHITECTURE.md` and `docs/PRIVACY.md`; THREAT_MODEL
+  moved from `docs/security/` to `docs/` per the item-72 layout. `scripts/check_docs.py` checks the
+  required set, resolves every relative link in 104 Markdown files, and requires the index to cover
+  docs/.
+- **73** `docs/BUILD.md` rewritten: prerequisites, Visual Studio component list, long-path and
+  `DEPOT_TOOLS_WIN_TOOLCHAIN` setup, GN/Ninja invocations, packaging per platform, sanitizer
+  configs, reproducible-release environment, and a failure table. Where a value must match the
+  Chromium tree (SDK version), the document gives the command that prints it rather than a number
+  that goes stale.
+
 ## PR #20 — Brand assets: the owner's logo is the mark, name is Latin in every language
 - The project's own artwork (`branding/bedrock-logo.png`, plus `bedrock-logo-transparent.png` for
   icons and non-black backgrounds) is **the** mark. The generated SVG from PR #19 was removed:
@@ -155,7 +178,7 @@ at it.
 ## PR #12 — Roadmap 43–46: fuzzing and sanitizers, threat model, security levels, performance budgets
 Four libFuzzer harnesses on untrusted input (filter lists, omnibox, download
 names/MIME, bookmark import), each also a deterministic CI smoke run;
-ASan/UBSan, MSan, TSan and fuzz GN configs; `docs/security/THREAT_MODEL.md` with
+ASan/UBSan, MSan, TSan and fuzz GN configs; `docs/THREAT_MODEL.md` with
 all 14 adversaries and where Bedrock's protection *ends*; Standard/Balanced/
 Strict/Maximum as one source of truth with Privacy Center reading it; six
 measured perf metrics plus eight `pending` budgets.

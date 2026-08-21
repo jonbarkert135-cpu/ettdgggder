@@ -22,7 +22,7 @@ REQUIRED = {
     "docs/BUILD.md": ["sync.py", "gn", "Requirements"],
     "docs/LICENSING.md": ["Reuse decision ladder", "GPL"],
     "docs/THIRD_PARTY.md": ["BEGIN INVENTORY"],
-    "docs/security/THREAT_MODEL.md": ["out of scope", "Assumptions", "Targeted"],
+    "docs/THREAT_MODEL.md": ["out of scope", "Assumptions", "Targeted"],
     "docs/REPRODUCIBILITY.md": ["build manifest", "Known gaps", "SBOM"],
     "build/chromium.pin": ["version=", "commit="],
     "build/sbom.json": ["CycloneDX", "components"],

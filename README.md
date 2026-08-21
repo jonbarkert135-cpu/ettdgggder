@@ -147,7 +147,11 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 67 Patch management | required patch header incl. `Drop-When`, one patch one purpose — [docs/PATCHES.md](docs/PATCHES.md) |
 | 68 Sync tooling | `scripts/upstream_sync.py` — pin status, header audit, `git apply --check` conflict detection, roll plan |
 | 69 Security update priority | `updater/release_policy.{h,cc}`: features are dropped, the security release is never delayed |
-| 70+ | awaiting specification |
+| 70 Supply chain | dependency locks, hashes, SBOM, trusted-source rules, SLSA-style provenance, Ed25519 release signing — [docs/SUPPLY_CHAIN.md](docs/SUPPLY_CHAIN.md), `scripts/verify_release.py` |
+| 71 Release engineering | nightly / beta / stable with soak and promotion rules in code; six mandatory note fields — [docs/RELEASES.md](docs/RELEASES.md) |
+| 72 Documentation | [docs/README.md](docs/README.md) index; new ARCHITECTURE and PRIVACY; link checker in CI |
+| 73 Build system | full Linux and Windows instructions, packaging, reproducible-release settings — [docs/BUILD.md](docs/BUILD.md) |
+| 74+ | awaiting specification |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host
 tests — `./scripts/run_host_tests.sh` builds and runs them with plain `g++`, no Chromium

@@ -60,6 +60,10 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 52 | Every patch states a Reason and a Drop-When, and is verified against the pinned Chromium version | `docs/PATCHES.md`, `scripts/upstream_sync.py --check-patches` |
 | 53 | No other vendor's brand appears in a user-visible string, mockup or asset name; the product name is Latin script in every language, never transliterated | `scripts/check_branding.py` |
 | 54 | Colours are defined only in `branding/design-tokens.json`; documents name them, never restate them | `scripts/check_branding.py` |
+| 55 | Every release states all six fields — version, Chromium base, security fixes, privacy changes, dependencies, known issues — on every channel including nightly | `release_channels`, `scripts/check_releases.py` |
+| 56 | No build is published unsigned or without provenance, on any channel | `release_channels` (`kUnsigned`), `docs/SUPPLY_CHAIN.md` |
+| 57 | Promotion is nightly → beta → stable, one step, after the channel's soak | `release_channels` (`IsPromotionAllowed`) |
+| 58 | Every required document exists and every relative link in the repository resolves | `scripts/check_docs.py` |
 | 44 | No user-visible string is written at its display site; it comes from the catalog by id | `ui/l10n/string_catalog`, `scripts/check_strings.py` |
 | 45 | A locale is offered only when every id is translated; placeholders match the English source | `scripts/check_strings.py`, `string_catalog_test` |
 | 46 | Ukrainian never falls back to Russian — only to English | `string_catalog` (`FallbackChain`), `string_catalog_test` |

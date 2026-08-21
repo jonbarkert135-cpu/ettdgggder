@@ -43,7 +43,7 @@ REQUIRED_BUILD_ARGS = {
 REQUIRED_DOCS = {
     "docs/security/TESTING.md": ["static analysis", "sanitizers", "fuzzing",
                                  "regression", "network privacy"],
-    "docs/security/THREAT_MODEL.md": ["malicious website", "malicious ad",
+    "docs/THREAT_MODEL.md": ["malicious website", "malicious ad",
                                       "renderer exploit", "network observer",
                                       "compromised extension", "out of scope"],
 }
