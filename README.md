@@ -142,7 +142,12 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 62 Platform support | Windows and Linux supported, macOS best effort; platform macros confined to the platform layer — [ADR 0005](docs/adr/0005-platform-abstraction.md) |
 | 63 Windows UX | eleven integration points with owner and failure mode — [docs/PLATFORMS.md](docs/PLATFORMS.md#windows-item-63) |
 | 64 Linux UX | Wayland **and** X11, portals over desktop guesses, six package formats — [docs/PLATFORMS.md](docs/PLATFORMS.md#linux-item-64) |
-| 65+ | awaiting specification |
+| 65 Branding | own name, mark (full + small variant), palette and voice; gate keeps other vendors' brands out of the UI — [docs/BRAND.md](docs/BRAND.md) |
+| 66 Engine version management | pipeline, cadence and security deadlines — [docs/UPSTREAM_SYNC.md](docs/UPSTREAM_SYNC.md) |
+| 67 Patch management | required patch header incl. `Drop-When`, one patch one purpose — [docs/PATCHES.md](docs/PATCHES.md) |
+| 68 Sync tooling | `scripts/upstream_sync.py` — pin status, header audit, `git apply --check` conflict detection, roll plan |
+| 69 Security update priority | `updater/release_policy.{h,cc}`: features are dropped, the security release is never delayed |
+| 70+ | awaiting specification |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host
 tests — `./scripts/run_host_tests.sh` builds and runs them with plain `g++`, no Chromium

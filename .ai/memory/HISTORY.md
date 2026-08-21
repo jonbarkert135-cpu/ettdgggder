@@ -4,6 +4,27 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #19 — Roadmap 65–69: brand identity, upstream sync, patch discipline, security priority
+- **65** `docs/BRAND.md`, `branding/bedrock-mark.svg` + `bedrock-mark-small.svg`. Name unchanged
+  (Bedrock, confirmed by the owner). Mark: strata of stone in a circle with one copper seam, the
+  same accent the UI uses for protection state. Below 32 px the mark *changes* (three bands) rather
+  than shrinking. `scripts/check_branding.py` keeps other vendors' brands out of user-visible
+  strings, mockups and asset names ("Chromium" allowed as the engine, "Tor" allowed as the network,
+  "Tor Browser" refused), checks docs ↔ assets both ways, and forbids restating colours outside
+  design-tokens.json.
+- **66/69** `updater/release_policy.{h,cc}` + `docs/UPSTREAM_SYNC.md`. Deadlines from the moment a
+  fix is *public upstream*: critical 72h, high 7d, medium 14d, low 30d. Unready features are
+  dropped (`kDropFeatures`), never a reason to delay. A fix touching patched code blocks the
+  release until a human re-reads the patch. `kEmergencyRelease` is narrow: security-only content,
+  written justification, and still the security review + privacy regression tests.
+- **67** `docs/PATCHES.md`: required header (incl. `Chromium-Version` and `Drop-When`), one patch
+  one purpose, `src_overrides/` preferred over a diff. Zero patches exist yet — the discipline
+  lands before the first patch on purpose.
+- **68** `scripts/upstream_sync.py`: `--status` (pin age, roll due), `--check-patches`,
+  `--dry-run` (`git apply --check` conflict detection), `--plan`, `--selftest`.
+- Gates: `check_branding.py` and `check_upstream.py` (code ↔ docs for deadlines, stages, patch
+  header fields). Six negative cases verified by deliberate breakage.
+
 ## PR #18 — Roadmap 61–64: localization, platform tiers, Windows and Linux integration
 - **61** `ui/l10n/string_catalog.{h,cc}`: 12 ids × 4 complete locales (en, uk, ru, de). Named
   placeholders parsed out of the text rather than declared twice; CLDR plural categories, so

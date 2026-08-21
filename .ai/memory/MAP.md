@@ -301,10 +301,13 @@ String catalog: every user-visible string by id, four complete locales, named pl
 | `string_catalog_test.cc` | Item 61: a locale is offered only when it is finished. |
 
 ### `src_overrides/bedrock/updater/`
-Provider-agnostic update system: signature-verified, works without any project-run infrastructure. Item 40.
+Update system and release policy: provider-agnostic signature-verified updates (item 40); security updates always outrank features, with deadlines by severity (items 66, 69).
 
 | File | What it is |
 | --- | --- |
+| `release_policy.cc` | implementation |
+| `release_policy.h` | Release policy: security update vs feature (roadmap items 66 and 69). |
+| `release_policy_test.cc` | Host test, no Chromium. |
 | `update_provider.cc` | implementation |
 | `update_provider.h` | Update system (roadmap item 40). |
 | `update_provider_test.cc` | Host test, no Chromium. |
@@ -322,14 +325,17 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | File | Title |
 | --- | --- |
 | [`docs/ACCESSIBILITY.md`](../../docs/ACCESSIBILITY.md) | Accessibility |
+| [`docs/BRAND.md`](../../docs/BRAND.md) | Brand identity |
 | [`docs/BUILD.md`](../../docs/BUILD.md) | Building Bedrock |
 | [`docs/CONFIGURATION.md`](../../docs/CONFIGURATION.md) | Configuration |
 | [`docs/FORMATS.md`](../../docs/FORMATS.md) | Import and export formats |
 | [`docs/LICENSING.md`](../../docs/LICENSING.md) | Bedrock Browser — Licensing & Provenance Policy |
 | [`docs/LOCALIZATION.md`](../../docs/LOCALIZATION.md) | Localization |
+| [`docs/PATCHES.md`](../../docs/PATCHES.md) | Patch management |
 | [`docs/PLATFORMS.md`](../../docs/PLATFORMS.md) | Platform support |
 | [`docs/REPRODUCIBILITY.md`](../../docs/REPRODUCIBILITY.md) | Reproducible Builds |
 | [`docs/THIRD_PARTY.md`](../../docs/THIRD_PARTY.md) | Bedrock Browser — Third-Party Inventory |
+| [`docs/UPSTREAM_SYNC.md`](../../docs/UPSTREAM_SYNC.md) | Upstream sync |
 | [`docs/adr/0001-chromium-overlay.md`](../../docs/adr/0001-chromium-overlay.md) | ADR 0001 — Chromium base, overlay repository (not a fork) |
 | [`docs/adr/0002-filter-engine-backend.md`](../../docs/adr/0002-filter-engine-backend.md) | ADR 0002 — One matcher behind one interface: built-in C++ engine, adblock-rust as a swappable backend |
 | [`docs/adr/0003-source-layout.md`](../../docs/adr/0003-source-layout.md) | ADR 0003 — Source layout: subsystem tree where it helps, Chromium's layout where it must |
@@ -409,6 +415,7 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 
 | Script | Enforces |
 | --- | --- |
+| `scripts/check_branding.py` | Branding gate (roadmap item 65). |
 | `scripts/check_catalog.py` | Validate the privacy extension catalog. Run: python3 scripts/check_catalog.py |
 | `scripts/check_config_surface.py` | Fail if the configuration surface and its documentation disagree (item 56). |
 | `scripts/check_fp_docs.py` | Every anti-fingerprinting surface must have a documented rationale. |
@@ -423,6 +430,7 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | `scripts/check_security_testing.py` | Fail if the security testing setup has decayed. Run: |
 | `scripts/check_strings.py` | Localization gate (roadmap item 61). |
 | `scripts/check_ui_style.py` | Roadmap item 27's taste rules, as a gate. |
+| `scripts/check_upstream.py` | Upstream sync and patch gate (roadmap items 66, 67, 69). |
 | `scripts/run_host_tests.sh` | Builds and runs every `*_test.cc` and fuzz smoke harness with plain g++. |
 
 ## Elsewhere

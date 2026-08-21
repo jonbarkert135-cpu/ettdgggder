@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Bedrock Browser mark. Copyright 2026 The Bedrock Authors. MPL-2.0.
+     Strata of stone seen in section, clipped to a circle: what is underneath
+     everything else and does not move. One copper seam, the same accent the UI
+     uses for protection state — the brand and the product agree on what the
+     colour means. Geometry is original; no third-party mark is referenced. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"
+     role="img" aria-label="Bedrock">
+  <title>Bedrock</title>
+  <defs>
+    <clipPath id="disc">
+      <circle cx="128" cy="128" r="112"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#disc)">
+    <rect width="256" height="256" fill="#101214"/>
+    <!-- Strata, top to bottom. Each band is a separate path so the seams stay
+         crisp at 16 px instead of collapsing into grey mush. -->
+    <path d="M0 16 L104 22 L168 12 L256 24 L256 52 L152 44 L84 54 L0 46 Z" fill="#4A5054"/>
+    <path d="M0 54 L84 62 L152 52 L256 60 L256 92 L140 86 L72 96 L0 88 Z" fill="#3A4044"/>
+    <path d="M0 96 L72 104 L140 94 L256 100 L256 130 L120 124 L60 134 L0 126 Z" fill="#565C60"/>
+    <path d="M0 134 L60 142 L120 132 L256 138 L256 158 L128 152 L64 162 L0 154 Z" fill="#B4622A"/>
+    <path d="M0 162 L64 170 L128 160 L256 166 L256 198 L112 192 L52 202 L0 194 Z" fill="#33393D"/>
+    <path d="M0 202 L52 210 L112 200 L256 206 L256 256 L0 256 Z" fill="#454B4F"/>
+  </g>
+  <circle cx="128" cy="128" r="112" fill="none" stroke="#1B1A18" stroke-width="8"/>
+</svg>

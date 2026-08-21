@@ -55,6 +55,11 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 40 | An import can lower privilege but never raise it; a newer file version is refused, not half-read | `settings/portability`, `portability_test` |
 | 41 | Exports carry no secrets unless explicitly requested and encrypted, and never third-party list contents | `settings/portability`, `docs/FORMATS.md` |
 | 42 | Every Bedrock control has a keyboard path and an accessible name | `ui/accessibility`, `accessibility_test`, `scripts/check_ui_style.py` |
+| 50 | A Chromium security fix outranks every feature; features are dropped, the release is not delayed | `updater/release_policy`, `release_policy_test`, `docs/UPSTREAM_SYNC.md` |
+| 51 | No build reaches users without the security review and the privacy regression tests — emergencies included | `release_policy` (`MandatoryStages`), `scripts/check_upstream.py` |
+| 52 | Every patch states a Reason and a Drop-When, and is verified against the pinned Chromium version | `docs/PATCHES.md`, `scripts/upstream_sync.py --check-patches` |
+| 53 | No other vendor's brand appears in a user-visible string, mockup or asset name | `scripts/check_branding.py` |
+| 54 | Colours are defined only in `branding/design-tokens.json`; documents name them, never restate them | `scripts/check_branding.py` |
 | 44 | No user-visible string is written at its display site; it comes from the catalog by id | `ui/l10n/string_catalog`, `scripts/check_strings.py` |
 | 45 | A locale is offered only when every id is translated; placeholders match the English source | `scripts/check_strings.py`, `string_catalog_test` |
 | 46 | Ukrainian never falls back to Russian — only to English | `string_catalog` (`FallbackChain`), `string_catalog_test` |
