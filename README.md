@@ -127,7 +127,10 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 47 Source layout | subsystem tree landed; deviations from the proposal justified in [ADR 0003](docs/adr/0003-source-layout.md) |
 | 48 Languages | C++ engine, Rust behind one FFI door, TypeScript for WebUI, never Electron — [ADR 0004](docs/adr/0004-languages.md), gated |
 | 49 Firefox research | mechanism-by-mechanism verdicts and licence position in [docs/research/FIREFOX.md](docs/research/FIREFOX.md) |
-| 50+ | awaiting specification |
+| 50 Brave research | [docs/research/BRAVE.md](docs/research/BRAVE.md) — CNAME uncloaking, query stripping, referrer and client-hints policy queued |
+| 51 Tor Browser research | [docs/research/TOR_BROWSER.md](docs/research/TOR_BROWSER.md) — letterboxing and circuit display queued; no anonymity claim |
+| 52 uBlock Origin research | [docs/research/UBLOCK_ORIGIN.md](docs/research/UBLOCK_ORIGIN.md) + per-list licence inventory in [docs/privacy/FILTER_LISTS.md](docs/privacy/FILTER_LISTS.md) |
+| 53+ | awaiting specification |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host
 tests — `./scripts/run_host_tests.sh` builds and runs them with plain `g++`, no Chromium

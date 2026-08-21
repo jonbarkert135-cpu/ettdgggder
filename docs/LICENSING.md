@@ -44,9 +44,10 @@ linked with the Bedrock binary.
 
 Permitted paths:
 
-- **Filter *lists*** (EasyList, EasyPrivacy, uBO's own lists) are data, licensed **CC BY-SA 3.0 /
-  GPL-3.0 depending on list**. They are downloaded at runtime by the user's browser or shipped
-  as a separate data package, never compiled in. Attribution required for CC BY-SA lists.
+- **Filter *lists*** (EasyList, EasyPrivacy, uBO's own lists) are data, licensed **per list** —
+  never as a set. The inventory, the "verified before it can be a default" rule and the reason
+  we never bundle one are in `docs/privacy/FILTER_LISTS.md`. Lists are downloaded at runtime by
+  the user's browser, never compiled in. Attribution required for CC BY / CC BY-SA lists.
 - **Filter *syntax*** (ABP/uBO syntax) is a documented format → reimplement a parser (ladder #1).
 - **Engine:** reimplement the documented ABP/uBO filter syntax (ladder #4, shipped as
   `bedrock::blocking::FilterEngine`), with Brave's `adblock-rust` (MPL-2.0, ladder #2/#3) as a

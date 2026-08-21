@@ -39,7 +39,10 @@ for how users still get uBO if they want it.
 
 Lists are **data fetched at runtime** from the list authors' own URLs (EasyList, EasyPrivacy,
 uBO filters), on a schedule, directly from the user's machine — no Bedrock CDN, no Bedrock
-list proxy. Default: EasyList + EasyPrivacy + uBO badware/privacy lists.
+list proxy. Intended default: EasyList + EasyPrivacy + uBO badware/privacy lists — **blocked
+on the licence verification rule** in [`docs/privacy/FILTER_LISTS.md`](../privacy/FILTER_LISTS.md)
+(item 52): a list becomes a default only once its licence is checked and recorded, so the
+shipped default set is empty until then.
 
 ## Fingerprinting
 

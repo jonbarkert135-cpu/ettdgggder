@@ -42,3 +42,5 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 27 | No Electron and no shipped Node/Python runtime | `scripts/check_languages.py` |
 | 28 | Web languages only in WebUI directories; no privacy decision is made in TypeScript | `scripts/check_languages.py` |
 | 29 | A Rust crate enters only through one `src/ffi.rs`, with no `unsafe` elsewhere and a provenance row | `scripts/check_languages.py` |
+| 30 | No filter-list data is ever committed to the tree; lists are fetched at runtime by the user | `scripts/check_provenance.py` |
+| 31 | A filter list becomes a default subscription only with a verified, dated licence row | `scripts/check_provenance.py`, `docs/privacy/FILTER_LISTS.md` |
