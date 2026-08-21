@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "bedrock/net/storage_isolation.h"
-#include "bedrock/privacy/fingerprint_policy.h"
+#include "bedrock/privacy/storage/storage_isolation.h"
+#include "bedrock/privacy/fingerprinting/fingerprint_policy.h"
 
 // Browsing modes and the optional Tor transport (roadmap items 19 and 20).
 //

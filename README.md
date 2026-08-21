@@ -62,12 +62,19 @@ is optional is memory that is wrong within a month.
 build/          chromium.pin (pinned base), sync.py (fetch + overlay), args/*.gn
 patches/        patches against the Chromium tree (bedrock/ and upstream/<project>/)
 src_overrides/  new files mirrored into the Chromium tree layout (preferred over patches)
-docs/           LICENSING.md, THIRD_PARTY.md, BUILD.md, adr/
+  bedrock/privacy/    core · fingerprinting · tracker_blocker · storage · network · security · stats
+  bedrock/ui themes settings search omnibox extensions profiles workspaces session
+  bedrock/history bookmarks passwords downloads devtools updater perf fuzz
+docs/           LICENSING.md, THIRD_PARTY.md, BUILD.md, adr/, design/, research/
 THIRD_PARTY_NOTICES/  one notice file per dependency, 1:1 with the inventory
-scripts/        the CI gates (licensing, telemetry, perf claims, memory, ...)
+scripts/        the CI gates (licensing, telemetry, perf claims, languages, memory, ...)
 .ai/            project memory for AI agents and new contributors
 branding/       Bedrock name and logo assets
 ```
+
+The subsystem tree and the places where Chromium's layout wins instead are decided in
+[ADR 0003](docs/adr/0003-source-layout.md); languages (C++ / Rust / TypeScript, and no Electron)
+in [ADR 0004](docs/adr/0004-languages.md).
 
 ## Build
 
@@ -117,7 +124,10 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 44 Threat model | 14 adversaries, each with where Bedrock's protection ends |
 | 45 Security levels | Standard / Balanced / Strict / Maximum as the single source of truth |
 | 46 Performance budgets | 6 metrics measured per commit, 8 marked pending until a real build |
-| 47+ | awaiting specification |
+| 47 Source layout | subsystem tree landed; deviations from the proposal justified in [ADR 0003](docs/adr/0003-source-layout.md) |
+| 48 Languages | C++ engine, Rust behind one FFI door, TypeScript for WebUI, never Electron — [ADR 0004](docs/adr/0004-languages.md), gated |
+| 49 Firefox research | mechanism-by-mechanism verdicts and licence position in [docs/research/FIREFOX.md](docs/research/FIREFOX.md) |
+| 50+ | awaiting specification |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host
 tests — `./scripts/run_host_tests.sh` builds and runs them with plain `g++`, no Chromium

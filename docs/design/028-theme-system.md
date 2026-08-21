@@ -1,7 +1,7 @@
 # 028 — Theme system
 
 **Roadmap item 28.** Status: landed and host-tested
-(`src_overrides/bedrock/ui/theme_engine.{h,cc}`).
+(`src_overrides/bedrock/themes/theme_engine.{h,cc}`).
 
 Modes: **Light · Dark · System · High Contrast · Custom**.
 

@@ -1,7 +1,7 @@
 # 015 — Cookie and storage isolation
 
 **Roadmap item 15.** Status: key model landed and host-tested
-(`src_overrides/bedrock/net/storage_isolation.{h,cc}`).
+(`src_overrides/bedrock/privacy/storage/storage_isolation.{h,cc}`).
 
 ## One key, every backend
 

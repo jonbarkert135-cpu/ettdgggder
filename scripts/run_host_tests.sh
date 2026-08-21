@@ -43,6 +43,7 @@ python3 scripts/check_catalog.py || status=1
 python3 scripts/check_security_testing.py || status=1
 python3 scripts/check_perf_claims.py || status=1
 python3 scripts/check_no_telemetry.py || status=1
+python3 scripts/check_languages.py || status=1
 python3 scripts/check_open_source.py || status=1
 python3 scripts/generate_sbom.py --check || status=1
 python3 scripts/check_memory.py --selftest || status=1

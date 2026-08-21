@@ -1,7 +1,7 @@
 # 024 — Security baseline
 
 **Roadmap item 24.** Status: landed and host-tested
-(`src_overrides/bedrock/security/security_baseline.{h,cc}`).
+(`src_overrides/bedrock/privacy/security/security_baseline.{h,cc}`).
 
 ## The failure mode this prevents
 

@@ -1,7 +1,7 @@
 # 032 — Workspaces
 
 **Roadmap item 32.** Status: landed and host-tested
-(`src_overrides/bedrock/session/workspace_manager.{h,cc}`).
+(`src_overrides/bedrock/workspaces/workspace_manager.{h,cc}`).
 
 A workspace is a named set of **tabs**, **tab groups**, **visual settings** and an **optional
 profile mapping**: Research, Personal, School, Development.

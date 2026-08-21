@@ -19,17 +19,17 @@ SOURCES = REPO / "src_overrides" / "bedrock"
 # Item 43: "test especially these". Each maps to the directory that must carry
 # both implementation and tests.
 CRITICAL_AREAS = {
-    "networking": "net",
+    "networking": "privacy/network",
     "URL parser": "omnibox",
     "extension system": "extensions",
-    "content blocking": "blocking",
-    "privacy APIs": "privacy",
-    "storage isolation": "net",
+    "content blocking": "privacy/tracker_blocker",
+    "privacy APIs": "privacy/core",
+    "storage isolation": "privacy/storage",
     "permissions": "extensions",
-    "renderer-facing policy": "privacy",
+    "renderer-facing policy": "privacy/fingerprinting",
     "downloads": "downloads",
     "passwords": "passwords",
-    "update path": "update",
+    "update path": "updater",
 }
 
 # Sanitizer and fuzzing configurations that must stay in the tree.
@@ -65,13 +65,13 @@ def main() -> int:
 
     # Every component directory needs a test, not just the listed ones — this is
     # what catches the subsystem added next month.
-    for directory in sorted(p for p in SOURCES.iterdir() if p.is_dir()):
+    for directory in sorted(p for p in SOURCES.rglob("*") if p.is_dir()):
         if directory.name == "fuzz":
             continue
         sources = [p for p in directory.glob("*.cc") if not p.name.endswith("_test.cc")]
         if sources and not list(directory.glob("*_test.cc")):
-            errors.append(
-                f"src_overrides/bedrock/{directory.name}/ has code but no *_test.cc")
+            rel = directory.relative_to(SOURCES)
+            errors.append(f"src_overrides/bedrock/{rel}/ has code but no *_test.cc")
 
     fuzzers = sorted((SOURCES / "fuzz").glob("*_fuzzer.cc"))
     if len(fuzzers) < MIN_FUZZERS:

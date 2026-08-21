@@ -1,7 +1,7 @@
 # 039 — Bedrock Privacy Extensions (store, analysis, recommendations)
 
 **PrivacyTools.io brief items 1–5, 13, 20, 21.** Status: landed and host-tested
-(`src_overrides/bedrock/catalog/`).
+(`src_overrides/bedrock/extensions/catalog/`).
 
 The store is a native part of the browser, not an embedded website: entries are local data
 (`catalog/bedrock_privacy_catalog.json`), rendered by the browser UI, usable offline.

@@ -10,44 +10,14 @@ told you which one you need.
 ## Code — `src_overrides/bedrock/`
 New files mirrored into the Chromium tree layout. Preferred over patches (see ADR 0001). Every directory below is required to carry a summary in `.ai/memory/modules.json` and at least one `*_test.cc`.
 
-### `src_overrides/bedrock/blocking/`
-Content blocking: ABP/uBO-syntax filter engine (independently implemented, rarest-token index), the behavioral Privacy-Badger-style heuristic, and the single `BlockingPipeline::Evaluate()` that every request goes through. Items 12-14.
-
-| File | What it is |
-| --- | --- |
-| `blocking_pipeline.cc` | implementation |
-| `blocking_pipeline.h` | The one blocking pipeline (roadmap item 13). |
-| `blocking_pipeline_test.cc` | Host test, no Chromium. |
-| `filter_engine.cc` | implementation |
-| `filter_engine.h` | Filter engine — Adblock Plus / uBlock Origin filter syntax (roadmap item 12). |
-| `filter_engine_test.cc` | Host test, no Chromium. |
-| `tracker_heuristic.cc` | implementation |
-| `tracker_heuristic.h` | Behavioral tracker detection (roadmap item 14). |
-| `tracker_heuristic_test.cc` | Host test, no Chromium. |
-
-### `src_overrides/bedrock/catalog/`
-Curated privacy-extension catalog (JSON data + validator) and the recommendation engine whose job is to say no. PrivacyTools.io brief.
-
-| File | What it is |
-| --- | --- |
-| `bedrock_privacy_catalog.json` | data |
-| `extension_catalog.cc` | implementation |
-| `extension_catalog.h` | Bedrock Privacy Extensions — the curated catalog (roadmap items 1–4, 13, 20, 21 of the PrivacyTools.io brief). |
-| `extension_catalog_test.cc` | Host test, no Chromium. |
-| `recommendation_engine.cc` | implementation |
-| `recommendation_engine.h` | Smart recommendations (brief item 5) and the threat-model framing (item 18). |
-
-### `src_overrides/bedrock/data/`
-History and bookmarks stores. History's hard requirement is deletion that also removes derived ranking data. Item 35.
+### `src_overrides/bedrock/bookmarks/`
+Bookmark store: folders and tags together, search over title, URL and tags. Item 35. Mirrors Chromium's components/bookmarks placement.
 
 | File | What it is |
 | --- | --- |
 | `bookmark_store.cc` | implementation |
 | `bookmark_store.h` | Bookmarks (roadmap item 35). |
 | `bookmark_store_test.cc` | Host test, no Chromium. |
-| `history_store.cc` | implementation |
-| `history_store.h` | History (roadmap item 35). |
-| `history_store_test.cc` | Host test, no Chromium. |
 
 ### `src_overrides/bedrock/devtools/`
 Added DevTools privacy panels. Rule zero: never break an upstream Chromium panel. Item 36.
@@ -76,6 +46,18 @@ Chromium-compatible extension API plus generated capability disclosure; an updat
 | `extension_registry.h` | Extension system (roadmap item 23). |
 | `extension_registry_test.cc` | Host test, no Chromium. |
 
+### `src_overrides/bedrock/extensions/catalog/`
+Curated privacy-extension catalog (JSON data + validator) and the recommendation engine whose job is to say no. PrivacyTools.io brief.
+
+| File | What it is |
+| --- | --- |
+| `bedrock_privacy_catalog.json` | data |
+| `extension_catalog.cc` | implementation |
+| `extension_catalog.h` | Bedrock Privacy Extensions — the curated catalog (roadmap items 1–4, 13, 20, 21 of the PrivacyTools.io brief). |
+| `extension_catalog_test.cc` | Host test, no Chromium. |
+| `recommendation_engine.cc` | implementation |
+| `recommendation_engine.h` | Smart recommendations (brief item 5) and the threat-model framing (item 18). |
+
 ### `src_overrides/bedrock/fuzz/`
 libFuzzer harnesses for every untrusted-input entry point, each also built as a deterministic CI smoke run via -DBEDROCK_FUZZ_SMOKE. Item 43.
 
@@ -88,32 +70,14 @@ libFuzzer harnesses for every untrusted-input entry point, each also built as a 
 | `fuzz_smoke_main.cc` | CI driver for the fuzz harnesses. |
 | `omnibox_input_fuzzer.cc` | Fuzzes omnibox input classification (roadmap item 43: URL parser). |
 
-### `src_overrides/bedrock/knowledge/`
-Privacy Knowledge Center: native offline articles (layer A) kept separate from externally licensed material (layer B) for licensing reasons.
+### `src_overrides/bedrock/history/`
+History store whose hard requirement is deletion: removing an entry removes the derived ranking data too. Item 35.
 
 | File | What it is |
 | --- | --- |
-| `knowledge_base.cc` | implementation |
-| `knowledge_base.h` | Privacy Knowledge Center (brief items 6–11, 14–17). |
-| `knowledge_base_test.cc` | Host test, no Chromium. |
-
-### `src_overrides/bedrock/net/`
-Network privacy: DNS settings (named resolvers, fail-closed strict mode), HTTPS policy, StorageKey isolation for every backend, WebRTC IP exposure modes. Items 15-18.
-
-| File | What it is |
-| --- | --- |
-| `dns_settings.cc` | implementation |
-| `dns_settings.h` | DNS and network privacy (roadmap item 17). |
-| `dns_settings_test.cc` | Host test, no Chromium. |
-| `https_policy.cc` | implementation |
-| `https_policy.h` | HTTPS upgrading, mixed content and certificate errors (roadmap item 16). |
-| `https_policy_test.cc` | Host test, no Chromium. |
-| `storage_isolation.cc` | implementation |
-| `storage_isolation.h` | Cookie and storage isolation (roadmap item 15). |
-| `storage_isolation_test.cc` | Host test, no Chromium. |
-| `webrtc_policy.cc` | implementation |
-| `webrtc_policy.h` | WebRTC IP exposure (roadmap item 18). |
-| `webrtc_policy_test.cc` | Host test, no Chromium. |
+| `history_store.cc` | implementation |
+| `history_store.h` | History (roadmap item 35). |
+| `history_store_test.cc` | Host test, no Chromium. |
 
 ### `src_overrides/bedrock/omnibox/`
 Omnibox input classification only — Chromium's own providers still rank bookmarks, history and tabs. Item 7.
@@ -142,14 +106,11 @@ Performance budgets measured on every commit; unmeasurable budgets are marked pe
 | `perf_budgets.h` | Performance budgets (roadmap item 46). |
 | `perf_budgets_test.cc` | Host test, no Chromium. |
 
-### `src_overrides/bedrock/privacy/`
-The Privacy Engine: feature registry, anti-fingerprinting policy and deterministic derivation, per-site Protection Controller, the PrivacyPolicy resolver (single source of truth for ten layers), security-level presets, zero-telemetry policy. Items 8-11, 25, 39, 45.
+### `src_overrides/bedrock/privacy/core/`
+The Privacy Engine core: feature registry, the PrivacyPolicy resolver (single source of truth for ten layers), per-site Protection Controller, security-level presets, zero-telemetry policy. Items 8, 11, 25, 39, 45.
 
 | File | What it is |
 | --- | --- |
-| `fingerprint_policy.cc` | implementation |
-| `fingerprint_policy.h` | Anti-fingerprinting policy: which strategy applies to which Web API surface at which level, plus the deterministic value derivation used by every shim. |
-| `fingerprint_policy_test.cc` | Host test, no Chromium. |
 | `privacy_engine.h` | The Bedrock Privacy Engine. |
 | `privacy_policy.cc` | implementation |
 | `privacy_policy.h` | PrivacyPolicy — the single source of truth (roadmap item 25). |
@@ -163,6 +124,84 @@ The Privacy Engine: feature registry, anti-fingerprinting policy and determinist
 | `telemetry_policy.cc` | implementation |
 | `telemetry_policy.h` | Telemetry policy (roadmap item 39). |
 
+### `src_overrides/bedrock/privacy/fingerprinting/`
+Anti-fingerprinting policy and deterministic value derivation: normalize first, never random per call, 21 documented surfaces. Items 9-10.
+
+| File | What it is |
+| --- | --- |
+| `fingerprint_policy.cc` | implementation |
+| `fingerprint_policy.h` | Anti-fingerprinting policy: which strategy applies to which Web API surface at which level, plus the deterministic value derivation used by every shim. |
+| `fingerprint_policy_test.cc` | Host test, no Chromium. |
+
+### `src_overrides/bedrock/privacy/network/`
+Network privacy: DNS settings (named resolvers, fail-closed strict mode), HTTPS upgrading and per-host certificate exceptions, WebRTC IP exposure modes. Items 16-18.
+
+| File | What it is |
+| --- | --- |
+| `dns_settings.cc` | implementation |
+| `dns_settings.h` | DNS and network privacy (roadmap item 17). |
+| `dns_settings_test.cc` | Host test, no Chromium. |
+| `https_policy.cc` | implementation |
+| `https_policy.h` | HTTPS upgrading, mixed content and certificate errors (roadmap item 16). |
+| `https_policy_test.cc` | Host test, no Chromium. |
+| `webrtc_policy.cc` | implementation |
+| `webrtc_policy.h` | WebRTC IP exposure (roadmap item 18). |
+| `webrtc_policy_test.cc` | Host test, no Chromium. |
+
+### `src_overrides/bedrock/privacy/security/`
+Security baseline audit: forbidden Chromium-weakening switches are rejected in tests, so privacy work cannot ship a less safe browser. Item 24.
+
+| File | What it is |
+| --- | --- |
+| `security_baseline.cc` | implementation |
+| `security_baseline.h` | Security baseline (roadmap item 24). |
+| `security_baseline_test.cc` | Host test, no Chromium. |
+
+### `src_overrides/bedrock/privacy/stats/`
+The one privacy event log feeding DevTools panels, Privacy Center and the per-site shield, so the numbers cannot disagree. Items 36-38.
+
+| File | What it is |
+| --- | --- |
+| `privacy_event_log.cc` | implementation |
+| `privacy_event_log.h` | The privacy event log — the single source for items 36, 37 and 38. |
+| `privacy_event_log_test.cc` | Host test, no Chromium. |
+
+### `src_overrides/bedrock/privacy/storage/`
+Cookie and storage isolation: one StorageKey decides where every backend reads and writes, cache, DNS and HSTS included. Item 15.
+
+| File | What it is |
+| --- | --- |
+| `storage_isolation.cc` | implementation |
+| `storage_isolation.h` | Cookie and storage isolation (roadmap item 15). |
+| `storage_isolation_test.cc` | Host test, no Chromium. |
+
+### `src_overrides/bedrock/privacy/tracker_blocker/`
+Content blocking: ABP/uBO-syntax filter engine (independently implemented, rarest-token index), the behavioral Privacy-Badger-style heuristic, and the single BlockingPipeline::Evaluate() every request goes through. Items 12-14.
+
+| File | What it is |
+| --- | --- |
+| `blocking_pipeline.cc` | implementation |
+| `blocking_pipeline.h` | The one blocking pipeline (roadmap item 13). |
+| `blocking_pipeline_test.cc` | Host test, no Chromium. |
+| `filter_engine.cc` | implementation |
+| `filter_engine.h` | Filter engine — Adblock Plus / uBlock Origin filter syntax (roadmap item 12). |
+| `filter_engine_test.cc` | Host test, no Chromium. |
+| `tracker_heuristic.cc` | implementation |
+| `tracker_heuristic.h` | Behavioral tracker detection (roadmap item 14). |
+| `tracker_heuristic_test.cc` | Host test, no Chromium. |
+
+### `src_overrides/bedrock/profiles/`
+Profiles, which share nothing by default, and New Identity — the controlled session reset that also states what it does not erase. Items 21-22.
+
+| File | What it is |
+| --- | --- |
+| `new_identity.cc` | implementation |
+| `new_identity.h` | "New Identity" — the controlled session reset (roadmap items 20 and 22). |
+| `new_identity_test.cc` | Host test, no Chromium. |
+| `profile_manager.cc` | implementation |
+| `profile_manager.h` | Profiles (roadmap item 21). |
+| `profile_manager_test.cc` | Host test, no Chromium. |
+
 ### `src_overrides/bedrock/search/`
 Search engine selection per context (default / private / Tor), pure logic feeding TemplateURLService. Item 6.
 
@@ -173,49 +212,46 @@ Search engine selection per context (default / private / Tor), pure logic feedin
 | `engine_selector.h` | Which engine handles a given search, per Settings -> Search. |
 | `engine_selector_test.cc` | Host test, no Chromium. |
 
-### `src_overrides/bedrock/security/`
-Security baseline audit: forbidden Chromium-weakening switches are rejected in tests, so privacy work cannot ship a less safe browser. Item 24.
-
-| File | What it is |
-| --- | --- |
-| `security_baseline.cc` | implementation |
-| `security_baseline.h` | Security baseline (roadmap item 24). |
-| `security_baseline_test.cc` | Host test, no Chromium. |
-
 ### `src_overrides/bedrock/session/`
-Browsing modes (Normal / Private / Tor transport), profiles, workspaces, and New Identity with its honest what-is-not-reset list. Items 19-22, 32.
+Browsing modes: Normal, Private and the optional Tor transport with circuit isolation. Tor lives here rather than in its own tree because it is a transport, not a subsystem. Items 19-20.
 
 | File | What it is |
 | --- | --- |
 | `browsing_mode.cc` | implementation |
 | `browsing_mode.h` | Browsing modes and the optional Tor transport (roadmap items 19 and 20). |
 | `browsing_mode_test.cc` | Host test, no Chromium. |
-| `new_identity.cc` | implementation |
-| `new_identity.h` | "New Identity" — the controlled session reset (roadmap items 20 and 22). |
-| `new_identity_test.cc` | Host test, no Chromium. |
-| `profile_manager.cc` | implementation |
-| `profile_manager.h` | Profiles (roadmap item 21). |
-| `profile_manager_test.cc` | Host test, no Chromium. |
-| `workspace_manager.cc` | implementation |
-| `workspace_manager.h` | Workspaces (roadmap item 32). |
-| `workspace_manager_test.cc` | Host test, no Chromium. |
 
-### `src_overrides/bedrock/stats/`
-One privacy event log feeding all three surfaces (DevTools panels, Privacy Center, per-site shield) plus the posture view, so the numbers cannot disagree. Items 36-38.
+### `src_overrides/bedrock/settings/`
+Settings surfaces: the Privacy Center dashboard and the privacy configuration (posture) view. Item 37, brief item 19.
 
 | File | What it is |
 | --- | --- |
 | `privacy_center.cc` | implementation |
 | `privacy_center.h` | Privacy Center (roadmap item 37). |
-| `privacy_event_log.cc` | implementation |
-| `privacy_event_log.h` | The privacy event log — the single source for items 36, 37 and 38. |
-| `privacy_event_log_test.cc` | Host test, no Chromium. |
 | `privacy_posture.cc` | implementation |
 | `privacy_posture.h` | Privacy configuration view (brief item 19). |
 | `privacy_posture_test.cc` | Host test, no Chromium. |
 
+### `src_overrides/bedrock/settings/knowledge/`
+Privacy Knowledge Center: native offline articles (layer A) kept separate from externally licensed material (layer B) for licensing reasons.
+
+| File | What it is |
+| --- | --- |
+| `knowledge_base.cc` | implementation |
+| `knowledge_base.h` | Privacy Knowledge Center (brief items 6–11, 14–17). |
+| `knowledge_base_test.cc` | Host test, no Chromium. |
+
+### `src_overrides/bedrock/themes/`
+Theme engine: 5 modes, 14 live properties, contrast validation, and no 'restart required' apply kind. Items 27-29.
+
+| File | What it is |
+| --- | --- |
+| `theme_engine.cc` | implementation |
+| `theme_engine.h` | Theme engine (roadmap items 27, 28 and 29). |
+| `theme_engine_test.cc` | Host test, no Chromium. |
+
 ### `src_overrides/bedrock/ui/`
-Theme engine with live application (no 'restart required'), tab model with two layouts, sidebar, per-site privacy panel. Items 27-31, 38.
+Browser UI surfaces: tab model with two layouts, optional sidebar, per-site privacy panel. Items 30-31, 38.
 
 | File | What it is |
 | --- | --- |
@@ -228,11 +264,8 @@ Theme engine with live application (no 'restart required'), tab model with two l
 | `tab_model.cc` | implementation |
 | `tab_model.h` | Tab system (roadmap item 30). |
 | `tab_model_test.cc` | Host test, no Chromium. |
-| `theme_engine.cc` | implementation |
-| `theme_engine.h` | Theme engine (roadmap items 27, 28 and 29). |
-| `theme_engine_test.cc` | Host test, no Chromium. |
 
-### `src_overrides/bedrock/update/`
+### `src_overrides/bedrock/updater/`
 Provider-agnostic update system: signature-verified, works without any project-run infrastructure. Item 40.
 
 | File | What it is |
@@ -240,6 +273,15 @@ Provider-agnostic update system: signature-verified, works without any project-r
 | `update_provider.cc` | implementation |
 | `update_provider.h` | Update system (roadmap item 40). |
 | `update_provider_test.cc` | Host test, no Chromium. |
+
+### `src_overrides/bedrock/workspaces/`
+Workspaces: named sets of tabs and visual settings inside one profile — an organisational boundary, never a privacy boundary. Item 32.
+
+| File | What it is |
+| --- | --- |
+| `workspace_manager.cc` | implementation |
+| `workspace_manager.h` | Workspaces (roadmap item 32). |
+| `workspace_manager_test.cc` | Host test, no Chromium. |
 
 ## Docs
 | File | Title |
@@ -250,6 +292,8 @@ Provider-agnostic update system: signature-verified, works without any project-r
 | [`docs/THIRD_PARTY.md`](../../docs/THIRD_PARTY.md) | Bedrock Browser — Third-Party Inventory |
 | [`docs/adr/0001-chromium-overlay.md`](../../docs/adr/0001-chromium-overlay.md) | ADR 0001 — Chromium base, overlay repository (not a fork) |
 | [`docs/adr/0002-filter-engine-backend.md`](../../docs/adr/0002-filter-engine-backend.md) | ADR 0002 — One matcher behind one interface: built-in C++ engine, adblock-rust as a swappable backend |
+| [`docs/adr/0003-source-layout.md`](../../docs/adr/0003-source-layout.md) | ADR 0003 — Source layout: subsystem tree where it helps, Chromium's layout where it must |
+| [`docs/adr/0004-languages.md`](../../docs/adr/0004-languages.md) | ADR 0004 — Languages: C++ for the engine, Rust behind an FFI boundary, TypeScript for UI, never Electron |
 | [`docs/design/006-search-system.md`](../../docs/design/006-search-system.md) | 006 — Search engine system |
 | [`docs/design/007-omnibox.md`](../../docs/design/007-omnibox.md) | 007 — Address bar / omnibox |
 | [`docs/design/008-privacy-engine.md`](../../docs/design/008-privacy-engine.md) | 008 — Privacy Engine |
@@ -309,6 +353,7 @@ Provider-agnostic update system: signature-verified, works without any project-r
 | [`docs/privacy/fingerprinting/user-agent.md`](../../docs/privacy/fingerprinting/user-agent.md) | User-Agent |
 | [`docs/privacy/fingerprinting/webgl.md`](../../docs/privacy/fingerprinting/webgl.md) | WebGL |
 | [`docs/privacy/fingerprinting/webrtc.md`](../../docs/privacy/fingerprinting/webrtc.md) | WebRTC |
+| [`docs/research/FIREFOX.md`](../../docs/research/FIREFOX.md) | Firefox research |
 | [`docs/security/TESTING.md`](../../docs/security/TESTING.md) | Security testing |
 | [`docs/security/THREAT_MODEL.md`](../../docs/security/THREAT_MODEL.md) | Bedrock Threat Model |
 
@@ -319,6 +364,7 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | --- | --- |
 | `scripts/check_catalog.py` | Validate the privacy extension catalog. Run: python3 scripts/check_catalog.py |
 | `scripts/check_fp_docs.py` | Every anti-fingerprinting surface must have a documented rationale. |
+| `scripts/check_languages.py` | Fail if the language policy of ADR 0004 is broken. |
 | `scripts/check_memory.py` | Fail if the project memory in `.ai/` is missing, stale or out of sync. |
 | `scripts/check_no_telemetry.py` | Fail if anything that reports home appears in the tree, or if the build |
 | `scripts/check_open_source.py` | Fail if the project calls itself open source without the parts that make the |

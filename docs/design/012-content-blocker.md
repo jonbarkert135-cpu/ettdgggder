@@ -1,7 +1,7 @@
 # 012 — Content blocker
 
 **Roadmap item 12.** Status: engine landed and host-tested
-(`src_overrides/bedrock/blocking/filter_engine.{h,cc}`).
+(`src_overrides/bedrock/privacy/tracker_blocker/filter_engine.{h,cc}`).
 
 ## What we studied, and what we may use
 

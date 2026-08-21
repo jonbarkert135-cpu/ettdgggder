@@ -1,7 +1,7 @@
 # 035 — Bookmarks and history
 
 **Roadmap item 35.** Status: landed and host-tested
-(`src_overrides/bedrock/data/bookmark_store.{h,cc}`, `data/history_store.{h,cc}`).
+(`src_overrides/bedrock/bookmarks/bookmark_store.{h,cc}`, `data/history_store.{h,cc}`).
 
 ## Bookmarks
 

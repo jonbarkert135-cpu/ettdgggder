@@ -1,7 +1,7 @@
 # 025 — PrivacyPolicy: the single source of truth
 
 **Roadmap item 25.** Status: landed and host-tested
-(`src_overrides/bedrock/privacy/privacy_policy.{h,cc}`).
+(`src_overrides/bedrock/privacy/core/privacy_policy.{h,cc}`).
 
 ```
 PrivacyPolicy

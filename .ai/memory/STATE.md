@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** roadmap 43–46 merged (PR #12, CI green).
+**As of:** roadmap 47–49 merged (PR #14, CI green).
 
 ## Position on the roadmap
 
@@ -22,12 +22,19 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 | PrivacyTools.io brief: catalog, recommendations, knowledge center, posture | done |
 | 39–42 Zero telemetry, provider-agnostic updates, open-source and reproducibility gates | done |
 | 43–46 Fuzzing + sanitizers, threat model, security levels, performance budgets | done |
-| 47+ | **not yet specified — waiting on the project owner** |
+| 47 Source layout (subsystem tree, ADR 0003) | done |
+| 48 Languages: C++ / Rust / TypeScript, no Electron (ADR 0004) | policy + gate done; no Rust code yet |
+| 49 Firefox research (`docs/research/FIREFOX.md`) | done — analysis only, nothing implemented |
+| 50+ | **not yet specified — waiting on the project owner** |
 
 ## What is real vs. what is documented
 
 - **Runs in CI today:** 34 host test binaries, 4 fuzz smoke harnesses (~860
-  inputs each), 6 measured performance metrics, 8 static gates.
+  inputs each), 6 measured performance metrics, 10 static gates.
+- **Tree shape since item 47:** code is nested under `src_overrides/bedrock/`
+  (`privacy/{core,fingerprinting,tracker_blocker,storage,network,security,stats}`,
+  plus `ui`, `themes`, `settings`, `profiles`, `workspaces`, `session`,
+  `history`, `bookmarks`, `updater`, …). Namespaces were *not* renamed.
 - **Requires a real Chromium build (documented, not running):** ASan/MSan/TSan
   nightlies, libFuzzer campaigns, browser and integration tests, clang-tidy,
   and 8 performance budgets marked `pending` (startup, memory, idle CPU,
@@ -49,7 +56,11 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 
 ## Open threads
 
-- Roadmap items 47+ awaited from the project owner.
+- Roadmap items 50+ awaited from the project owner.
+- No Rust module exists yet; first candidate is the filter-list parser (ADR 0004).
+- From item 49, three recorded follow-ups: letterboxing, one "forget about this
+  site" action, and an ADR deciding whether extensions keep blocking `webRequest`.
+  Parked as too large for now: RLBox-style library sandboxing, a Bedrock root store.
 - No real Chromium build has been run in CI; everything requiring one is marked
   as such in `docs/security/TESTING.md` and `docs/performance/BUDGETS.md`.
 - Fuzz corpora are seed-sized only; no long campaign has run yet.

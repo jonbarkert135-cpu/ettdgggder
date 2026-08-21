@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "bedrock/stats/privacy_event_log.h"
+#include "bedrock/privacy/stats/privacy_event_log.h"
 
 // Privacy panels for DevTools (roadmap item 36).
 //

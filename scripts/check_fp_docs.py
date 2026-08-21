@@ -11,7 +11,7 @@ import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-POLICY = ROOT / "src_overrides/bedrock/privacy/fingerprint_policy.cc"
+POLICY = ROOT / "src_overrides/bedrock/privacy/fingerprinting/fingerprint_policy.cc"
 DOCS = ROOT / "docs/privacy/fingerprinting"
 SECTIONS = ("## Attack vector", "## Mitigation", "## Compatibility impact",
             "## Performance impact", "## Test cases")

@@ -87,12 +87,20 @@ def doc_sentence(path: str) -> str:
 
 
 def module_dirs() -> list[str]:
+    """Every directory holding source files, as a path relative to CODE_ROOT.
+
+    The tree is nested since roadmap item 47 (ADR 0003), so a directory that
+    only holds other directories is not a module.
+    """
     base = os.path.join(ROOT, CODE_ROOT)
-    return sorted(
-        name
-        for name in os.listdir(base)
-        if os.path.isdir(os.path.join(base, name)) and not name.startswith(".")
-    )
+    found = []
+    for dirpath, dirnames, filenames in os.walk(base):
+        dirnames.sort()
+        if any(not f.startswith(".") for f in filenames):
+            rel = os.path.relpath(dirpath, base).replace(os.sep, "/")
+            if rel != ".":
+                found.append(rel)
+    return sorted(found)
 
 
 def files_in(module: str) -> list[str]:

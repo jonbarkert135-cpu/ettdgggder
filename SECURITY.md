@@ -52,7 +52,7 @@ Chromium bases; upgrading the pin is the security fix.
 ## Our own security work
 
 - The Chromium security baseline is asserted in a test: 13 required features and 14 forbidden
-  switches (`src_overrides/bedrock/security/security_baseline.*`). No privacy feature may weaken it.
+  switches (`src_overrides/bedrock/privacy/security/security_baseline.*`). No privacy feature may weaken it.
 - The update path refuses unsigned releases, unknown keys, hash mismatches, downgrades and
   non-HTTPS sources on every provider (`docs/design/042`).
 - The threat model, including what Bedrock explicitly does **not** protect against, is in

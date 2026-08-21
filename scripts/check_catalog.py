@@ -23,7 +23,7 @@ from datetime import date
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-CATALOG = REPO / "src_overrides" / "bedrock" / "catalog" / "bedrock_privacy_catalog.json"
+CATALOG = REPO / "src_overrides" / "bedrock" / "extensions" / "catalog" / "bedrock_privacy_catalog.json"
 
 CAPABILITIES = {
     "content_blocking", "tracker_blocking", "url_parameter_cleaning",

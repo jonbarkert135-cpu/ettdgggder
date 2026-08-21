@@ -8,7 +8,7 @@ Reuse mode: vendored (metadata only).
 
 What Bedrock uses:
   - the set of privacy browser extensions PrivacyTools.io recommends, as catalog
-    metadata in src_overrides/bedrock/catalog/bedrock_privacy_catalog.json;
+    metadata in src_overrides/bedrock/extensions/catalog/bedrock_privacy_catalog.json;
   - the Covered / Hardened / Targeted threat-level concept, expressed in Bedrock's
     own words;
   - links to their guides, shown as external reference cards.

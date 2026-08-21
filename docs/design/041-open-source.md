@@ -1,7 +1,7 @@
 # 041 — Telemetry policy, updates, open source, reproducibility
 
 **Roadmap items 39–42.** Status: landed and host-tested
-(`src_overrides/bedrock/privacy/telemetry_policy.*`, `src_overrides/bedrock/update/*`,
+(`src_overrides/bedrock/privacy/core/telemetry_policy.*`, `src_overrides/bedrock/updater/*`,
 plus four CI gates and four documents).
 
 ## 39 — Zero telemetry

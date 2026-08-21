@@ -1,7 +1,7 @@
 # 021 — Profiles
 
 **Roadmap item 21.** Status: landed and host-tested
-(`src_overrides/bedrock/session/profile_manager.{h,cc}`).
+(`src_overrides/bedrock/profiles/profile_manager.{h,cc}`).
 
 Personal, Work, School, Temporary, Custom. A profile owns **everything**: cookies, storage,
 history, bookmarks, extensions, permissions, privacy settings, downloads and passwords.

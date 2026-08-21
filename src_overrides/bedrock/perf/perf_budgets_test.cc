@@ -16,13 +16,13 @@
 #include <iostream>
 #include <string>
 
-#include "bedrock/blocking/blocking_pipeline.h"
-#include "bedrock/blocking/filter_engine.h"
-#include "bedrock/blocking/tracker_heuristic.h"
-#include "bedrock/data/history_store.h"
-#include "bedrock/privacy/protection_controller.h"
+#include "bedrock/privacy/tracker_blocker/blocking_pipeline.h"
+#include "bedrock/privacy/tracker_blocker/filter_engine.h"
+#include "bedrock/privacy/tracker_blocker/tracker_heuristic.h"
+#include "bedrock/history/history_store.h"
+#include "bedrock/privacy/core/protection_controller.h"
 #include "bedrock/ui/tab_model.h"
-#include "bedrock/ui/theme_engine.h"
+#include "bedrock/themes/theme_engine.h"
 
 namespace {
 
