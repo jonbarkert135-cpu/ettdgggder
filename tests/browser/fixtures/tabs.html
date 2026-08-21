@@ -1,0 +1,13 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>bedrock-tabs-fixture</title>
+<pre id="result"></pre>
+<script src="_report.js"></script>
+<script>
+  // Opens a second tab in the same browser session, then reports for itself.
+  // The runner requires a report from both tabs, so this passes only if the
+  // browser really created and loaded a second tab (run with
+  // --disable-popup-blocking; a blocked popup is a legitimate failure here).
+  window.open('page.html?tab=2', '_blank');
+  report(document.title + ' ' + location.pathname + '?tab=1');
+</script>

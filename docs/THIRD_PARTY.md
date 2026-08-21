@@ -4,18 +4,24 @@ Machine-checked by `scripts/check_provenance.py`. Do not edit the table format.
 Versions verified against upstream on **2026-08-21**.
 
 <!-- BEGIN INVENTORY -->
-| Project | Repository | Pinned version | License | Reuse mode | Notice |
-|---|---|---|---|---|---|
-| Chromium | https://chromium.googlesource.com/chromium/src | 151.0.7922.173 | BSD-3-Clause | patched-base | chromium.txt |
-| brave-core | https://github.com/brave/brave-core | v1.96.5 | MPL-2.0 | port | brave-core.txt |
-| adblock-rust | https://github.com/brave/adblock-rust | v0.13.3 | MPL-2.0 | vendored | adblock-rust.txt |
-| ungoogled-chromium | https://github.com/ungoogled-software/ungoogled-chromium | 151.0.7922.169-1 | BSD-3-Clause | port | ungoogled-chromium.txt |
-| uBlock Origin | https://github.com/gorhill/uBlock | 1.73.0 | GPL-3.0-or-later | separate-artifact | ublock-origin.txt |
-| Privacy Badger | https://github.com/EFForg/privacybadger | release-2026.8.7 | GPL-3.0-or-later | separate-artifact | privacy-badger.txt |
-| Tor Browser (tor-browser) | https://gitlab.torproject.org/tpo/applications/tor-browser | not-pinned-yet | MPL-2.0 | reimplement | tor-browser.txt |
-| Firefox (mozilla-central) | https://github.com/mozilla-firefox/firefox | not-pinned-yet | MPL-2.0 | reimplement | firefox.txt |
-| PrivacyTools.io | https://www.privacytools.io | catalog-snapshot-2026-08-21 | VERNAM License | vendored | privacytools-io.txt |
+| Project | Repository | Pinned version | License | Reuse mode | Notice | Reviewed | Justification |
+|---|---|---|---|---|---|---|---|
+| Chromium | https://chromium.googlesource.com/chromium/src | 151.0.7922.173 | BSD-3-Clause | patched-base | chromium.txt | 2026-08-21 | The browser engine; the project is an overlay on it (ADR 0001) |
+| brave-core | https://github.com/brave/brave-core | v1.96.5 | MPL-2.0 | port | brave-core.txt | 2026-08-21 | Reference for Shields behaviour; MPL files reused with attribution where a reimplementation would only differ cosmetically |
+| adblock-rust | https://github.com/brave/adblock-rust | v0.13.3 | MPL-2.0 | vendored | adblock-rust.txt | 2026-08-21 | Candidate filter-matching backend evaluated in ADR 0002; kept because it is MPL and already field-proven |
+| ungoogled-chromium | https://github.com/ungoogled-software/ungoogled-chromium | 151.0.7922.169-1 | BSD-3-Clause | port | ungoogled-chromium.txt | 2026-08-21 | Patch reference for removing Google service endpoints — work we would otherwise redo and get wrong |
+| uBlock Origin | https://github.com/gorhill/uBlock | 1.73.0 | GPL-3.0-or-later | separate-artifact | ublock-origin.txt | 2026-08-21 | Filter syntax reference only; GPL-3.0 keeps it a separate artifact, never linked |
+| Privacy Badger | https://github.com/EFForg/privacybadger | release-2026.8.7 | GPL-3.0-or-later | separate-artifact | privacy-badger.txt | 2026-08-21 | Tracker-heuristic reference only; GPL-3.0, separate artifact |
+| Tor Browser (tor-browser) | https://gitlab.torproject.org/tpo/applications/tor-browser | not-pinned-yet | MPL-2.0 | reimplement | tor-browser.txt | 2026-08-21 | Anti-fingerprinting research source; no code enters the tree |
+| Firefox (mozilla-central) | https://github.com/mozilla-firefox/firefox | not-pinned-yet | MPL-2.0 | reimplement | firefox.txt | 2026-08-21 | Privacy-architecture research source; no code enters the tree |
+| PrivacyTools.io | https://www.privacytools.io | catalog-snapshot-2026-08-21 | VERNAM License | vendored | privacytools-io.txt | 2026-08-21 | Data source for the curated extension catalog; no executable code |
 <!-- END INVENTORY -->
+
+**Reviewed** is the date a human last checked this row against upstream: the version still exists,
+the licence has not changed, and the justification still holds. A review older than twelve months
+fails `check_provenance.py` — an inventory nobody re-reads becomes a list of what the project used
+to depend on. **Justification** is why the dependency exists at all; see
+[`DEPENDENCIES.md`](DEPENDENCIES.md) for what does not count as one (item 77).
 
 `not-pinned-yet` is only legal for reuse mode `reimplement` (no code enters the tree, so there
 is nothing to pin); the checker enforces this.

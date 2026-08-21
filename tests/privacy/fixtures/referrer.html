@@ -1,0 +1,18 @@
+<!doctype html><meta charset="utf-8"><title>referrer</title>
+<h1>referrer</h1>
+<pre id="result"></pre>
+<script src="_harness.js"></script>
+<script>
+// document.referrer is the JS view; the header the server saw is recorded by
+// the runner. Both matter: the header is what a tracker reads, and the JS value
+// is what a page uses to decide whether you came from a competitor.
+const img = new Image();
+const params = new URLSearchParams(location.search);
+img.src = (params.get('probe') || '') + '/probe.gif?from=referrer';
+report({
+  referrer: document.referrer,
+  referrer_length: document.referrer.length,
+  referrer_policy: document.referrerPolicy || '(default)',
+  origin: location.origin,
+});
+</script>

@@ -1,0 +1,27 @@
+<!doctype html><meta charset="utf-8"><title>storage isolation</title>
+<h1>storage isolation</h1>
+<p>Loaded as a third-party frame by <code>storage_isolation_top.html</code>.</p>
+<pre id="result"></pre>
+<script src="_harness.js"></script>
+<script>
+// Runs inside a cross-site iframe. Writes a value keyed by the parameter the
+// runner passes, then reports everything it can see. Under partitioning, a
+// frame embedded on site A must not see what the same frame wrote on site B.
+const params = new URLSearchParams(location.search);
+const tag = params.get('tag') || 'none';
+const out = { tag: tag };
+try {
+  out.local_storage_before = localStorage.getItem('probe');
+  localStorage.setItem('probe', tag);
+  out.local_storage_after = localStorage.getItem('probe');
+} catch (e) { out.local_storage_error = e.name; }
+try {
+  document.cookie = 'probe=' + tag + ';SameSite=None;Secure;path=/';
+  out.cookie_visible = document.cookie;
+} catch (e) { out.cookie_error = e.name; }
+out.storage_access_api = typeof document.requestStorageAccess === 'function';
+out.has_storage_access = safe(() => typeof document.hasStorageAccess === 'function');
+out.indexeddb = typeof indexedDB === 'object';
+if (window.parent !== window) parent.postMessage(out, '*');
+report(out);
+</script>

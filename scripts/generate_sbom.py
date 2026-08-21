@@ -34,10 +34,11 @@ def read_inventory() -> list[dict[str, str]]:
     rows = []
     for line in block.group(1).strip().splitlines():
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) != 6 or cells[0] == "Project" or set(cells[0]) <= set("- "):
+        if len(cells) != 8 or cells[0] == "Project" or set(cells[0]) <= set("- "):
             continue
         rows.append(dict(zip(
-            ["project", "repository", "version", "license", "mode", "notice"], cells)))
+            ["project", "repository", "version", "license", "mode", "notice",
+             "reviewed", "justification"], cells)))
     return rows
 
 

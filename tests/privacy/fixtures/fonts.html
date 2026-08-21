@@ -1,0 +1,33 @@
+<!doctype html><meta charset="utf-8"><title>fonts</title>
+<h1>fonts</h1>
+<pre id="result"></pre>
+<script src="_harness.js"></script>
+<script>
+// Font enumeration without an API: render a string in a candidate font with a
+// known fallback and see whether the metrics change. This is the technique
+// actual fingerprinting scripts use, which is why the test uses it too — a
+// mitigation that only blocks queryLocalFonts() does nothing about this.
+const probes = ['monospace', 'sans-serif', 'serif'];
+const candidates = ['Arial', 'Courier New', 'Georgia', 'Helvetica Neue', 'Impact',
+  'Segoe UI', 'Tahoma', 'Times New Roman', 'Verdana', 'Comic Sans MS',
+  'DejaVu Sans', 'Liberation Serif', 'Noto Color Emoji', 'Ubuntu', 'Cantarell'];
+const span = document.createElement('span');
+span.style.cssText = 'position:absolute;left:-9999px;font-size:72px';
+span.textContent = 'mmmmmmmmmmlli WWW @#$%';
+document.body.appendChild(span);
+function metrics(family) {
+  span.style.fontFamily = family;
+  return span.offsetWidth + 'x' + span.offsetHeight;
+}
+const base = {};
+probes.forEach(p => base[p] = metrics(p));
+const detected = candidates.filter(font =>
+  probes.some(p => metrics(`'${font}',${p}`) !== base[p]));
+report({
+  detected_fonts: detected,
+  detected_count: detected.length,
+  candidates_tested: candidates.length,
+  local_fonts_api: safe(() => typeof window.queryLocalFonts === 'function'),
+  base_metrics: base,
+});
+</script>

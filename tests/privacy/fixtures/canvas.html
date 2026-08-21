@@ -1,0 +1,39 @@
+<!doctype html><meta charset="utf-8"><title>canvas</title>
+<h1>Canvas fingerprint consistency</h1>
+<pre id="result"></pre>
+<script src="_harness.js"></script>
+<script>
+// Draws the same scene twice in two canvases and hashes both. Two properties
+// matter and they pull in opposite directions:
+//   - within one page load and one origin, the value must be STABLE, or every
+//     canvas-using site breaks and the user turns protection off;
+//   - across origins it must DIFFER, or the value is a cross-site identifier.
+// The second half is measured by the runner, which loads this page from two
+// origins and compares.
+function draw() {
+  const c = document.createElement('canvas');
+  c.width = 220; c.height = 40;
+  const ctx = c.getContext('2d');
+  ctx.textBaseline = 'top';
+  ctx.font = "14px 'Arial'";
+  ctx.fillStyle = '#f60'; ctx.fillRect(0, 0, 100, 20);
+  ctx.fillStyle = '#069'; ctx.fillText('Bedrock \u2014 fingerprint \u26A1', 2, 15);
+  ctx.strokeStyle = 'rgba(102,204,0,0.7)'; ctx.arc(50, 20, 18, 0, Math.PI * 2); ctx.stroke();
+  return c.toDataURL();
+}
+async function sha256(text) {
+  const bytes = new TextEncoder().encode(text);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+(async () => {
+  const first = draw(), second = draw();
+  const c = document.createElement('canvas').getContext('2d');
+  report({
+    hash: await sha256(first),
+    stable_within_page: first === second,
+    data_url_length: first.length,
+    readback_supported: safe(() => typeof c.getImageData === 'function'),
+  });
+})();
+</script>
