@@ -271,6 +271,9 @@ Settings surfaces: the Privacy Center dashboard and the privacy configuration (p
 | `config_surface.cc` | implementation |
 | `config_surface.h` | The configuration surface (roadmap item 56). |
 | `config_surface_test.cc` | Host test, no Chromium. |
+| `defaults.cc` | implementation |
+| `defaults.h` | User control (item 83) and the shipped defaults (item 84). |
+| `defaults_test.cc` | Host test, no Chromium. |
 | `portability.cc` | implementation |
 | `portability.h` | Import and export (roadmap item 59). |
 | `portability_test.cc` | An importer is a parser for hostile input that arrives wearing the user's trust. |
@@ -288,6 +291,9 @@ Privacy Knowledge Center: native offline articles (layer A) kept separate from e
 
 | File | What it is |
 | --- | --- |
+| `feature_disclosure.cc` | implementation |
+| `feature_disclosure.h` | Privacy transparency (item 82) and the trade-off table (item 85). |
+| `feature_disclosure_test.cc` | Host test, no Chromium. |
 | `knowledge_base.cc` | implementation |
 | `knowledge_base.h` | Privacy Knowledge Center (brief items 6–11, 14–17). |
 | `knowledge_base_test.cc` | Host test, no Chromium. |
@@ -360,6 +366,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/BRAND.md`](../../docs/BRAND.md) | Brand identity |
 | [`docs/BUILD.md`](../../docs/BUILD.md) | Building Bedrock |
 | [`docs/CONFIGURATION.md`](../../docs/CONFIGURATION.md) | Configuration |
+| [`docs/DEFAULTS.md`](../../docs/DEFAULTS.md) | Defaults and the four axes of control |
 | [`docs/DEPENDENCIES.md`](../../docs/DEPENDENCIES.md) | Dependency policy |
 | [`docs/DIAGNOSTICS.md`](../../docs/DIAGNOSTICS.md) | Diagnostics: debug logs and crash reports |
 | [`docs/ERRORS.md`](../../docs/ERRORS.md) | Errors: what the user sees when something fails |
@@ -367,8 +374,10 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/LICENSING.md`](../../docs/LICENSING.md) | Bedrock Browser — Licensing & Provenance Policy |
 | [`docs/LOCALIZATION.md`](../../docs/LOCALIZATION.md) | Localization |
 | [`docs/PATCHES.md`](../../docs/PATCHES.md) | Patch management |
+| [`docs/PHASES.md`](../../docs/PHASES.md) | Implementation phases, and where Bedrock actually is |
 | [`docs/PLATFORMS.md`](../../docs/PLATFORMS.md) | Platform support |
 | [`docs/PRIVACY.md`](../../docs/PRIVACY.md) | Privacy |
+| [`docs/PROCESS.md`](../../docs/PROCESS.md) | How a part of Bedrock gets built |
 | [`docs/README.md`](../../docs/README.md) | Documentation index |
 | [`docs/RELEASES.md`](../../docs/RELEASES.md) | Releases |
 | [`docs/REPRODUCIBILITY.md`](../../docs/REPRODUCIBILITY.md) | Reproducible Builds |
@@ -382,6 +391,15 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/adr/0004-languages.md`](../../docs/adr/0004-languages.md) | ADR 0004 — Languages: C++ for the engine, Rust behind an FFI boundary, TypeScript for UI, never Electron |
 | [`docs/adr/0005-platform-abstraction.md`](../../docs/adr/0005-platform-abstraction.md) | ADR 0005 — Platform support and the abstraction that keeps it honest |
 | [`docs/adr/0006-no-ui-frameworks.md`](../../docs/adr/0006-no-ui-frameworks.md) | ADR 0006 — No JavaScript UI framework |
+| [`docs/adr/0007-privacy-architecture.md`](../../docs/adr/0007-privacy-architecture.md) | ADR 0007 — Privacy is one engine with a registry, not a bag of switches |
+| [`docs/adr/0008-fingerprinting-strategy.md`](../../docs/adr/0008-fingerprinting-strategy.md) | ADR 0008 — Fingerprinting: deterministic per-site perturbation, in levels |
+| [`docs/adr/0009-search-architecture.md`](../../docs/adr/0009-search-architecture.md) | ADR 0009 — Search: provider-agnostic, no default-search deal, ever |
+| [`docs/adr/0010-tor-integration.md`](../../docs/adr/0010-tor-integration.md) | ADR 0010 — Tor is a browsing mode with honest limits, not a rebranded Tor Browser |
+| [`docs/adr/0011-storage-isolation.md`](../../docs/adr/0011-storage-isolation.md) | ADR 0011 — Storage is partitioned by top-level site, and third-party storage is ephemeral |
+| [`docs/adr/0012-theme-architecture.md`](../../docs/adr/0012-theme-architecture.md) | ADR 0012 — Themes are tokens plus a manifest, evaluated by the browser, never code |
+| [`docs/adr/0013-update-strategy.md`](../../docs/adr/0013-update-strategy.md) | ADR 0013 — Updates: provider-agnostic transport, security fixes on a clock |
+| [`docs/adr/0014-license-strategy.md`](../../docs/adr/0014-license-strategy.md) | ADR 0014 — MPL-2.0 for Bedrock's own code, and a boundary the GPL cannot cross by accident |
+| [`docs/adr/README.md`](../../docs/adr/README.md) | Architecture decision records |
 | [`docs/design/006-search-system.md`](../../docs/design/006-search-system.md) | 006 — Search engine system |
 | [`docs/design/007-omnibox.md`](../../docs/design/007-omnibox.md) | 007 — Address bar / omnibox |
 | [`docs/design/008-privacy-engine.md`](../../docs/design/008-privacy-engine.md) | 008 — Privacy Engine |
@@ -419,7 +437,9 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/design/040-knowledge-center.md`](../../docs/design/040-knowledge-center.md) | 040 — Privacy Knowledge Center |
 | [`docs/design/041-open-source.md`](../../docs/design/041-open-source.md) | 041 — Telemetry policy, updates, open source, reproducibility |
 | [`docs/performance/BUDGETS.md`](../../docs/performance/BUDGETS.md) | Performance budgets |
+| [`docs/privacy/FEATURES.md`](../../docs/privacy/FEATURES.md) | Privacy features, in full |
 | [`docs/privacy/FILTER_LISTS.md`](../../docs/privacy/FILTER_LISTS.md) | Filter lists — licences, one per list |
+| [`docs/privacy/TRADEOFFS.md`](../../docs/privacy/TRADEOFFS.md) | Privacy versus usability: the scoring table |
 | [`docs/privacy/fingerprinting/README.md`](../../docs/privacy/fingerprinting/README.md) | Anti-fingerprinting: per-surface documentation |
 | [`docs/privacy/fingerprinting/audio.md`](../../docs/privacy/fingerprinting/audio.md) | Web Audio |
 | [`docs/privacy/fingerprinting/battery.md`](../../docs/privacy/fingerprinting/battery.md) | Battery Status API |
@@ -456,9 +476,11 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 
 | Script | Enforces |
 | --- | --- |
+| `scripts/check_adr.py` | Gate: architecture decisions are recorded, complete, and indexed. |
 | `scripts/check_branding.py` | Branding gate (roadmap item 65). |
 | `scripts/check_catalog.py` | Validate the privacy extension catalog. Run: python3 scripts/check_catalog.py |
 | `scripts/check_config_surface.py` | Fail if the configuration surface and its documentation disagree (item 56). |
+| `scripts/check_defaults.py` | Gate: the shipped defaults are the ones that were specified and documented. |
 | `scripts/check_diagnostics.py` | Gate: debug logs stay logs, crashes stay local, errors stay localized. |
 | `scripts/check_docs.py` | Documentation gate (roadmap item 72). |
 | `scripts/check_fp_docs.py` | Every anti-fingerprinting surface must have a documented rationale. |
@@ -469,6 +491,7 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | `scripts/check_no_telemetry.py` | Fail if anything that reports home appears in the tree, or if the build |
 | `scripts/check_open_source.py` | Fail if the project calls itself open source without the parts that make the |
 | `scripts/check_perf_claims.py` | Fail if the project makes a performance claim without a number. |
+| `scripts/check_phases.py` | Gate: the phase table stays complete and stays honest. |
 | `scripts/check_platform.py` | Platform abstraction gate (roadmap items 62, 63, 64). |
 | `scripts/check_privacy_suite.py` | Gate: the privacy regression suite stays complete and stays local. |
 | `scripts/check_provenance.py` | Fail if the licensing record is incomplete. Run: python3 scripts/check_provenance.py |
@@ -476,6 +499,7 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | `scripts/check_security_testing.py` | Fail if the security testing setup has decayed. Run: |
 | `scripts/check_strings.py` | Localization gate (roadmap item 61). |
 | `scripts/check_test_matrix.py` | Gate: the roadmap-74 test matrix stays complete, honest and executable. |
+| `scripts/check_transparency.py` | Gate: every privacy feature explains itself, including its limits. |
 | `scripts/check_ui_style.py` | Roadmap item 27's taste rules, as a gate. |
 | `scripts/check_upstream.py` | Upstream sync and patch gate (roadmap items 66, 67, 69). |
 | `scripts/run_host_tests.sh` | Builds and runs every `*_test.cc` and fuzz smoke harness with plain g++. |

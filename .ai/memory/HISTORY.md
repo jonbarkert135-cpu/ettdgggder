@@ -4,6 +4,33 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #24 — Roadmap 82–89: transparency, defaults, trade-off scores, ADRs, process, phases
+- **82 + 85** one table, `settings/knowledge/feature_disclosure`: all 30 registry features get how
+  it works / what it protects / **what it cannot protect** / compatibility impact, plus five scores
+  (privacy, security, compatibility loss, performance cost, complexity). Docs
+  `docs/privacy/FEATURES.md` and `TRADEOFFS.md` are **generated** from it by
+  `scripts/check_transparency.py --write`; the gate fails when they drift.
+- The cross-check between the two tables found four real disagreements: `breaks_sites` in the
+  registry disagreed with the scored compatibility loss for cross-site tracking, secure DNS,
+  cookie isolation and permission isolation. Registry flags corrected; secure DNS also moved to
+  **off by default** (item 84 says "configurable"), which required updating an old assertion in
+  `privacy_engine_test.cc`.
+- Four features ship on although `IsDefaultable()` says opt-in; each now carries a written
+  `default_on_reason` and the test fails without it. `IsDefaultable` treats a zero-cost protection
+  as always-on, and a compatibility loss of 3 as never-default.
+- **83 + 84** `settings/defaults`: the twelve specified defaults with a rationale each, the four
+  axes, and `Change` records that mark every weakening. Telemetry and crash upload are
+  `negotiable = false`, and a test walks every axis × choice to prove nothing touches them.
+- **86** eight new ADRs (0007 privacy architecture, 0008 fingerprinting, 0009 search, 0010 Tor,
+  0011 storage, 0012 themes, 0013 updates, 0014 licensing) + `docs/adr/README.md` mapping the
+  owner's ADR-001…010 numbering onto ours. `scripts/check_adr.py` required harmonising the five
+  old records (missing Status line, missing sections, "Rejected alternatives" heading).
+- **87–88** `docs/PROCESS.md`: ten steps before code, and the explicit stopping rules.
+- **89** `docs/PHASES.md` + `scripts/check_phases.py`: all 19 phases with a status from a fixed
+  vocabulary. The honest headline: phases 3–15 are `policy-landed`, phase 1 (Chromium build) is
+  `not-started`, and the gate refuses to let a build-dependent phase claim `done` until
+  `build/ENFORCEMENT.md` exists.
+
 ## PR #23 — Roadmap 78–81: no UI frameworks, debug logging, error handling, crash diagnostics
 - **78** ADR 0006 (`docs/adr/0006-no-ui-frameworks.md`): WebUI is custom elements, shadow DOM and
   plain CSS over Chromium's own infrastructure — no React/Vue/Angular, no bundler, no npm step,

@@ -3,6 +3,12 @@
 **Status:** accepted, 2026-08-21
 **Context:** master prompt sections 3–5.
 
+## Context
+
+Bedrock needs Chromium's engine and Chromium's security response, and needs to remain a project
+that one person can check out and build without inheriting Google's release machinery. How the
+upstream source is consumed decides both.
+
 ## Decision
 
 1. **Engine: Chromium**, pinned at a stable tag (`build/chromium.pin`, currently
@@ -33,7 +39,7 @@ profile makes **zero** connections to any `*.bedrock` or Google endpoint on star
 Section 5 is respected: the browser still talks to whatever the *user* chooses (their search
 engine, their DNS resolver, the sites they visit). We simply never insert our own infrastructure.
 
-## Rejected alternatives
+## Alternatives considered
 
 | Option | Why not |
 |---|---|
@@ -42,7 +48,7 @@ engine, their DNS resolver, the sites they visit). We simply never insert our ow
 | Gecko / Firefox base | uBO-class extension ecosystem and the Chromium sandbox/site-isolation model are the requirement; Tor/Firefox contributions to this project are design-level (see `docs/THIRD_PARTY.md`). |
 | Ladybird / Servo | Not production-ready for daily browsing in 2026. |
 
-## Hardware reality (recorded so nobody is surprised)
+## Consequences: hardware reality (recorded so nobody is surprised)
 
 A first Chromium build needs ~100 GB disk and, on 8–16 cores, 3–8 hours; incremental builds
 are minutes. Bedrock CI therefore does **not** build Chromium on every PR — docs/lint/provenance

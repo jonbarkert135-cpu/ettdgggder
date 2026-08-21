@@ -108,8 +108,15 @@ void BreakingFeaturesAreMarked() {
   const FeatureInfo* cosmetic = FindFeature(Feature::kCosmeticFiltering);
   Check(cosmetic != nullptr && cosmetic->breaks_sites,
         "cosmetic filtering can break pages and must be marked as such");
+  // Changed with item 85: encrypted DNS does break things — captive portals and
+  // split-horizon corporate resolvers — and the trade-off table scores it as a
+  // medium compatibility loss. The two tables must agree, so the flag is true
+  // and the standard default is off (item 84 says "configurable").
   const FeatureInfo* dns = FindFeature(Feature::kSecureDns);
-  Check(dns != nullptr && !dns->breaks_sites, "secure DNS should not be flagged as breaking");
+  Check(dns != nullptr && dns->breaks_sites,
+        "secure DNS is flagged as breaking: captive portals and split-horizon DNS");
+  Check(dns != nullptr && dns->standard_default == Setting::kOff,
+        "secure DNS is configurable rather than forced on (item 84)");
 }
 
 }  // namespace

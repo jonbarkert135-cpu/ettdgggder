@@ -159,7 +159,14 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 79 Debug logging | off by default, two local sinks, scrubbed before storage, no upload path exists — [docs/DIAGNOSTICS.md](docs/DIAGNOSTICS.md) |
 | 80 Error handling | meaningful, actionable, localized in 4 languages, internal detail withheld — [docs/ERRORS.md](docs/ERRORS.md) |
 | 81 Crash handling | local crash store, upload off by default and per-report, whitelisted fields only |
-| 82+ | awaiting specification |
+| 82 Privacy transparency | all 30 protections state how they work, what they protect, **what they cannot**, and what they break — [docs/privacy/FEATURES.md](docs/privacy/FEATURES.md) |
+| 83 User control | four independent axes; no axis weakens a protection without saying so — [docs/DEFAULTS.md](docs/DEFAULTS.md) |
+| 84 Default settings | the 12 specified defaults, shipped as **Balanced Privacy**, checked against the docs |
+| 85 Privacy vs usability | five-axis score per protection; 4 defaults ship against their score and each argues why — [docs/privacy/TRADEOFFS.md](docs/privacy/TRADEOFFS.md) |
+| 86 Decision records | 14 ADRs with context, decision, alternatives and consequences — [docs/adr/README.md](docs/adr/README.md) |
+| 87–88 Research-first, without the 500-page report | [docs/PROCESS.md](docs/PROCESS.md) |
+| 89 Implementation order | 19 phases with an honest status each; phase 1 (Chromium build) is the next unblocker — [docs/PHASES.md](docs/PHASES.md) |
+| 90+ | awaiting specification |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host
 tests — `./scripts/run_host_tests.sh` builds and runs them with plain `g++`, no Chromium

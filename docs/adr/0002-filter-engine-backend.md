@@ -10,7 +10,9 @@ Roadmap item 12 asks for a real filter engine with the uBO feature set; item 13 
 several independent blockers. Those two put a question on the table that the earlier docs
 answered too early: what actually matches a request?
 
-Three options:
+## Alternatives considered
+
+Three options were on the table:
 
 1. **adblock-rust only.** Mature, fast, MPL-2.0, Brave-scale battle testing. Costs: Rust +
    cbindgen/FFI in the Chromium build for every platform we target, a data model we do not

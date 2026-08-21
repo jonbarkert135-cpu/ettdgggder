@@ -1,5 +1,7 @@
 # ADR 0005 — Platform support and the abstraction that keeps it honest
 
+**Status:** accepted (2026-08-21) · roadmap items 62–64
+
 - **Status:** accepted
 - **Date:** 2026-08
 - **Roadmap:** items 62, 63, 64
@@ -43,7 +45,7 @@ and the one nobody develops on rots silently.
 - The Wayland-first choices (portals for file chooser, colour scheme and notifications) also
   improve the Flatpak build, since the same interfaces are what a sandbox allows.
 
-## Alternatives rejected
+## Alternatives considered
 
 - **Windows-only first.** Faster, but a Linux port added later inherits every assumption made in
   the meantime — the abstraction has to exist while there is something to abstract.

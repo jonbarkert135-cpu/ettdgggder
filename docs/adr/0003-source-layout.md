@@ -43,7 +43,7 @@ bedrock/
 └── perf/  fuzz/         budgets · libFuzzer harnesses
 ```
 
-### Where the proposal is deliberately not followed
+## Alternatives considered: where the proposal is deliberately not followed
 
 | Proposed | What we did | Why |
 | --- | --- | --- |

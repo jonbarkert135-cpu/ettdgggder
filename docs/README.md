@@ -25,6 +25,8 @@ where GitHub looks for them; `check_open_source.py` enforces their presence and 
 | [`THREAT_MODEL.md`](THREAT_MODEL.md) | who Bedrock defends against — and, explicitly, who it does not |
 | [`privacy/FILTER_LISTS.md`](privacy/FILTER_LISTS.md) | which filter lists, under which licences |
 | [`privacy/fingerprinting/README.md`](privacy/fingerprinting/README.md) | every fingerprinting surface and its mitigation |
+| [`privacy/FEATURES.md`](privacy/FEATURES.md) | every protection: how it works, what it protects, what it cannot, what it breaks |
+| [`privacy/TRADEOFFS.md`](privacy/TRADEOFFS.md) | the five-axis score behind every default, and the exceptions |
 | [`security/TESTING.md`](security/TESTING.md) | sanitizers, fuzzing, and what CI runs |
 | [`DIAGNOSTICS.md`](DIAGNOSTICS.md) | local debug logs and crash reports, and why neither is telemetry |
 
@@ -51,6 +53,7 @@ where GitHub looks for them; `check_open_source.py` enforces their presence and 
 | Document | Answers |
 | --- | --- |
 | [`CONFIGURATION.md`](CONFIGURATION.md) | every setting across GUI, config file, policy and CLI |
+| [`DEFAULTS.md`](DEFAULTS.md) | what a fresh profile ships with, and the four axes of user control |
 | [`FORMATS.md`](FORMATS.md) | import/export formats, versioned |
 | [`ACCESSIBILITY.md`](ACCESSIBILITY.md) | keyboard, screen readers, contrast, motion, focus |
 | [`ERRORS.md`](ERRORS.md) | what an error says, what it never shows, and how to add one |
@@ -62,7 +65,9 @@ where GitHub looks for them; `check_open_source.py` enforces their presence and 
 
 | Document | Answers |
 | --- | --- |
-| [`adr/`](adr/0001-chromium-overlay.md) | architecture decision records, numbered |
+| [`adr/README.md`](adr/README.md) | architecture decision records, indexed and mapped to the roadmap |
+| [`PROCESS.md`](PROCESS.md) | the ten steps before code, and where the research stops |
+| [`PHASES.md`](PHASES.md) | the implementation order, and the honest state of each phase |
 | [`research/`](research/BRAVE.md) | studies of Brave, Firefox, Tor Browser, uBlock Origin, Privacy Badger, and the "Origin Tools" search that found nothing |
 | [`design/`](design/041-open-source.md) | per-batch design notes |
 | [`releases/TEMPLATE.md`](releases/TEMPLATE.md) | the release-notes template |
