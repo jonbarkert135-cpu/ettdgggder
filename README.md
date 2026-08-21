@@ -79,6 +79,11 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 24 Security baseline | audited in tests; forbidden switches rejected |
 | 25 PrivacyPolicy | one resolver for all ten layers, 84 combinations checked for conflicts |
 | 26 Visual language | design tokens + self-contained window mockup |
+| 27 Design philosophy | taste limits enforced by `scripts/check_ui_style.py` |
+| 28 Theme system | 5 modes, 14 live properties, contrast validation |
+| 29 Live customization | `ApplyKind` has no "restart required" value |
+| 30 Tab system | one model, two layouts, groups/pinned/sleeping/search/duplicates |
+| 31 Sidebar | 8 panels, optional, every one reachable without it |
 | Extension catalog | designed ([009](docs/design/009-extension-catalog.md)) |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host
