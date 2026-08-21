@@ -1,0 +1,23 @@
+<!doctype html><meta charset="utf-8"><title>tracking parameters</title>
+<h1>tracking parameters</h1>
+<pre id="result"></pre>
+<script src="_harness.js"></script>
+<script>
+// The runner navigates here with a URL full of tracking parameters. If query
+// stripping works, they are gone from location.search by the time this runs.
+// gclid/fbclid/msclkid are cross-site identifiers; utm_* are analytics tags,
+// and stripping those breaks a site owner's reporting rather than tracking the
+// user — the distinction is deliberate and the expectations record it.
+const params = new URLSearchParams(location.search);
+const present = {};
+for (const [key, value] of params) present[key] = value;
+report({
+  full_url: location.href,
+  search: location.search,
+  params_present: Object.keys(present),
+  identifier_params_present: Object.keys(present).filter(k =>
+    ['gclid', 'fbclid', 'msclkid', 'igshid', 'mc_eid', 'twclid'].includes(k)),
+  analytics_params_present: Object.keys(present).filter(k => k.startsWith('utm_')),
+  kept_functional_params: Object.keys(present).filter(k => ['id', 'q', 'page'].includes(k)),
+});
+</script>

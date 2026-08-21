@@ -8,10 +8,13 @@ Enforces docs/LICENSING.md section 7:
   4. build/chromium.pin is well formed and matches the Chromium inventory row
   5. every patch under patches/upstream/<project>/ maps to a port/patched-base row
   6. docs/privacy/FILTER_LISTS.md: one licence row per list, defaults verified, none bundled
+  7. zero-trust dependencies (item 77): every row is reviewed within the last
+     year and carries a justification that is about need, not taste
 """
 
 from __future__ import annotations
 
+import datetime
 import re
 import sys
 from pathlib import Path
@@ -21,6 +24,15 @@ INVENTORY = REPO / "docs" / "THIRD_PARTY.md"
 NOTICES = REPO / "THIRD_PARTY_NOTICES"
 PIN = REPO / "build" / "chromium.pin"
 FILTER_LISTS = REPO / "docs" / "privacy" / "FILTER_LISTS.md"
+
+# Item 77: a dependency must be justified by what it does for the product, not
+# by taste or momentum. These are the words that show up when it is neither.
+NON_JUSTIFICATIONS = (
+    "prettier", "nicer", "looks better", "convenient", "convenience",
+    "everyone uses", "popular", "modern", "industry standard", "why not",
+    "saves time", "easier",
+)
+REVIEW_MAX_AGE_DAYS = 365
 
 MODES = {"patched-base", "port", "vendored", "separate-artifact", "reimplement", "not-used"}
 UNPINNED = {"", "main", "master", "latest", "head", "trunk"}
@@ -35,10 +47,11 @@ def parse_inventory() -> list[dict[str, str]]:
     rows = []
     for line in block.group(1).strip().splitlines():
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) != 6 or cells[0] in ("Project",) or set(cells[0]) <= set("- "):
+        if len(cells) != 8 or cells[0] in ("Project",) or set(cells[0]) <= set("- "):
             continue
         rows.append(dict(zip(
-            ["project", "repository", "version", "license", "mode", "notice"], cells)))
+            ["project", "repository", "version", "license", "mode", "notice",
+             "reviewed", "justification"], cells)))
     if not rows:
         sys.exit("THIRD_PARTY.md: inventory table is empty")
     return rows
@@ -104,6 +117,47 @@ def check_pin(rows: list[dict[str, str]]) -> list[str]:
     return errors
 
 
+def check_zero_trust(rows: list[dict[str, str]]) -> list[str]:
+    """Item 77: identified, pinned, licensed, reviewed, justified.
+
+    The first three are checked elsewhere in this file. These are the two that
+    rot silently: a review nobody repeats, and a justification nobody wrote.
+    """
+    errors: list[str] = []
+    today = datetime.date.today()
+    for row in rows:
+        project = row["project"]
+
+        reviewed = row.get("reviewed", "")
+        try:
+            date = datetime.date.fromisoformat(reviewed)
+        except ValueError:
+            errors.append(f"{project}: 'Reviewed' must be an ISO date, got {reviewed!r}")
+        else:
+            if date > today:
+                errors.append(f"{project}: reviewed in the future ({reviewed})")
+            elif (today - date).days > REVIEW_MAX_AGE_DAYS:
+                errors.append(
+                    f"{project}: last reviewed {reviewed}, more than "
+                    f"{REVIEW_MAX_AGE_DAYS} days ago — re-check the version, licence and whether "
+                    f"it is still needed, then update the row"
+                )
+
+        justification = row.get("justification", "")
+        if len(justification) < 20:
+            errors.append(
+                f"{project}: 'Justification' is empty or too short to be one ({justification!r})"
+            )
+        lowered = justification.lower()
+        for phrase in NON_JUSTIFICATIONS:
+            if phrase in lowered:
+                errors.append(
+                    f"{project}: {phrase!r} is not a justification — say what breaks without it "
+                    f"(docs/DEPENDENCIES.md)"
+                )
+    return errors
+
+
 def check_upstream_patches(rows: list[dict[str, str]]) -> list[str]:
     """patches/upstream/<slug>/ must correspond to a port/patched-base inventory row."""
     allowed = {
@@ -157,7 +211,8 @@ def check_filter_lists() -> list[str]:
 
 def main() -> int:
     rows = parse_inventory()
-    errors = check(rows) + check_pin(rows) + check_upstream_patches(rows) + check_filter_lists()
+    errors = (check(rows) + check_pin(rows) + check_upstream_patches(rows)
+              + check_zero_trust(rows) + check_filter_lists())
     if errors:
         print("provenance check FAILED:")
         for error in errors:

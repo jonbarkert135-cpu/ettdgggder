@@ -1,0 +1,18 @@
+<!doctype html><meta charset="utf-8"><title>cookies</title>
+<h1>cookie isolation</h1>
+<pre id="result"></pre>
+<script src="_harness.js"></script>
+<script>
+// First-party cookies must keep working — a browser that breaks logins is
+// uninstalled by lunchtime. The third-party half is measured by the runner via
+// the request headers the cross-site frame's server actually receives.
+document.cookie = 'first_party=1;path=/;SameSite=Lax';
+document.cookie = 'no_samesite=1;path=/';
+report({
+  origin: location.origin,
+  visible: document.cookie,
+  first_party_set: document.cookie.includes('first_party=1'),
+  cookie_store_api: typeof window.cookieStore === 'object',
+  cookie_enabled: navigator.cookieEnabled,
+});
+</script>

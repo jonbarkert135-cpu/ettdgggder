@@ -1,0 +1,15 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>bedrock-storage-fixture</title>
+<pre id="result"></pre>
+<script src="_report.js"></script>
+<script>
+  // ?write=VALUE stores VALUE; no query reads back whatever this profile has.
+  const wanted = new URLSearchParams(location.search).get('write');
+  if (wanted !== null) {
+    localStorage.setItem('bedrock-probe', wanted);
+    report('written:' + wanted);
+  } else {
+    report('read:' + (localStorage.getItem('bedrock-probe') || ''));
+  }
+</script>

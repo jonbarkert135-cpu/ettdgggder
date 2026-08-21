@@ -1,0 +1,20 @@
+<!doctype html><meta charset="utf-8"><title>storage isolation (top)</title>
+<h1>storage isolation — top-level page</h1>
+<pre id="result"></pre>
+<script src="_harness.js"></script>
+<script>
+// Embeds the same third-party origin twice with different tags; the runner
+// loads this page from two different top-level sites. If the frame on site B
+// can read the value written on site A, storage is not partitioned.
+const frameOrigin = new URLSearchParams(location.search).get('frame');
+const tag = new URLSearchParams(location.search).get('tag') || 'a';
+const seen = [];
+addEventListener('message', e => {
+  seen.push(e.data);
+  if (seen.length === 1) report({ top_origin: location.origin, frame_origin: frameOrigin, frames: seen });
+});
+const iframe = document.createElement('iframe');
+iframe.src = frameOrigin + '/storage_isolation.html?tag=' + encodeURIComponent(tag);
+document.body.appendChild(iframe);
+setTimeout(() => { if (!seen.length) report({ top_origin: location.origin, frames: [], note: 'frame did not respond' }); }, 3000);
+</script>

@@ -1,0 +1,16 @@
+<!doctype html><meta charset="utf-8"><title>timezone</title>
+<h1>timezone</h1>
+<pre id="result"></pre>
+<script src="_harness.js"></script>
+<script>
+const now = new Date('2026-01-15T12:00:00Z');
+const summer = new Date('2026-07-15T12:00:00Z');
+report({
+  resolved_timezone: safe(() => Intl.DateTimeFormat().resolvedOptions().timeZone),
+  offset_january: now.getTimezoneOffset(),
+  offset_july: summer.getTimezoneOffset(),
+  observes_dst: now.getTimezoneOffset() !== summer.getTimezoneOffset(),
+  locale_string: safe(() => now.toLocaleString('en-US')),
+  date_string: now.toString(),
+});
+</script>

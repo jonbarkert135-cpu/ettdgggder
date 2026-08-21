@@ -1,0 +1,135 @@
+{
+  "_comment": [
+    "Privacy regression expectations (roadmap item 75). One entry per scenario.",
+    "'requirement' is what Bedrock must do and is the sentence a failure prints.",
+    "'checks' are machine-checkable assertions over the fixture's JSON output;",
+    "paths are dotted. A scenario with an empty 'checks' is measured and recorded",
+    "but not yet assertable — that is honest, and better than an assertion that",
+    "encodes a guess. Stock Chromium fails many of these on purpose: the recorded",
+    "baseline is the 'before' column.",
+    "{A} and {B} are two local origins the runner serves; they are different sites."
+  ],
+  "scenarios": [
+    {
+      "id": "canvas",
+      "requirement": "Canvas readback is stable within a page and differs across sites",
+      "url": "{A}/canvas.html",
+      "checks": {
+        "stable_within_page": true,
+        "readback_supported": true
+      },
+      "cross_origin_property": "hash must differ when the same fixture is loaded from {B}"
+    },
+    {
+      "id": "webgl",
+      "requirement": "WEBGL_debug_renderer_info does not name the real GPU",
+      "url": "{A}/webgl.html",
+      "checks": {
+        "unmasked_renderer": {"not": null},
+        "webgl_available": true
+      }
+    },
+    {
+      "id": "navigator",
+      "requirement": "navigator exposes no device-specific values and announces GPC",
+      "url": "{A}/navigator.html",
+      "checks": {
+        "hardware_concurrency": {"in": [2, 4, 8]},
+        "device_memory": {"in": [8, "undefined", null]},
+        "plugin_count": {"max": 5},
+        "webdriver": false,
+        "global_privacy_control": true
+      }
+    },
+    {
+      "id": "screen",
+      "requirement": "Window metrics are letterboxed and screen size is not the raw display",
+      "url": "{A}/screen.html",
+      "checks": {
+        "inner_width_mod_100": 0,
+        "inner_height_mod_100": 0
+      }
+    },
+    {
+      "id": "timezone",
+      "requirement": "Timezone reads as UTC regardless of the system clock",
+      "url": "{A}/timezone.html",
+      "checks": {
+        "resolved_timezone": "UTC",
+        "offset_january": 0,
+        "offset_july": 0,
+        "observes_dst": false
+      }
+    },
+    {
+      "id": "language",
+      "requirement": "One language is exposed, and it is the UI language, not the user's list",
+      "url": "{A}/language.html",
+      "checks": {
+        "languages_count": 1
+      }
+    },
+    {
+      "id": "fonts",
+      "requirement": "Font enumeration by metrics finds only the standard set",
+      "url": "{A}/fonts.html",
+      "checks": {
+        "detected_count": {"max": 3},
+        "local_fonts_api": false
+      }
+    },
+    {
+      "id": "client_hints",
+      "requirement": "High-entropy client hints are not answered",
+      "url": "{A}/client_hints.html",
+      "checks": {
+        "high_entropy.architecture": {"in": ["", null]},
+        "high_entropy.model": {"in": ["", null]},
+        "high_entropy.platformVersion": {"in": ["", "0.0.0", null]}
+      }
+    },
+    {
+      "id": "webrtc",
+      "requirement": "No private address reaches a page through ICE candidates",
+      "url": "{A}/webrtc.html",
+      "checks": {
+        "private_ipv4_exposed": false
+      }
+    },
+    {
+      "id": "storage_isolation",
+      "requirement": "A third-party frame's storage is partitioned by top-level site",
+      "url": "{A}/storage_isolation_top.html?frame={B}&tag=a",
+      "checks": {
+        "frames.0.local_storage_before": null
+      },
+      "cross_origin_property": "loading the same page from {B} must show local_storage_before = null again"
+    },
+    {
+      "id": "cookies",
+      "requirement": "First-party cookies work; third-party cookies are not sent",
+      "url": "{A}/cookies.html",
+      "checks": {
+        "first_party_set": true,
+        "cookie_enabled": true
+      }
+    },
+    {
+      "id": "referrer",
+      "requirement": "Cross-site requests carry at most the origin as referrer",
+      "url": "{A}/referrer.html?probe={B}",
+      "checks": {
+        "referrer": ""
+      }
+    },
+    {
+      "id": "tracking_params",
+      "requirement": "Cross-site identifier parameters are stripped; functional ones survive",
+      "url": "{A}/tracking_params.html?id=42&q=test&gclid=abc123&fbclid=def456&utm_source=news&utm_medium=email&msclkid=ghi789",
+      "checks": {
+        "identifier_params_present": [],
+        "kept_functional_params": ["id", "q"]
+      }
+    }
+  ]
+}

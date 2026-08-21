@@ -1,0 +1,17 @@
+<!doctype html><meta charset="utf-8"><title>language</title>
+<h1>language</h1>
+<pre id="result"></pre>
+<script src="_harness.js"></script>
+<script>
+// navigator.languages and the Accept-Language header must agree, and both must
+// be the *UI* language rather than the user's real preference list: a rare
+// language list is a strong identifier, and a mismatch between JS and the
+// header is itself a signal that something is being spoofed badly.
+report({
+  language: navigator.language,
+  languages: navigator.languages,
+  languages_count: navigator.languages.length,
+  intl_locale: safe(() => Intl.DateTimeFormat().resolvedOptions().locale),
+  number_format_sample: safe(() => (1234567.89).toLocaleString()),
+});
+</script>

@@ -151,7 +151,11 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 71 Release engineering | nightly / beta / stable with soak and promotion rules in code; six mandatory note fields — [docs/RELEASES.md](docs/RELEASES.md) |
 | 72 Documentation | [docs/README.md](docs/README.md) index; new ARCHITECTURE and PRIVACY; link checker in CI |
 | 73 Build system | full Linux and Windows instructions, packaging, reproducible-release settings — [docs/BUILD.md](docs/BUILD.md) |
-| 74+ | awaiting specification |
+| 74 Testing matrix | all 26 required cases in [tests/matrix.json](tests/matrix.json) with runner and honest status; 5 browser-core checks drive a real binary — [tests/MATRIX.md](tests/MATRIX.md) |
+| 75 Privacy regression suite | 13 scenarios on local fixtures, two local origins, stock-Chromium baseline recorded — [tests/privacy/](tests/privacy) |
+| 76 Security fuzzing | 9 fuzz targets: URL, filter list, privacy rules, configuration, search, extension permissions, custom rules, download names, bookmark import |
+| 77 Zero-trust dependencies | every dependency identified, pinned, licensed, reviewed **and justified**; gate rejects "it looks nicer" — [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md) |
+| 78+ | awaiting specification |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host
 tests — `./scripts/run_host_tests.sh` builds and runs them with plain `g++`, no Chromium

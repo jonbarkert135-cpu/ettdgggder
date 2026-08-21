@@ -1,0 +1,15 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>bedrock-download-fixture</title>
+<pre id="result"></pre>
+<script src="_report.js"></script>
+<script>
+  // Same-document blob download: no network fetch, nothing extra to serve.
+  const blob = new Blob(['bedrock-download-payload\n'], {type: 'text/plain'});
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'bedrock-download.txt';
+  document.body.appendChild(link);
+  link.click();
+  report('clicked');
+</script>

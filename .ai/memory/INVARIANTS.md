@@ -71,3 +71,7 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 48 | No Linux code path assumes a desktop environment; Wayland and X11 are both first class | `platform/platform_support`, `scripts/check_platform.py` |
 | 49 | A platform is called supported only when it is built, tested and released | `platform_support` (tiers + reasons), `platform_support_test` |
 | 43 | A destructive dialog is an alertdialog that opens focused on the safe choice | `ui/accessibility` (`ContractFor`), `accessibility_test` |
+| 59 | Every case in roadmap item 74's matrix exists in `tests/matrix.json` with a runner that exists, and `running` is claimed only by something that really executes | `scripts/check_test_matrix.py` |
+| 60 | Privacy tests use local fixtures only; no fixture may reference an off-machine URL, and no measurement leaves the machine | `scripts/check_privacy_suite.py`, `tests/privacy/` |
+| 61 | A claim that Bedrock changes a browser-observable value is comparable against a recorded stock-Chromium measurement | `tests/privacy/baseline-chromium.json` |
+| 62 | A dependency needs a dated review and a justification about what breaks without it; "looks nicer" is rejected | `scripts/check_provenance.py` (`check_zero_trust`), `docs/DEPENDENCIES.md` |

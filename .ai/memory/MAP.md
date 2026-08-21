@@ -64,11 +64,16 @@ libFuzzer harnesses for every untrusted-input entry point, each also built as a 
 | File | What it is |
 | --- | --- |
 | `bookmark_import_fuzzer.cc` | Fuzzes bookmark import (roadmap item 43: storage/parsers). |
+| `config_parser_fuzzer.cc` | Fuzzes the configuration parser (roadmap item 76). |
+| `custom_rule_fuzzer.cc` | Fuzzes the custom-rule / advanced-settings validator (roadmap item 76). |
 | `download_name_fuzzer.cc` | Fuzzes download risk assessment (roadmap item 43: networking / downloads). |
+| `extension_permission_fuzzer.cc` | Fuzzes the extension permission parser (roadmap item 76). |
 | `filter_list_fuzzer.cc` | Fuzzes the filter list parser and matcher (roadmap item 43: content blocking). |
 | `fuzz_main.h` | Fuzz harnesses (roadmap item 43). |
 | `fuzz_smoke_main.cc` | CI driver for the fuzz harnesses. |
 | `omnibox_input_fuzzer.cc` | Fuzzes omnibox input classification (roadmap item 43: URL parser). |
+| `privacy_rules_fuzzer.cc` | Fuzzes privacy rule resolution and storage keying (roadmap item 76). |
+| `search_fuzzer.cc` | Fuzzes search engine selection (roadmap item 76). |
 
 ### `src_overrides/bedrock/history/`
 History store whose hard requirement is deletion: removing an entry removes the derived ranking data too. Item 35.
@@ -332,6 +337,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/BRAND.md`](../../docs/BRAND.md) | Brand identity |
 | [`docs/BUILD.md`](../../docs/BUILD.md) | Building Bedrock |
 | [`docs/CONFIGURATION.md`](../../docs/CONFIGURATION.md) | Configuration |
+| [`docs/DEPENDENCIES.md`](../../docs/DEPENDENCIES.md) | Dependency policy |
 | [`docs/FORMATS.md`](../../docs/FORMATS.md) | Import and export formats |
 | [`docs/LICENSING.md`](../../docs/LICENSING.md) | Bedrock Browser — Licensing & Provenance Policy |
 | [`docs/LOCALIZATION.md`](../../docs/LOCALIZATION.md) | Localization |
@@ -436,10 +442,12 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | `scripts/check_open_source.py` | Fail if the project calls itself open source without the parts that make the |
 | `scripts/check_perf_claims.py` | Fail if the project makes a performance claim without a number. |
 | `scripts/check_platform.py` | Platform abstraction gate (roadmap items 62, 63, 64). |
+| `scripts/check_privacy_suite.py` | Gate: the privacy regression suite stays complete and stays local. |
 | `scripts/check_provenance.py` | Fail if the licensing record is incomplete. Run: python3 scripts/check_provenance.py |
 | `scripts/check_releases.py` | Release channel and release-notes gate (roadmap item 71). |
 | `scripts/check_security_testing.py` | Fail if the security testing setup has decayed. Run: |
 | `scripts/check_strings.py` | Localization gate (roadmap item 61). |
+| `scripts/check_test_matrix.py` | Gate: the roadmap-74 test matrix stays complete, honest and executable. |
 | `scripts/check_ui_style.py` | Roadmap item 27's taste rules, as a gate. |
 | `scripts/check_upstream.py` | Upstream sync and patch gate (roadmap items 66, 67, 69). |
 | `scripts/run_host_tests.sh` | Builds and runs every `*_test.cc` and fuzz smoke harness with plain g++. |

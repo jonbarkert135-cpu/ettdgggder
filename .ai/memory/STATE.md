@@ -46,15 +46,23 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 | 71 Release engineering | done |
 | 72 Documentation | done |
 | 73 Build system | done |
-| 74+ | **not yet specified — waiting on the project owner** |
+| 74 Testing matrix | done |
+| 75 Privacy regression suite | done |
+| 76 Security fuzzing | done |
+| 77 Zero-trust dependencies | done |
+| 78+ | **not yet specified — waiting on the project owner** |
 
 ## What is real vs. what is documented
 
 - **Nothing is `Status::kEnforced`** in the feature registry, so the settings UI
   renders no protection switches yet. That is item 55 working, not a gap to paper over:
   enforcement needs a Chromium build, and `build/ENFORCEMENT.md` must record it.
-- **Runs in CI today:** 48 host test binaries, 4 fuzz smoke harnesses (~860
-  inputs each), 6 measured performance metrics, 10 static gates.
+- **Runs in CI today:** 48 host test binaries, 9 fuzz smoke harnesses (~860
+  inputs each), 6 measured performance metrics, 22 static gates.
+- **Runs against a real browser binary (not in CI):**
+  `tests/browser/run.py` (5/5 pass on Chrome-for-Testing 151) and
+  `tests/privacy/run.py` (13 scenarios; stock-Chromium baseline committed as
+  `tests/privacy/baseline-chromium.json`). Both need `--browser <path>`.
 - **Tree shape since item 47:** code is nested under `src_overrides/bedrock/`
   (`privacy/{core,fingerprinting,tracker_blocker,storage,network,security,stats}`,
   plus `ui`, `themes`, `settings`, `profiles`, `workspaces`, `session`,
@@ -75,12 +83,19 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
   change to what matches. Lesson kept: a budget is a bug detector, not paperwork.
 - The common fuzzing failure is not a missing harness but a harness that stopped
   compiling months ago — hence every harness is also a CI smoke build.
+- **Driving a headless browser from a script: `--dump-dom` never returns** in
+  current Chrome-for-Testing new-headless builds, and with no internet the
+  browser burns ~90 s on GCM/component-update before doing anything. Both test
+  runners therefore start the browser with the offline flag set in `BASE_FLAGS`
+  and let the *page* POST its result to the local server. Profile writes
+  (localStorage) also need ~8 s of settle time before the process is stopped,
+  or they are lost.
 - Defaults must equal the Balanced preset exactly, or the browser starts in a
   state its own settings call "Custom".
 
 ## Open threads
 
-- Roadmap items 74+ awaited from the project owner.
+- Roadmap items 78+ awaited from the project owner.
 - **Default filter lists are empty** until each list's licence is verified and dated in
   `docs/privacy/FILTER_LISTS.md` (item 52 rule). This is a deliberate blocker, not an oversight.
 - Research queue, highest value first: CNAME uncloaking · query stripping + debouncing ·

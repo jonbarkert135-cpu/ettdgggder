@@ -1,0 +1,41 @@
+{
+  "comment": "Roadmap item 74. One entry per required test case. `runner` must exist in the repo; `check_test_matrix.py` enforces that, and enforces that `status` is one of the honest values below. Never mark a case `running` unless the named runner actually executes it today.",
+  "status_values": {
+    "running": "executes today, either as a host test or against a real browser binary in this repo",
+    "needs-build": "the harness exists but needs a Chromium/Bedrock build to produce a verdict",
+    "needs-network": "requires a live external service (only the Tor network), never run in CI by default"
+  },
+  "cases": [
+    {"area": "Browser Core", "case": "launch", "kind": "browser", "runner": "tests/browser/run.py", "selector": "--only launch", "status": "running", "note": "binary starts and reports a version"},
+    {"area": "Browser Core", "case": "navigation", "kind": "browser", "runner": "tests/browser/run.py", "selector": "--only navigation", "status": "running", "note": "local page loads, scripting runs, URL matches"},
+    {"area": "Browser Core", "case": "tabs", "kind": "browser", "runner": "tests/browser/run.py", "selector": "--only tabs", "status": "running", "note": "two command-line URLs become two live page targets; tab model logic is covered by ui/tab_model_test.cc"},
+    {"area": "Browser Core", "case": "downloads", "kind": "browser", "runner": "tests/browser/run.py", "selector": "--only downloads", "status": "running", "note": "page-initiated download lands in the configured directory; naming/collision logic in downloads/download_manager_test.cc"},
+    {"area": "Browser Core", "case": "profiles", "kind": "browser", "runner": "tests/browser/run.py", "selector": "--only profiles", "status": "running", "note": "state persists in one profile and is absent in a fresh one"},
+
+    {"area": "Privacy", "case": "third-party cookies", "kind": "fixture", "runner": "tests/privacy/run.py", "selector": "--only cookies", "status": "needs-build", "note": "measurable today against stock Chromium (baseline recorded); the pass criterion is a Bedrock build"},
+    {"area": "Privacy", "case": "trackers", "kind": "host", "runner": "src_overrides/bedrock/privacy/tracker_blocker/blocking_pipeline_test.cc", "status": "running", "note": "filter engine + heuristic through the full pipeline"},
+    {"area": "Privacy", "case": "fingerprint APIs", "kind": "fixture", "runner": "tests/privacy/run.py", "selector": "--only canvas,webgl,navigator,screen,timezone,language,fonts,client_hints", "status": "needs-build", "note": "policy side is host-tested in privacy/fingerprinting/fingerprint_policy_test.cc"},
+    {"area": "Privacy", "case": "referrer", "kind": "fixture", "runner": "tests/privacy/run.py", "selector": "--only referrer", "status": "needs-build", "note": "the header the third party receives is recorded by the local server"},
+    {"area": "Privacy", "case": "query stripping", "kind": "fixture", "runner": "tests/privacy/run.py", "selector": "--only tracking_params", "status": "needs-build"},
+    {"area": "Privacy", "case": "storage partition", "kind": "fixture", "runner": "tests/privacy/run.py", "selector": "--only storage_isolation", "status": "needs-build", "note": "key derivation is host-tested in privacy/storage/storage_isolation_test.cc"},
+    {"area": "Privacy", "case": "WebRTC", "kind": "fixture", "runner": "tests/privacy/run.py", "selector": "--only webrtc", "status": "needs-build", "note": "policy host test: privacy/network/webrtc_policy_test.cc"},
+    {"area": "Privacy", "case": "HTTPS", "kind": "host", "runner": "src_overrides/bedrock/privacy/network/https_policy_test.cc", "status": "running"},
+
+    {"area": "Search", "case": "Google", "kind": "host", "runner": "src_overrides/bedrock/search/engine_selector_test.cc", "status": "running", "note": "no query is ever sent to Google in tests"},
+    {"area": "Search", "case": "DuckDuckGo", "kind": "host", "runner": "src_overrides/bedrock/search/engine_selector_test.cc", "status": "running"},
+    {"area": "Search", "case": "custom search providers", "kind": "host", "runner": "src_overrides/bedrock/search/engine_selector_test.cc", "status": "running", "note": "malformed provider strings are also fuzzed: fuzz/search_fuzzer.cc"},
+
+    {"area": "Extensions", "case": "installation", "kind": "host", "runner": "src_overrides/bedrock/extensions/extension_registry_test.cc", "status": "running"},
+    {"area": "Extensions", "case": "permissions", "kind": "host", "runner": "src_overrides/bedrock/extensions/extension_registry_test.cc", "status": "running", "note": "permission parsing is fuzzed: fuzz/extension_permission_fuzzer.cc"},
+    {"area": "Extensions", "case": "execution", "kind": "browser", "runner": "tests/MATRIX.md", "status": "needs-build", "note": "loading a real unpacked extension requires a Chromium build; procedure documented in MATRIX.md until then"},
+    {"area": "Extensions", "case": "isolation", "kind": "host", "runner": "src_overrides/bedrock/extensions/catalog/extension_catalog_test.cc", "status": "running", "note": "per-extension host access rules"},
+
+    {"area": "Tor", "case": "proxy routing", "kind": "browser", "runner": "tests/MATRIX.md", "status": "needs-network", "note": "requires a running tor daemon; no daemon is bundled yet (open decision in .ai/memory/STATE.md)"},
+    {"area": "Tor", "case": "identity reset", "kind": "host", "runner": "src_overrides/bedrock/profiles/new_identity_test.cc", "status": "running", "note": "what a New Identity clears, without the network"},
+    {"area": "Tor", "case": "DNS behavior", "kind": "host", "runner": "src_overrides/bedrock/privacy/network/dns_settings_test.cc", "status": "running", "note": "asserts DNS is not resolved locally when a SOCKS proxy is in use"},
+
+    {"area": "UI", "case": "themes", "kind": "host", "runner": "src_overrides/bedrock/themes/theme_engine_test.cc", "status": "running"},
+    {"area": "UI", "case": "accessibility", "kind": "host", "runner": "src_overrides/bedrock/ui/accessibility_test.cc", "status": "running", "note": "contrast ratios and focus order; screen-reader verification stays manual"},
+    {"area": "UI", "case": "keyboard navigation", "kind": "host", "runner": "src_overrides/bedrock/ui/accessibility_test.cc", "status": "running", "note": "every command has a reachable shortcut and focus order is complete"}
+  ]
+}

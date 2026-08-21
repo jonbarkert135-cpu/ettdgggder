@@ -1,0 +1,35 @@
+<!doctype html><meta charset="utf-8"><title>webrtc</title>
+<h1>WebRTC</h1>
+<pre id="result"></pre>
+<script src="_harness.js"></script>
+<script>
+// The classic leak: ICE candidate gathering reveals local network addresses
+// (and, with a STUN server, the public one) to any page, with no permission
+// prompt and no UI. No STUN server is configured here on purpose — the test
+// must not send anything to a third party (item 75) — so this measures host
+// candidates and mDNS obfuscation, which is where the local-IP leak lives.
+const candidates = [];
+let done = false;
+function finish() {
+  if (done) return; done = true;
+  const hosts = candidates.map(c => (c.match(/ ([0-9a-f.:]+) \d+ typ (\w+)/i) || [])[1])
+                          .filter(Boolean);
+  report({
+    rtc_available: true,
+    candidate_count: candidates.length,
+    candidate_types: [...new Set(candidates.map(c => (c.match(/typ (\w+)/) || [])[1]).filter(Boolean))],
+    addresses: [...new Set(hosts)],
+    mdns_obfuscated: hosts.length > 0 && hosts.every(h => h.endsWith('.local')),
+    private_ipv4_exposed: hosts.some(h => /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(h)),
+  });
+}
+if (typeof RTCPeerConnection !== 'function') {
+  report({ rtc_available: false });
+} else {
+  const pc = new RTCPeerConnection({ iceServers: [] });
+  pc.createDataChannel('probe');
+  pc.onicecandidate = e => { if (e.candidate) candidates.push(e.candidate.candidate); else finish(); };
+  pc.createOffer().then(o => pc.setLocalDescription(o)).catch(() => finish());
+  setTimeout(finish, 3000);
+}
+</script>

@@ -1,0 +1,25 @@
+<!doctype html><meta charset="utf-8"><title>webgl</title>
+<h1>WebGL exposure</h1>
+<pre id="result"></pre>
+<script src="_harness.js"></script>
+<script>
+// UNMASKED_RENDERER_WEBGL is the single most identifying string a GPU exposes:
+// it names the exact card and driver. The parameter list is nearly as good, so
+// both are measured, not just the debug extension.
+const gl = document.createElement('canvas').getContext('webgl');
+if (!gl) {
+  report({ webgl_available: false });
+} else {
+  const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+  report({
+    webgl_available: true,
+    vendor: safe(() => gl.getParameter(gl.VENDOR)),
+    renderer: safe(() => gl.getParameter(gl.RENDERER)),
+    unmasked_vendor: debugInfo ? safe(() => gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL)) : null,
+    unmasked_renderer: debugInfo ? safe(() => gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)) : null,
+    max_texture_size: safe(() => gl.getParameter(gl.MAX_TEXTURE_SIZE)),
+    extension_count: safe(() => (gl.getSupportedExtensions() || []).length),
+    debug_extension_present: !!debugInfo,
+  });
+}
+</script>

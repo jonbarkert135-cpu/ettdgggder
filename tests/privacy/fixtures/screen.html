@@ -1,0 +1,25 @@
+<!doctype html><meta charset="utf-8"><title>screen</title>
+<h1>screen metrics</h1>
+<pre id="result"></pre>
+<script src="_harness.js"></script>
+<script>
+// Window size is the fingerprinting surface users create themselves by
+// resizing. Letterboxing (rounding the content area to a grid) is the standard
+// mitigation, so the runner checks the *innerWidth/innerHeight* modulo, not
+// just the screen dimensions.
+report({
+  screen_width: screen.width,
+  screen_height: screen.height,
+  avail_width: screen.availWidth,
+  avail_height: screen.availHeight,
+  color_depth: screen.colorDepth,
+  pixel_depth: screen.pixelDepth,
+  device_pixel_ratio: window.devicePixelRatio,
+  inner_width: window.innerWidth,
+  inner_height: window.innerHeight,
+  outer_width: window.outerWidth,
+  outer_height: window.outerHeight,
+  inner_width_mod_100: window.innerWidth % 100,
+  inner_height_mod_100: window.innerHeight % 100,
+});
+</script>

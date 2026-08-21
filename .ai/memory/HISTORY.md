@@ -4,26 +4,27 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
-## PR #19 — Roadmap 65–69: brand identity, upstream sync, patch discipline, security priority
-- **65** `docs/BRAND.md`, `branding/bedrock-mark.svg` + `bedrock-mark-small.svg`. Name unchanged
-  (Bedrock, confirmed by the owner). Mark: strata of stone in a circle with one copper seam, the
-  same accent the UI uses for protection state. Below 32 px the mark *changes* (three bands) rather
-  than shrinking. `scripts/check_branding.py` keeps other vendors' brands out of user-visible
-  strings, mockups and asset names ("Chromium" allowed as the engine, "Tor" allowed as the network,
-  "Tor Browser" refused), checks docs ↔ assets both ways, and forbids restating colours outside
-  design-tokens.json.
-- **66/69** `updater/release_policy.{h,cc}` + `docs/UPSTREAM_SYNC.md`. Deadlines from the moment a
-  fix is *public upstream*: critical 72h, high 7d, medium 14d, low 30d. Unready features are
-  dropped (`kDropFeatures`), never a reason to delay. A fix touching patched code blocks the
-  release until a human re-reads the patch. `kEmergencyRelease` is narrow: security-only content,
-  written justification, and still the security review + privacy regression tests.
-- **67** `docs/PATCHES.md`: required header (incl. `Chromium-Version` and `Drop-When`), one patch
-  one purpose, `src_overrides/` preferred over a diff. Zero patches exist yet — the discipline
-  lands before the first patch on purpose.
-- **68** `scripts/upstream_sync.py`: `--status` (pin age, roll due), `--check-patches`,
-  `--dry-run` (`git apply --check` conflict detection), `--plan`, `--selftest`.
-- Gates: `check_branding.py` and `check_upstream.py` (code ↔ docs for deadlines, stages, patch
-  header fields). Six negative cases verified by deliberate breakage.
+## PR #22 — Roadmap 74–77: testing matrix, privacy regression suite, fuzzing, zero-trust deps
+- **74** `tests/matrix.json` (26 required cases, each with runner + honest status) +
+  `tests/MATRIX.md` + `scripts/check_test_matrix.py`. New `tests/browser/run.py`: launch,
+  navigation, tabs, downloads, profiles — **5/5 against Chrome-for-Testing 151**. Three cases
+  cannot run yet (extension execution, Tor proxy routing, and privacy verdicts) and say so, with
+  the exact command that unblocks them.
+- **75** `tests/privacy/` — 13 scenarios, 15 local fixtures, two loopback origins so cross-site is
+  really cross-site, and a server that records request headers (referrer, cookies, client hints are
+  not visible to JS). Stock-Chromium baseline committed as `baseline-chromium.json`: it is the
+  "before" column, and it already shows `hardware_concurrency=17`, `deviceMemory=32`,
+  `Sec-CH-UA-Arch: x86`, 6 fonts detected and `gclid/fbclid/msclkid` surviving navigation.
+  Gate: `scripts/check_privacy_suite.py`.
+- **76** five new fuzz targets — configuration parser, extension permissions, custom rules, search,
+  privacy rules — for 9 total, each replayed over 860 seed inputs in CI.
+- **77** `docs/THIRD_PARTY.md` grew `Reviewed` and `Justification` columns; `check_zero_trust()` in
+  `scripts/check_provenance.py` rejects a review older than a year, a future date, or a
+  justification made of adjectives ("popular", "nicer", "modern"). Rationale: `docs/DEPENDENCIES.md`.
+- **Learned the hard way:** `--dump-dom` never returns in current new-headless, and with no network
+  Chromium spends ~90 s in GCM/component-update retries before the first paint. Both runners set
+  offline flags and let the page POST its own result to the local server; profile writes need ~8 s
+  of settle before the process is stopped.
 
 ## PR #21 — Roadmap 70–73: supply chain, release channels, documentation set, build instructions
 - **70** `docs/SUPPLY_CHAIN.md`: the chain from upstream archive to installed binary, link by link,
@@ -59,6 +60,27 @@ read, not skimmed. Anything longer belongs in a doc, linked from here.
 - `scripts/gen_icons.py`: icons are generated (PNG 16–512, Windows .ico, Linux hicolor), not
   committed; it trims the ~15 % transparent margin first and prefers the small mark ≤24 px.
 - Gate additions: PNG header check (square, alpha where the name claims it), transliteration check.
+
+## PR #19 — Roadmap 65–69: brand identity, upstream sync, patch discipline, security priority
+- **65** `docs/BRAND.md`, `branding/bedrock-mark.svg` + `bedrock-mark-small.svg`. Name unchanged
+  (Bedrock, confirmed by the owner). Mark: strata of stone in a circle with one copper seam, the
+  same accent the UI uses for protection state. Below 32 px the mark *changes* (three bands) rather
+  than shrinking. `scripts/check_branding.py` keeps other vendors' brands out of user-visible
+  strings, mockups and asset names ("Chromium" allowed as the engine, "Tor" allowed as the network,
+  "Tor Browser" refused), checks docs ↔ assets both ways, and forbids restating colours outside
+  design-tokens.json.
+- **66/69** `updater/release_policy.{h,cc}` + `docs/UPSTREAM_SYNC.md`. Deadlines from the moment a
+  fix is *public upstream*: critical 72h, high 7d, medium 14d, low 30d. Unready features are
+  dropped (`kDropFeatures`), never a reason to delay. A fix touching patched code blocks the
+  release until a human re-reads the patch. `kEmergencyRelease` is narrow: security-only content,
+  written justification, and still the security review + privacy regression tests.
+- **67** `docs/PATCHES.md`: required header (incl. `Chromium-Version` and `Drop-When`), one patch
+  one purpose, `src_overrides/` preferred over a diff. Zero patches exist yet — the discipline
+  lands before the first patch on purpose.
+- **68** `scripts/upstream_sync.py`: `--status` (pin age, roll due), `--check-patches`,
+  `--dry-run` (`git apply --check` conflict detection), `--plan`, `--selftest`.
+- Gates: `check_branding.py` and `check_upstream.py` (code ↔ docs for deadlines, stages, patch
+  header fields). Six negative cases verified by deliberate breakage.
 
 ## PR #18 — Roadmap 61–64: localization, platform tiers, Windows and Linux integration
 - **61** `ui/l10n/string_catalog.{h,cc}`: 12 ids × 4 complete locales (en, uk, ru, de). Named

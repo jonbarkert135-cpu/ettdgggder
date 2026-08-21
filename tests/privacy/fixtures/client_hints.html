@@ -1,0 +1,24 @@
+<!doctype html><meta charset="utf-8"><title>client hints</title>
+<h1>client hints</h1>
+<pre id="result"></pre>
+<script src="_harness.js"></script>
+<script>
+// The JS side of Client Hints. The runner also records the request headers the
+// server saw, because low-entropy hints are sent without being asked for and
+// only appear there.
+const ua = navigator.userAgentData;
+if (!ua) {
+  report({ user_agent_data: false });
+} else {
+  ua.getHighEntropyValues([
+    'architecture', 'bitness', 'model', 'platformVersion', 'uaFullVersion',
+    'fullVersionList', 'wow64',
+  ]).then(high => report({
+    user_agent_data: true,
+    brands: ua.brands,
+    mobile: ua.mobile,
+    platform: ua.platform,
+    high_entropy: high,
+  })).catch(e => report({ user_agent_data: true, error: e.name }));
+}
+</script>

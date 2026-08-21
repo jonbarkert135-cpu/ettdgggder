@@ -1,0 +1,19 @@
+<!doctype html><meta charset="utf-8"><title>navigator</title>
+<h1>navigator properties</h1>
+<pre id="result"></pre>
+<script src="_harness.js"></script>
+<script>
+report({
+  user_agent: navigator.userAgent,
+  platform: safe(() => navigator.platform),
+  hardware_concurrency: safe(() => navigator.hardwareConcurrency),
+  device_memory: safe(() => navigator.deviceMemory, 'undefined'),
+  max_touch_points: safe(() => navigator.maxTouchPoints),
+  plugin_count: safe(() => navigator.plugins.length),
+  mime_type_count: safe(() => navigator.mimeTypes.length),
+  webdriver: safe(() => navigator.webdriver),
+  do_not_track: safe(() => navigator.doNotTrack, 'null'),
+  global_privacy_control: safe(() => navigator.globalPrivacyControl, 'undefined'),
+  pdf_viewer_enabled: safe(() => navigator.pdfViewerEnabled),
+});
+</script>
