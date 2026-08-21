@@ -1,0 +1,12 @@
+# Bedrock — libFuzzer build for the harnesses in src_overrides/bedrock/fuzz/.
+# Every harness also builds without this toolchain (-DBEDROCK_FUZZ_SMOKE) so CI
+# proves it still compiles on every commit.
+import("//build/args/bedrock-release.gn")
+
+is_debug = false
+is_official_build = false
+symbol_level = 1
+use_libfuzzer = true
+is_asan = true
+is_ubsan_security = true
+optimize_for_fuzzing = true

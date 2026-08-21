@@ -130,7 +130,15 @@ class FilterEngine {
 
  private:
   bool ParseRule(const std::string& line);
-  void Index(size_t filter_index);
+  struct TokenCandidate {
+    uint32_t hash = 0;
+    size_t length = 0;
+  };
+  // All word-aligned tokens a rule could be indexed under.
+  static void CollectTokens(const NetworkFilter& filter,
+                            std::vector<TokenCandidate>* out);
+  // Rebuilds the token index, assigning each rule to its rarest token.
+  void Reindex();
   bool Matches(const NetworkFilter& filter, const Request& request) const;
 
   std::vector<NetworkFilter> filters_;

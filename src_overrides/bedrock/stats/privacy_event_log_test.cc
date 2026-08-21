@@ -11,6 +11,7 @@
 #include <string>
 
 #include "bedrock/privacy/protection_controller.h"
+#include "bedrock/privacy/security_levels.h"
 #include "bedrock/stats/privacy_center.h"
 
 namespace {
@@ -129,12 +130,17 @@ int main() {
   controls.Set(Scope::kGlobal, "", Control::kScripts, Value::kBlock);
   Check(center.Level() == ProtectionLevel::kCustom,
         "changing one control immediately changes the badge");
-  controls.Set(Scope::kGlobal, "", Control::kFingerprinting,
-               Value::kBlockStrict);
-  controls.Set(Scope::kGlobal, "", Control::kCookies, Value::kBlockStrict);
+  // The presets themselves live in privacy/security_levels (item 45); the
+  // dashboard reads them rather than keeping a second table.
+  bedrock::privacy::SecurityLevels::Apply(&controls,
+                                          bedrock::privacy::SecurityLevel::kStrict);
   Check(center.Level() == ProtectionLevel::kStrict, "the strict preset is STRICT");
   Check(std::string(PrivacyCenter::LevelName(center.Level())) == "STRICT",
         "and renders in the roadmap's capitals");
+  bedrock::privacy::SecurityLevels::Apply(&controls,
+                                          bedrock::privacy::SecurityLevel::kMaximum);
+  Check(std::string(PrivacyCenter::LevelName(center.Level())) == "MAXIMUM",
+        "and the maximum preset is MAXIMUM");
 
   // The dashboard says where the numbers live.
   const std::string note = PrivacyCenter::DataSourceNote();

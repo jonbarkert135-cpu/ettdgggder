@@ -1,0 +1,7 @@
+# Bedrock — ThreadSanitizer build (data races). Slow; nightly only.
+import("//build/args/bedrock-release.gn")
+
+is_debug = false
+is_official_build = false
+symbol_level = 1
+is_tsan = true

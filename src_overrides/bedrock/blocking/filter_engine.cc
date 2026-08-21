@@ -204,6 +204,7 @@ size_t FilterEngine::AddList(const std::string& text) {
       ++accepted;
     }
   }
+  Reindex();
   return accepted;
 }
 
@@ -212,6 +213,7 @@ bool FilterEngine::AddRule(const std::string& line) {
     return false;
   }
   user_rules_.insert(line);
+  Reindex();
   return true;
 }
 
@@ -331,7 +333,6 @@ bool FilterEngine::ParseRule(const std::string& line) {
   }
   filter.pattern = ToLower(rule);
   filters_.push_back(std::move(filter));
-  Index(filters_.size() - 1);
   return true;
 }
 
@@ -355,18 +356,17 @@ bool FilterEngine::RemoveRule(const std::string& line) {
   for (const std::string& rule : rules) {
     AddRule(rule);
   }
+  Reindex();
   return true;
 }
 
-void FilterEngine::Index(size_t filter_index) {
-  // Pick the longest literal token in the pattern: the longer the token, the
-  // fewer URLs share it, so the candidate list stays short. (uBO picks by
-  // measured token frequency; length is the cheap approximation and needs no
-  // histogram to ship with the binary.)
-  const NetworkFilter& filter = filters_[filter_index];
+void FilterEngine::CollectTokens(const NetworkFilter& filter,
+                                 std::vector<TokenCandidate>* out) {
+  // Every word-aligned literal token of at least three characters is a
+  // possible index key. A token must start where a URL word starts and end
+  // where one ends, or the URL tokenizer would hash a longer word and never
+  // look in this bucket.
   const std::string& pattern = filter.pattern;
-  size_t best_at = kNpos;
-  size_t best_length = 0;
   size_t at = 0;
   while (at < pattern.size()) {
     if (!IsTokenChar(pattern[at])) {
@@ -377,27 +377,63 @@ void FilterEngine::Index(size_t filter_index) {
     while (end < pattern.size() && IsTokenChar(pattern[end])) {
       ++end;
     }
-    // The token must start where a URL word starts, or the URL tokenizer will
-    // hash a longer word and never look in this bucket. A token ending at a
-    // wildcard may likewise be truncated in the URL.
-    // ...and it must end where a URL word ends, or the URL word ("adsense")
-    // will not hash to the filter token ("ads"). Tokens that fail either test
-    // are not indexable, and the filter goes to the always-checked bucket
-    // rather than silently never matching.
-    bool starts_word = at > 0 || filter.anchor_domain || filter.anchor_start;
-    bool ends_word = (end < pattern.size() && pattern[end] != '*') ||
-                     (end == pattern.size() && filter.anchor_end);
-    if (starts_word && ends_word && end - at > best_length) {
-      best_length = end - at;
-      best_at = at;
+    const bool starts_word =
+        at > 0 || filter.anchor_domain || filter.anchor_start;
+    const bool ends_word = (end < pattern.size() && pattern[end] != '*') ||
+                           (end == pattern.size() && filter.anchor_end);
+    if (starts_word && ends_word && end - at >= 3) {
+      TokenCandidate candidate;
+      candidate.hash = Fnv1a(pattern.data() + at, end - at);
+      candidate.length = end - at;
+      out->push_back(candidate);
     }
     at = end;
   }
-  if (best_length >= 3) {
-    index_[Fnv1a(pattern.data() + best_at, best_length)].push_back(
-        static_cast<uint32_t>(filter_index));
-  } else {
-    untokenized_.push_back(static_cast<uint32_t>(filter_index));
+}
+
+void FilterEngine::Reindex() {
+  // Index each rule under its **rarest** token, not its longest.
+  //
+  // The longest-token heuristic looks reasonable and fails badly on real
+  // lists: a few thousand rules ending in the same popular word all pick that
+  // word, and every request carrying it walks the whole bucket. Measured on a
+  // synthetic list of 20,000 same-suffix rules, a matching request cost 70 us
+  // — 3.5x over the 20 us budget — while a non-matching one cost 0.35 us,
+  // which is exactly the shape of one oversized bucket.
+  //
+  // Counting how many rules could use each token is a good enough frequency
+  // estimate and needs no histogram shipped in the binary (uBO uses a
+  // measured one). Ties go to the longer token, which is the old rule.
+  index_.clear();
+  untokenized_.clear();
+
+  std::unordered_map<uint32_t, uint32_t> frequency;
+  std::vector<TokenCandidate> candidates;
+  for (const NetworkFilter& filter : filters_) {
+    candidates.clear();
+    CollectTokens(filter, &candidates);
+    for (const TokenCandidate& candidate : candidates)
+      ++frequency[candidate.hash];
+  }
+
+  for (size_t i = 0; i < filters_.size(); ++i) {
+    candidates.clear();
+    CollectTokens(filters_[i], &candidates);
+    const TokenCandidate* best = nullptr;
+    uint32_t best_frequency = 0;
+    for (const TokenCandidate& candidate : candidates) {
+      const uint32_t count = frequency[candidate.hash];
+      if (!best || count < best_frequency ||
+          (count == best_frequency && candidate.length > best->length)) {
+        best = &candidate;
+        best_frequency = count;
+      }
+    }
+    if (best) {
+      index_[best->hash].push_back(static_cast<uint32_t>(i));
+    } else {
+      untokenized_.push_back(static_cast<uint32_t>(i));
+    }
   }
 }
 
