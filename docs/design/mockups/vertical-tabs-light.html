@@ -1,0 +1,157 @@
+<!doctype html>
+<!-- Bedrock: vertical tabs, sidebar, light theme, compact density.
+     Same visual language as browser-window.html; see docs/design/026. -->
+<html lang="en"><head><meta charset="utf-8"><title>Bedrock — vertical tabs</title>
+<style>
+  :root{
+    --surface:#F7F6F4; --raised:#FFFFFF; --sunken:#EDEBE7;
+    --border:#DCD8D2; --border-strong:#C3BDB4;
+    --text:#1B1A18; --muted:#6B655D;
+    --accent:#B4622A; --accent-quiet:#F2E4DA;
+    --positive:#2F6B4F;
+    --ui:Inter,'SF Pro Text','Segoe UI Variable',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#E4E1DC;font-family:var(--ui);color:var(--text);
+       -webkit-font-smoothing:antialiased;padding:40px;display:flex;
+       justify-content:center}
+  .frame{width:1120px}
+  .window{background:var(--surface);border:1px solid var(--border-strong);
+          border-radius:14px;overflow:hidden;display:flex;
+          box-shadow:0 20px 50px rgba(60,50,40,.22)}
+
+  /* left rail: sidebar icons */
+  .rail{width:52px;background:var(--sunken);border-right:1px solid var(--border);
+        display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0}
+  .rail .i{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;
+           color:var(--muted);font-size:15px}
+  .rail .i.on{background:var(--accent-quiet);color:var(--accent);
+              box-shadow:inset 0 0 0 1px #E4CDBB}
+  .rail .sp{flex:1}
+
+  /* sidebar panel */
+  .side{width:264px;background:var(--surface);border-right:1px solid var(--border);
+        display:flex;flex-direction:column}
+  .side h2{font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+           color:var(--muted);padding:14px 14px 8px;font-weight:600}
+  .side .item{display:flex;align-items:center;gap:9px;padding:7px 14px;font-size:12.5px}
+  .side .item .sq{width:15px;height:15px;border-radius:4px;background:#DAD5CD;flex:none}
+  .side .item:hover{background:var(--sunken)}
+  .side .sec{margin-top:6px;border-top:1px solid var(--border)}
+
+  /* tab column */
+  .tabcol{width:230px;background:var(--sunken);border-right:1px solid var(--border);
+          padding:10px 8px;display:flex;flex-direction:column;gap:2px}
+  .tsearch{height:30px;border-radius:8px;background:var(--raised);
+           border:1px solid var(--border);display:flex;align-items:center;
+           padding:0 10px;gap:7px;font-size:12px;color:var(--muted);margin-bottom:8px}
+  .grp{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+       color:var(--muted);padding:9px 8px 4px;display:flex;align-items:center;gap:6px}
+  .grp .d{width:7px;height:7px;border-radius:999px;background:var(--accent)}
+  .t{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;
+     font-size:12.5px;color:#4A443D;white-space:nowrap;overflow:hidden}
+  .t .fav{width:14px;height:14px;border-radius:4px;background:#D6D0C7;flex:none}
+  .t.on{background:var(--raised);color:var(--text);
+        box-shadow:0 1px 2px rgba(0,0,0,.05),0 0 0 1px var(--border)}
+  .t.on .fav{background:linear-gradient(140deg,var(--accent),#D68A50)}
+  .t .mute{margin-left:auto;font-size:10.5px;color:var(--muted)}
+  .t.sleep{opacity:.55}
+  .pin{display:flex;gap:6px;padding:2px 4px 8px;border-bottom:1px solid var(--border);
+       margin-bottom:6px}
+  .pin .p{width:32px;height:32px;border-radius:8px;background:var(--raised);
+          border:1px solid var(--border);display:grid;place-items:center}
+  .pin .p b{width:14px;height:14px;border-radius:4px;background:#CFC8BE;display:block}
+
+  /* main */
+  .main{flex:1;display:flex;flex-direction:column;background:var(--raised)}
+  .bar{height:46px;display:flex;align-items:center;gap:9px;padding:0 12px;
+       border-bottom:1px solid var(--border);background:var(--surface)}
+  .ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
+      color:var(--muted);font-size:14px}
+  .omni{flex:1;height:32px;background:var(--raised);border:1px solid var(--border);
+        border-radius:9px;display:flex;align-items:center;gap:9px;padding:0 8px 0 11px;
+        font-size:13px}
+  .omni .lock{color:var(--positive);font-size:11px}
+  .omni .p{color:var(--muted)}
+  .chip{margin-left:auto;display:flex;align-items:center;gap:6px;height:24px;
+        padding:0 9px;border-radius:999px;background:var(--accent-quiet);
+        color:var(--accent);font-size:11px;border:1px solid #E7D3C4;
+        font-variant-numeric:tabular-nums}
+  .content{flex:1;padding:44px 52px}
+  .content h1{font-size:23px;font-weight:600;letter-spacing:-.02em}
+  .content p{color:var(--muted);font-size:13.5px;line-height:1.6;margin-top:10px;
+             max-width:430px}
+  .cards{display:flex;gap:12px;margin-top:26px}
+  .card{flex:1;border:1px solid var(--border);border-radius:10px;padding:14px 15px;
+        background:var(--surface)}
+  .card .k{font-size:11px;text-transform:uppercase;letter-spacing:.07em;
+           color:var(--muted)}
+  .card .v{font-size:18px;font-weight:600;margin-top:6px;font-variant-numeric:tabular-nums}
+  .card .s{font-size:11.5px;color:var(--muted);margin-top:4px}
+  .caption{display:flex;justify-content:space-between;margin-top:16px;font-size:12px;
+           color:#8A8177}
+  .caption b{color:#5C554D;font-weight:500}
+</style></head><body><div class="frame">
+  <div class="window">
+    <div class="rail">
+      <div class="i on">▤</div><div class="i">⌚</div><div class="i">⤓</div>
+      <div class="i">▦</div><div class="i">✎</div><div class="sp"></div>
+      <div class="i">⚙</div>
+    </div>
+
+    <div class="side">
+      <h2>Bookmarks</h2>
+      <div class="item"><i class="sq"></i>Reading queue</div>
+      <div class="item"><i class="sq"></i>Chromium docs</div>
+      <div class="item"><i class="sq"></i>Filter list syntax</div>
+      <div class="item"><i class="sq"></i>WCAG contrast</div>
+      <div class="sec"></div>
+      <h2>Workspace · Bedrock</h2>
+      <div class="item"><i class="sq"></i>Roadmap 27–31</div>
+      <div class="item"><i class="sq"></i>Design tokens</div>
+      <div class="item"><i class="sq"></i>Host tests</div>
+    </div>
+
+    <div class="tabcol">
+      <div class="tsearch">⌕ Search tabs<span style="margin-left:auto">⌘K</span></div>
+      <div class="pin">
+        <div class="p"><b></b></div><div class="p"><b></b></div><div class="p"><b></b></div>
+      </div>
+      <div class="grp"><i class="d"></i>Work</div>
+      <div class="t on"><i class="fav"></i>Theme engine — design</div>
+      <div class="t"><i class="fav"></i>Tab model notes</div>
+      <div class="t"><i class="fav"></i>Sidebar panels<span class="mute">muted</span></div>
+      <div class="grp">Reading</div>
+      <div class="t sleep"><i class="fav"></i>Long article<span class="mute">asleep</span></div>
+      <div class="t sleep"><i class="fav"></i>Another long read<span class="mute">asleep</span></div>
+      <div class="t"><i class="fav"></i>Duplicate: Long article</div>
+    </div>
+
+    <div class="main">
+      <div class="bar">
+        <div class="ic">←</div><div class="ic">→</div><div class="ic">⟳</div>
+        <div class="omni"><span class="lock">▲</span>docs.test<span class="p">/theme/engine</span>
+          <span class="chip">6 blocked</span></div>
+        <div class="ic">☰</div>
+      </div>
+      <div class="content">
+        <h1>Vertical tabs, sidebar on, compact density</h1>
+        <p>The same tab model as the horizontal layout — one list, two ways to draw it.
+           Every panel in the rail is also a menu item and a keyboard shortcut, so the
+           sidebar stays optional.</p>
+        <div class="cards">
+          <div class="card"><div class="k">Layout</div><div class="v">Vertical</div>
+            <div class="s">Switches live, no restart</div></div>
+          <div class="card"><div class="k">Sleeping tabs</div><div class="v">2</div>
+            <div class="s">Never pinned, active or audible</div></div>
+          <div class="card"><div class="k">Duplicates</div><div class="v">1 set</div>
+            <div class="s">Ignoring utm_, www., fragments</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="caption">
+    <span><b>Light theme</b> · same tokens, compact density, sidebar width 264&nbsp;px</span>
+    <span>Every panel reachable without the sidebar</span>
+  </div>
+</div></body></html>

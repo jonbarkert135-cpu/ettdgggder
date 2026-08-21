@@ -42,6 +42,17 @@ source_set("extensions") {
   ]
 }
 
+source_set("ui") {
+  sources = [
+    "ui/sidebar.cc",
+    "ui/sidebar.h",
+    "ui/tab_model.cc",
+    "ui/tab_model.h",
+    "ui/theme_engine.cc",
+    "ui/theme_engine.h",
+  ]
+}
+
 source_set("security") {
   sources = [
     "security/security_baseline.cc",
