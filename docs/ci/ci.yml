@@ -21,3 +21,7 @@ jobs:
 # NOTE: copy this file to .github/workflows/ci.yml in the GitHub UI.
 # The bot's GitHub App lacks the `workflows` permission, so it cannot push files
 # under .github/workflows/ itself.
+
+# --- delta to append to the provenance job's steps (host C++ tests) ---
+#      - name: host tests (C++, no Chromium needed)
+#        run: ./scripts/run_host_tests.sh

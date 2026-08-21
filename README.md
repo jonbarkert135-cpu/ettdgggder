@@ -56,8 +56,17 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 
 ## Status
 
-Foundation stage: engine decision, overlay build system, and the licensing/provenance gate are
-in place. Feature work proceeds through the roadmap.
+| Roadmap | State |
+|---|---|
+| 1–5 Foundation (engine, autonomy, licensing) | done — overlay build system + provenance gate |
+| 6 Search engine system | designed + selection logic landed, host-tested |
+| 7 Address bar / omnibox | designed + input classifier landed, host-tested |
+| 8 Privacy Engine | architecture + feature registry landed |
+| Extension catalog | designed ([009](docs/design/009-extension-catalog.md)) |
+
+Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host
+tests — `./scripts/run_host_tests.sh` builds and runs them with plain `g++`, no Chromium
+checkout required, and CI runs them on every PR.
 
 ## License
 
