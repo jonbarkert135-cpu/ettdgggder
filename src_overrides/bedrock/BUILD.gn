@@ -1,0 +1,38 @@
+# Copyright 2026 The Bedrock Authors
+# This Source Code Form is subject to the terms of the Mozilla Public License,
+# v. 2.0. If a copy of the MPL was not distributed with this file, You can
+# obtain one at https://mozilla.org/MPL/2.0/.
+
+# Bedrock components. Wired into the browser by a single patch that appends
+# "//bedrock:bedrock" to the chrome/browser deps (see docs/design/006-search-system.md).
+
+source_set("omnibox") {
+  sources = [
+    "omnibox/input_parser.cc",
+    "omnibox/input_parser.h",
+  ]
+}
+
+source_set("search") {
+  sources = [
+    "search/engine_selector.cc",
+    "search/engine_selector.h",
+  ]
+}
+
+source_set("privacy") {
+  sources = [ "privacy/privacy_engine.h" ]
+}
+
+group("bedrock") {
+  public_deps = [
+    ":omnibox",
+    ":privacy",
+    ":search",
+  ]
+}
+
+# Tests: the *_test.cc files next to these sources are dependency-free host
+# tests with their own main(), run by scripts/run_host_tests.sh in CI. They are
+# deliberately NOT in a gtest target — anything that needs Chromium types gets a
+# separate *_unittest.cc added to //chrome/test:unit_tests when that day comes.

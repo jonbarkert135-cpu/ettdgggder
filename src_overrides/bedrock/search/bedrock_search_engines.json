@@ -1,0 +1,111 @@
+{
+  "_comment": [
+    "Bedrock search providers. Data only — no code depends on this list's contents.",
+    "Loaded by BedrockSearchProviderService at first run and merged with user-added",
+    "providers stored in the profile. Adding a provider = adding an object here.",
+    "Fields mirror Chromium's TemplateURLData so entries convert 1:1.",
+    "URL templates verified reachable 2026-08-21."
+  ],
+  "version": 1,
+  "default_engine": "duckduckgo",
+  "default_private_engine": "duckduckgo",
+  "engines": [
+    {
+      "id": "duckduckgo",
+      "name": "DuckDuckGo",
+      "keyword": "!ddg",
+      "aliases": ["!d", "!duck"],
+      "search_url": "https://duckduckgo.com/?q={searchTerms}",
+      "suggest_url": "https://duckduckgo.com/ac/?q={searchTerms}&type=list",
+      "favicon_url": "https://duckduckgo.com/favicon.ico",
+      "encoding": "UTF-8",
+      "sends_referrer": false,
+      "required": true
+    },
+    {
+      "id": "google",
+      "name": "Google",
+      "keyword": "!g",
+      "aliases": ["!google"],
+      "search_url": "https://www.google.com/search?q={searchTerms}",
+      "suggest_url": "https://www.google.com/complete/search?client=firefox&q={searchTerms}",
+      "favicon_url": "https://www.google.com/favicon.ico",
+      "encoding": "UTF-8",
+      "sends_referrer": false,
+      "required": true,
+      "_note": "suggest uses client=firefox: the open JSON endpoint, no Chrome API key, no RLZ/client-id."
+    },
+    {
+      "id": "brave",
+      "name": "Brave Search",
+      "keyword": "!br",
+      "aliases": ["!brave"],
+      "search_url": "https://search.brave.com/search?q={searchTerms}",
+      "suggest_url": "https://search.brave.com/api/suggest?q={searchTerms}",
+      "favicon_url": "https://search.brave.com/favicon.ico",
+      "encoding": "UTF-8",
+      "sends_referrer": false,
+      "required": false
+    },
+    {
+      "id": "startpage",
+      "name": "Startpage",
+      "keyword": "!sp",
+      "aliases": ["!startpage"],
+      "search_url": "https://www.startpage.com/sp/search?query={searchTerms}",
+      "suggest_url": "",
+      "favicon_url": "https://www.startpage.com/favicon.ico",
+      "encoding": "UTF-8",
+      "sends_referrer": false,
+      "required": false
+    },
+    {
+      "id": "bing",
+      "name": "Bing",
+      "keyword": "!b",
+      "aliases": ["!bing"],
+      "search_url": "https://www.bing.com/search?q={searchTerms}",
+      "suggest_url": "https://www.bing.com/osjson.aspx?query={searchTerms}",
+      "favicon_url": "https://www.bing.com/favicon.ico",
+      "encoding": "UTF-8",
+      "sends_referrer": false,
+      "required": false
+    },
+    {
+      "id": "mojeek",
+      "name": "Mojeek",
+      "keyword": "!mj",
+      "aliases": [],
+      "search_url": "https://www.mojeek.com/search?q={searchTerms}",
+      "suggest_url": "https://www.mojeek.com/search?q={searchTerms}&fmt=json",
+      "favicon_url": "https://www.mojeek.com/favicon.ico",
+      "encoding": "UTF-8",
+      "sends_referrer": false,
+      "required": false
+    },
+    {
+      "id": "ecosia",
+      "name": "Ecosia",
+      "keyword": "!e",
+      "aliases": [],
+      "search_url": "https://www.ecosia.org/search?q={searchTerms}",
+      "suggest_url": "https://ac.ecosia.org/autocomplete?q={searchTerms}&type=list",
+      "favicon_url": "https://www.ecosia.org/favicon.ico",
+      "encoding": "UTF-8",
+      "sends_referrer": false,
+      "required": false
+    },
+    {
+      "id": "wikipedia",
+      "name": "Wikipedia",
+      "keyword": "!w",
+      "aliases": ["!wiki"],
+      "search_url": "https://en.wikipedia.org/w/index.php?search={searchTerms}",
+      "suggest_url": "https://en.wikipedia.org/w/api.php?action=opensearch&search={searchTerms}",
+      "favicon_url": "https://en.wikipedia.org/favicon.ico",
+      "encoding": "UTF-8",
+      "sends_referrer": false,
+      "required": false
+    }
+  ]
+}
