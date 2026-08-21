@@ -25,6 +25,18 @@ read, not skimmed. Anything longer belongs in a doc, linked from here.
 - Gates: `check_branding.py` and `check_upstream.py` (code ↔ docs for deadlines, stages, patch
   header fields). Six negative cases verified by deliberate breakage.
 
+## PR #20 — Brand assets: the owner's logo is the mark, name is Latin in every language
+- The project's own artwork (`branding/bedrock-logo.png`, plus `bedrock-logo-transparent.png` for
+  icons and non-black backgrounds) is **the** mark. The generated SVG from PR #19 was removed:
+  two full-size marks in one repository is one too many. `bedrock-mark-small.svg` stays, and only
+  for ≤32 px, where the strata verifiably average into a grey circle.
+- Name: full form **Bedrock Browser**, short form Bedrock in-product, **Latin script in every
+  locale** — no Cyrillic transliteration, the same convention Firefox/Brave/Tor follow, checked by
+  `check_branding.py` across catalog strings, BRAND.md and README.
+- `scripts/gen_icons.py`: icons are generated (PNG 16–512, Windows .ico, Linux hicolor), not
+  committed; it trims the ~15 % transparent margin first and prefers the small mark ≤24 px.
+- Gate additions: PNG header check (square, alpha where the name claims it), transliteration check.
+
 ## PR #18 — Roadmap 61–64: localization, platform tiers, Windows and Linux integration
 - **61** `ui/l10n/string_catalog.{h,cc}`: 12 ids × 4 complete locales (en, uk, ru, de). Named
   placeholders parsed out of the text rather than declared twice; CLDR plural categories, so

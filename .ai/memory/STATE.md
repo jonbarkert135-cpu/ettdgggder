@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** roadmap 65–69 merged (PR #19, CI green).
+**As of:** roadmap 65–69 merged (PR #19); brand assets finalised (PR #20).
 
 ## Position on the roadmap
 

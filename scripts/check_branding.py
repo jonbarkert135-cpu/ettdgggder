@@ -8,6 +8,8 @@ checked here:
     label, a placeholder string, an icon file copied "for now". The engine is
     Chromium and prose may say so, but no browser vendor's brand belongs in a
     user-visible string, and nothing may claim to *be* Tor Browser (item 51).
+  * **The name gets localised.** It is Latin script in every language (docs/BRAND.md);
+    a transliterated product name splits search results, package names and trust.
   * **The brand documentation and the assets drift.** A documented logo file
     that does not exist, or an asset nobody documents and everyone is afraid to
     delete.
@@ -48,6 +50,9 @@ FORBIDDEN = [
     "onion router",
 ]
 
+# The product name, spelled the ways it must never be spelled.
+TRANSLITERATIONS = ["бедрок", "бедрок браузер", "bedrok"]
+
 MESSAGE_TEXT = re.compile(
     r"PluralCategory::k\w+,\s*\n?\s*\"((?:[^\"\\]|\\.)*)\"", re.S
 )
@@ -66,14 +71,34 @@ def find_forbidden(text: str) -> list[str]:
     return [name for name in FORBIDDEN if re.search(rf"\b{re.escape(name)}\b", lowered)]
 
 
-def check_strings(errors: list[str]) -> int:
+def check_name(errors: list[str], texts: list[str]) -> None:
+    """The name is Latin script everywhere, in strings and in prose."""
+    sources = [(f'string catalog: "{text}"', text) for text in texts]
+    sources += [
+        (str(path.relative_to(REPO)), path.read_text(encoding="utf-8"))
+        for path in (DOC, REPO / "README.md")
+    ]
+    for label, text in sources:
+        lowered = text.lower()
+        for wrong in TRANSLITERATIONS:
+            if wrong in lowered:
+                errors.append(
+                    f'{label}: the product name is transliterated as "{wrong}" — it is written '
+                    f"Bedrock in Latin script in every language"
+                )
+    app_names = [text for text in texts if "bedrock" in text.lower()]
+    if not app_names:
+        errors.append("no catalog string contains the product name — is kAppName still there?")
+
+
+def check_strings(errors: list[str]) -> list[str]:
     texts = MESSAGE_TEXT.findall(CATALOG.read_text(encoding="utf-8"))
     if len(texts) < 40:
         errors.append(f"only found {len(texts)} catalog strings — the parser broke")
     for text in texts:
         for name in find_forbidden(text):
             errors.append(f'string catalog: "{text}" contains the brand "{name}"')
-    return len(texts)
+    return texts
 
 
 def check_mockups(errors: list[str]) -> int:
@@ -99,6 +124,18 @@ def check_assets(errors: list[str]) -> int:
     for name in sorted(on_disk):
         for forbidden in find_forbidden(name):
             errors.append(f"branding/{name}: asset name contains the brand \"{forbidden}\"")
+    # PNG header, read without a dependency: width, height, colour type (6 = RGBA).
+    for name in sorted(on_disk):
+        if not name.endswith(".png"):
+            continue
+        header = (BRANDING / name).read_bytes()[:26]
+        width = int.from_bytes(header[16:20], "big")
+        height = int.from_bytes(header[20:24], "big")
+        if width != height:
+            errors.append(f"branding/{name}: {width}x{height} is not square — icons will distort")
+        if "transparent" in name and header[25] != 6:
+            errors.append(f"branding/{name}: no alpha channel, despite the name")
+
     # The mark must scale: a fixed width/height defeats every small-size use.
     for name in sorted(on_disk):
         if not name.endswith(".svg"):
@@ -143,11 +180,16 @@ def main() -> int:
         assert find_forbidden("This is Tor Browser") == ["tor browser"], "claiming to be it is not"
         assert "hello" in visible_text("<style>p{}</style><!-- x --><p>hello</p>")
         assert "x" not in visible_text("<!-- x --><p>hello</p>")
+        probe: list[str] = []
+        check_name(probe, ["Бедрок Браузер"])
+        assert probe and "transliterated" in probe[0], probe
         print("selftest OK")
         return 0
 
     errors: list[str] = []
-    strings = check_strings(errors)
+    texts = check_strings(errors)
+    check_name(errors, texts)
+    strings = len(texts)
     mockups = check_mockups(errors)
     assets = check_assets(errors)
     check_palette(errors)
