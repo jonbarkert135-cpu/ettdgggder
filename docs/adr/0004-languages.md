@@ -42,6 +42,15 @@ TypeScript compiled by the tree's own toolchain, not by a bundler we bring.
    UI is not open.
 5. **No language runtime is added to the product.** No Python, no Node, no JVM at runtime.
 
+## Alternatives considered
+
+* **One language everywhere (C++).** Rejected: it would mean writing WebUI in C++-generated HTML,
+  and giving up memory safety for the parsers that read untrusted input.
+* **Rust as the primary language.** Attractive for safety, rejected for reach: every Bedrock file
+  has to build inside a Chromium checkout, and Chromium's build is C++ with a narrow Rust door.
+* **An application shell over Chromium.** Rejected in the strongest terms — see the ban and its
+  gate; it would make the browser a website packaged as an application.
+
 ### Status today
 
 No Rust module has landed. Every subsystem is C++17, dependency-free and host-testable, and the

@@ -46,7 +46,7 @@ const std::vector<FeatureInfo>& Registry() {
        "cross_site_tracking_protection",
        "IDS_BEDROCK_PRIVACY_CROSS_SITE_TRACKING_TITLE",
        "IDS_BEDROCK_PRIVACY_CROSS_SITE_TRACKING_EXPLANATION",
-       Setting::kStandard, Setting::kStrict, false, Status::kPolicyLanded},
+       Setting::kStandard, Setting::kStrict, true, Status::kPolicyLanded},
 
       // kNetwork
       {Feature::kReferrerControl, Module::kNetwork, "referrer_control",
@@ -61,10 +61,13 @@ const std::vector<FeatureInfo>& Registry() {
        "IDS_BEDROCK_PRIVACY_HTTPS_ONLY_TITLE",
        "IDS_BEDROCK_PRIVACY_HTTPS_ONLY_EXPLANATION",
        Setting::kStandard, Setting::kStrict, true, Status::kPolicyLanded},
+      // Off by default on purpose (item 84 says "configurable"): encrypted DNS
+      // moves trust to a resolver the user did not choose, and breaks captive
+      // portals. Bedrock asks rather than picking a provider for them.
       {Feature::kSecureDns, Module::kNetwork, "secure_dns",
        "IDS_BEDROCK_PRIVACY_SECURE_DNS_TITLE",
        "IDS_BEDROCK_PRIVACY_SECURE_DNS_EXPLANATION",
-       Setting::kStandard, Setting::kStrict, false, Status::kPolicyLanded},
+       Setting::kOff, Setting::kStrict, true, Status::kPolicyLanded},
       {Feature::kThirdPartyRequestControl, Module::kNetwork, "third_party_requests",
        "IDS_BEDROCK_PRIVACY_THIRD_PARTY_REQUESTS_TITLE",
        "IDS_BEDROCK_PRIVACY_THIRD_PARTY_REQUESTS_EXPLANATION",
@@ -74,7 +77,7 @@ const std::vector<FeatureInfo>& Registry() {
       {Feature::kCookieIsolation, Module::kStorage, "cookie_isolation",
        "IDS_BEDROCK_PRIVACY_COOKIE_ISOLATION_TITLE",
        "IDS_BEDROCK_PRIVACY_COOKIE_ISOLATION_EXPLANATION",
-       Setting::kStandard, Setting::kStrict, false, Status::kPolicyLanded},
+       Setting::kStandard, Setting::kStrict, true, Status::kPolicyLanded},
       {Feature::kStoragePartitioning, Module::kStorage, "storage_partitioning",
        "IDS_BEDROCK_PRIVACY_STORAGE_PARTITIONING_TITLE",
        "IDS_BEDROCK_PRIVACY_STORAGE_PARTITIONING_EXPLANATION",
@@ -145,7 +148,7 @@ const std::vector<FeatureInfo>& Registry() {
       {Feature::kPermissionIsolation, Module::kPermissions, "permission_isolation",
        "IDS_BEDROCK_PRIVACY_PERMISSION_ISOLATION_TITLE",
        "IDS_BEDROCK_PRIVACY_PERMISSION_ISOLATION_EXPLANATION",
-       Setting::kStandard, Setting::kStrict, false, Status::kDesigned},
+       Setting::kStandard, Setting::kStrict, true, Status::kDesigned},
   };
   return registry;
 }

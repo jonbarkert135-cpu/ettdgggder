@@ -79,3 +79,9 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 64 | Debug logging is off by default and has no sink that can reach the network; lines are scrubbed before they are stored | `diagnostics/debug_log`, `scripts/check_diagnostics.py` |
 | 65 | Crash upload defaults to never, needs per-report consent, and a report carries whitelisted fields only — never URLs, cookies, credentials or the profile path | `diagnostics/crash_report`, `crash_report_test` |
 | 66 | Every error has a localized title *and* an action in all four locales, and its internal detail goes to the log, not the screen | `errors/error_catalog`, `scripts/check_diagnostics.py` |
+| 67 | Every privacy feature states how it works, what it protects, what it cannot protect and what it breaks | `settings/knowledge/feature_disclosure`, `scripts/check_transparency.py` |
+| 68 | `breaks_sites` in the feature registry and the scored compatibility loss must agree | `feature_disclosure_test` |
+| 69 | A feature shipped on against its own trade-off score carries a written argument | `feature_disclosure_test` (`default_on_reason`) |
+| 70 | The twelve item-84 defaults ship as specified; telemetry and crash upload are on no axis of user control | `settings/defaults`, `scripts/check_defaults.py` |
+| 71 | Every ADR has context, decision, alternatives and consequences, and is in the index | `scripts/check_adr.py` |
+| 72 | A phase that needs a Chromium build cannot be called done until `build/ENFORCEMENT.md` records one | `scripts/check_phases.py`, `docs/PHASES.md` |
