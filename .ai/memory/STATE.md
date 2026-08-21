@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** roadmap 47–49 merged (PR #14, CI green).
+**As of:** roadmap 50–52 merged (PR #15, CI green).
 
 ## Position on the roadmap
 
@@ -25,7 +25,8 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 | 47 Source layout (subsystem tree, ADR 0003) | done |
 | 48 Languages: C++ / Rust / TypeScript, no Electron (ADR 0004) | policy + gate done; no Rust code yet |
 | 49 Firefox research (`docs/research/FIREFOX.md`) | done — analysis only, nothing implemented |
-| 50+ | **not yet specified — waiting on the project owner** |
+| 50–52 Brave / Tor Browser / uBlock Origin research | done — analysis + filter-list licence inventory, nothing implemented |
+| 53+ | **not yet specified — waiting on the project owner** |
 
 ## What is real vs. what is documented
 
@@ -56,7 +57,12 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 
 ## Open threads
 
-- Roadmap items 50+ awaited from the project owner.
+- Roadmap items 53+ awaited from the project owner.
+- **Default filter lists are empty** until each list's licence is verified and dated in
+  `docs/privacy/FILTER_LISTS.md` (item 52 rule). This is a deliberate blocker, not an oversight.
+- Research queue, highest value first: CNAME uncloaking · query stripping + debouncing ·
+  letterboxing · referrer/Client-Hints policy · dynamic filtering as a pipeline stage ·
+  "forget about this site" · the blocking-`webRequest` ADR.
 - No Rust module exists yet; first candidate is the filter-list parser (ADR 0004).
 - From item 49, three recorded follow-ups: letterboxing, one "forget about this
   site" action, and an ADR deciding whether extensions keep blocking `webRequest`.

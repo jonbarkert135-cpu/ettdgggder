@@ -47,6 +47,9 @@ is nothing to pin); the checker enforces this.
 - **Trademark:** no Brave naming, no Brave Rewards/BAT, no Brave update or Brave Search endpoints.
 - **Compatibility:** MPL-2.0 file-level copyleft; compatible with our MPL-2.0 overlay and with
   Chromium's BSD base.
+- **Research (item 50):** [`docs/research/BRAVE.md`](research/BRAVE.md) — mechanism-by-mechanism
+  verdicts. MPL is per *file*: a port needs that file's header, a notice row and the upstream
+  commit, never "brave-core is MPL".
 
 ## adblock-rust — `vendored`
 
@@ -75,8 +78,9 @@ is nothing to pin); the checker enforces this.
   (b) reimplementing the documented ABP/uBO filter syntax — this is what Bedrock does, see
   `src_overrides/bedrock/privacy/tracker_blocker/filter_engine.cc`; (c) using `adblock-rust`, which already
   implements that syntax under MPL-2.0.
-- **Filter lists** are separate works with their own licenses (EasyList: CC BY-SA 3.0 / GPL-3.0
-  dual) and are fetched at runtime, never compiled in.
+- **Filter lists** are separate works with their own licenses, one per list — inventoried in
+  [`docs/privacy/FILTER_LISTS.md`](privacy/FILTER_LISTS.md), fetched at runtime, never bundled.
+- **Architecture research (item 52):** [`docs/research/UBLOCK_ORIGIN.md`](research/UBLOCK_ORIGIN.md).
 - **Trademark:** "uBlock Origin" used descriptively only.
 
 ## Privacy Badger — `separate-artifact` ⚠ GPL-3.0
@@ -96,6 +100,8 @@ is nothing to pin); the checker enforces this.
   applied to Chromium. We take **anti-fingerprinting design only** (letterboxing/resolution
   quantisation, timer coarsening, locale/timezone/language normalisation, font enumeration
   limits, uniformity-over-randomisation philosophy) from the public design document.
+- **Research (item 51):** [`docs/research/TOR_BROWSER.md`](research/TOR_BROWSER.md) — including
+  why copying Tor's mitigations does not copy its anonymity set.
 - **Trademark:** the Tor Project restricts the name for modified builds — Bedrock ships **no**
   feature named "Tor". No Tor network integration is bundled.
 

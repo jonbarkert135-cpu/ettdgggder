@@ -4,6 +4,28 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #15 — Roadmap 50–52: Brave, Tor Browser and uBlock Origin research
+Three research documents in `docs/research/` in the item-49 format (mechanism → verdict →
+licence → cost), plus a per-list filter-list licence inventory.
+- **Brave** (`BRAVE.md`): brave-core is MPL-2.0 and MPL is per *file*, so literal reuse is
+  available with a header check, a notice row and the upstream commit — never "brave-core is
+  MPL". Queued: CNAME uncloaking (must use the user's resolver), query stripping + debouncing as
+  one navigation-cleaning stage, referrer and Client-Hints policy, priced language reduction.
+  Refused: everything needing a Brave service, and their list CDN.
+- **Tor Browser** (`TOR_BROWSER.md`): the protection is the crowd, not the code — copying the
+  mitigations does not copy the anonymity set, so the no-anonymity-claim rule stands. Queued:
+  letterboxing, forcing HTTPS-Only inside Tor windows, circuit display, evaluating a
+  JIT-disable control as attack-surface hardening separate from the privacy ladder. Confirmed
+  our SOCKS `CircuitId` shape matches Tor's stream isolation.
+- **uBlock Origin** (`UBLOCK_ORIGIN.md`): GPL-3.0, so syntax and documentation only. Notable:
+  uBO also selects the *rarest* token — the design literature agrees with the item-46
+  measurement. Queued: dynamic filtering as a pipeline stage with a "why blocked" answer,
+  `!#include`/`!#if` in the parser, procedural cosmetics behind a perf budget, our own scriptlets.
+- **`docs/privacy/FILTER_LISTS.md`**: one row per list, because the set is not one licence.
+  A list may not be a *default* until its licence is verified and dated; nothing is default
+  today (design doc 008 reconciled). `scripts/check_provenance.py` now enforces the table and
+  fails if filter-list data is ever committed.
+
 ## PR #14 — Roadmap 47–49: source layout, language policy, Firefox research
 Item 47: `src_overrides/bedrock/` reorganised into the proposed subsystem tree (77 files moved,
 includes and header guards rewritten, zero behaviour change — all 34 tests and 4 harnesses pass

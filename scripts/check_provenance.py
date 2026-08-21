@@ -7,6 +7,7 @@ Enforces docs/LICENSING.md section 7:
   3. GPL-family licenses may only be 'separate-artifact' or 'not-used'
   4. build/chromium.pin is well formed and matches the Chromium inventory row
   5. every patch under patches/upstream/<project>/ maps to a port/patched-base row
+  6. docs/privacy/FILTER_LISTS.md: one licence row per list, defaults verified, none bundled
 """
 
 from __future__ import annotations
@@ -19,6 +20,7 @@ REPO = Path(__file__).resolve().parent.parent
 INVENTORY = REPO / "docs" / "THIRD_PARTY.md"
 NOTICES = REPO / "THIRD_PARTY_NOTICES"
 PIN = REPO / "build" / "chromium.pin"
+FILTER_LISTS = REPO / "docs" / "privacy" / "FILTER_LISTS.md"
 
 MODES = {"patched-base", "port", "vendored", "separate-artifact", "reimplement", "not-used"}
 UNPINNED = {"", "main", "master", "latest", "head", "trunk"}
@@ -120,9 +122,42 @@ def check_upstream_patches(rows: list[dict[str, str]]) -> list[str]:
     return errors
 
 
+def check_filter_lists() -> list[str]:
+    """Filter lists are data with their own licences, one per list (item 52).
+
+    A list is only a default subscription once someone verified its licence, and
+    no list file is ever committed: shipping one distributes it under its terms.
+    """
+    errors: list[str] = []
+    text = FILTER_LISTS.read_text()
+    block = re.search(r"<!-- BEGIN FILTER LISTS -->(.*?)<!-- END FILTER LISTS -->", text, re.S)
+    if not block:
+        return ["docs/privacy/FILTER_LISTS.md: FILTER LISTS markers not found"]
+    rows = 0
+    for line in block.group(1).strip().splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) != 5 or cells[0] == "List" or set(cells[0]) <= set("- "):
+            continue
+        rows += 1
+        name, author, licence, verified, default = cells
+        if not author or not licence:
+            errors.append(f"filter list {name!r}: author and licence are required")
+        if default.lower().startswith("yes") and verified.lower() == "unverified":
+            errors.append(
+                f"filter list {name!r}: default subscription with an unverified licence")
+    if not rows:
+        errors.append("docs/privacy/FILTER_LISTS.md: inventory is empty")
+
+    for path in (REPO / "src_overrides").rglob("*.txt"):
+        head = path.read_text(errors="replace")[:2000]
+        if any(marker in head for marker in ("||", "##", "@@")):
+            errors.append(f"{path.relative_to(REPO)}: filter list data is never committed")
+    return errors
+
+
 def main() -> int:
     rows = parse_inventory()
-    errors = check(rows) + check_pin(rows) + check_upstream_patches(rows)
+    errors = check(rows) + check_pin(rows) + check_upstream_patches(rows) + check_filter_lists()
     if errors:
         print("provenance check FAILED:")
         for error in errors:
@@ -142,6 +177,7 @@ def _selftest() -> None:
     assert any("relicense" in e for e in check([bad_gpl])), "GPL rule not enforced"
     unpinned = dict(good[0], project="X", version="master", notice="chromium.txt")
     assert any("not pinned" in e for e in check([unpinned])), "pin rule not enforced"
+    assert check_filter_lists() == [], "filter list inventory should be clean"
     print("selftest OK")
 
 

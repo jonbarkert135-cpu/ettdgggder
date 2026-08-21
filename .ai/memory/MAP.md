@@ -331,6 +331,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/design/040-knowledge-center.md`](../../docs/design/040-knowledge-center.md) | 040 — Privacy Knowledge Center |
 | [`docs/design/041-open-source.md`](../../docs/design/041-open-source.md) | 041 — Telemetry policy, updates, open source, reproducibility |
 | [`docs/performance/BUDGETS.md`](../../docs/performance/BUDGETS.md) | Performance budgets |
+| [`docs/privacy/FILTER_LISTS.md`](../../docs/privacy/FILTER_LISTS.md) | Filter lists — licences, one per list |
 | [`docs/privacy/fingerprinting/README.md`](../../docs/privacy/fingerprinting/README.md) | Anti-fingerprinting: per-surface documentation |
 | [`docs/privacy/fingerprinting/audio.md`](../../docs/privacy/fingerprinting/audio.md) | Web Audio |
 | [`docs/privacy/fingerprinting/battery.md`](../../docs/privacy/fingerprinting/battery.md) | Battery Status API |
@@ -353,7 +354,10 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/privacy/fingerprinting/user-agent.md`](../../docs/privacy/fingerprinting/user-agent.md) | User-Agent |
 | [`docs/privacy/fingerprinting/webgl.md`](../../docs/privacy/fingerprinting/webgl.md) | WebGL |
 | [`docs/privacy/fingerprinting/webrtc.md`](../../docs/privacy/fingerprinting/webrtc.md) | WebRTC |
+| [`docs/research/BRAVE.md`](../../docs/research/BRAVE.md) | Brave research (brave-core) |
 | [`docs/research/FIREFOX.md`](../../docs/research/FIREFOX.md) | Firefox research |
+| [`docs/research/TOR_BROWSER.md`](../../docs/research/TOR_BROWSER.md) | Tor Browser research |
+| [`docs/research/UBLOCK_ORIGIN.md`](../../docs/research/UBLOCK_ORIGIN.md) | uBlock Origin research |
 | [`docs/security/TESTING.md`](../../docs/security/TESTING.md) | Security testing |
 | [`docs/security/THREAT_MODEL.md`](../../docs/security/THREAT_MODEL.md) | Bedrock Threat Model |
 
