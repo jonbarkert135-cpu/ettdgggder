@@ -111,7 +111,9 @@ The Privacy Engine core: feature registry, the PrivacyPolicy resolver (single so
 
 | File | What it is |
 | --- | --- |
+| `privacy_engine.cc` | implementation |
 | `privacy_engine.h` | The Bedrock Privacy Engine. |
+| `privacy_engine_test.cc` | Host test, no Chromium. |
 | `privacy_policy.cc` | implementation |
 | `privacy_policy.h` | PrivacyPolicy — the single source of truth (roadmap item 25). |
 | `privacy_policy_test.cc` | Host test, no Chromium. |
@@ -226,6 +228,9 @@ Settings surfaces: the Privacy Center dashboard and the privacy configuration (p
 
 | File | What it is |
 | --- | --- |
+| `config_surface.cc` | implementation |
+| `config_surface.h` | The configuration surface (roadmap item 56). |
+| `config_surface_test.cc` | Host test, no Chromium. |
 | `privacy_center.cc` | implementation |
 | `privacy_center.h` | Privacy Center (roadmap item 37). |
 | `privacy_posture.cc` | implementation |
@@ -287,6 +292,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | File | Title |
 | --- | --- |
 | [`docs/BUILD.md`](../../docs/BUILD.md) | Building Bedrock |
+| [`docs/CONFIGURATION.md`](../../docs/CONFIGURATION.md) | Configuration |
 | [`docs/LICENSING.md`](../../docs/LICENSING.md) | Bedrock Browser — Licensing & Provenance Policy |
 | [`docs/REPRODUCIBILITY.md`](../../docs/REPRODUCIBILITY.md) | Reproducible Builds |
 | [`docs/THIRD_PARTY.md`](../../docs/THIRD_PARTY.md) | Bedrock Browser — Third-Party Inventory |
@@ -356,6 +362,8 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/privacy/fingerprinting/webrtc.md`](../../docs/privacy/fingerprinting/webrtc.md) | WebRTC |
 | [`docs/research/BRAVE.md`](../../docs/research/BRAVE.md) | Brave research (brave-core) |
 | [`docs/research/FIREFOX.md`](../../docs/research/FIREFOX.md) | Firefox research |
+| [`docs/research/ORIGIN_TOOLS.md`](../../docs/research/ORIGIN_TOOLS.md) | "Origin Tools" — searched for, not found |
+| [`docs/research/PRIVACY_BADGER.md`](../../docs/research/PRIVACY_BADGER.md) | Privacy Badger research |
 | [`docs/research/TOR_BROWSER.md`](../../docs/research/TOR_BROWSER.md) | Tor Browser research |
 | [`docs/research/UBLOCK_ORIGIN.md`](../../docs/research/UBLOCK_ORIGIN.md) | uBlock Origin research |
 | [`docs/security/TESTING.md`](../../docs/security/TESTING.md) | Security testing |
@@ -367,9 +375,11 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | Script | Enforces |
 | --- | --- |
 | `scripts/check_catalog.py` | Validate the privacy extension catalog. Run: python3 scripts/check_catalog.py |
+| `scripts/check_config_surface.py` | Fail if the configuration surface and its documentation disagree (item 56). |
 | `scripts/check_fp_docs.py` | Every anti-fingerprinting surface must have a documented rationale. |
 | `scripts/check_languages.py` | Fail if the language policy of ADR 0004 is broken. |
 | `scripts/check_memory.py` | Fail if the project memory in `.ai/` is missing, stale or out of sync. |
+| `scripts/check_no_fake_features.py` | Fail if the browser would claim something it does not do (roadmap item 55). |
 | `scripts/check_no_telemetry.py` | Fail if anything that reports home appears in the tree, or if the build |
 | `scripts/check_open_source.py` | Fail if the project calls itself open source without the parts that make the |
 | `scripts/check_perf_claims.py` | Fail if the project makes a performance claim without a number. |

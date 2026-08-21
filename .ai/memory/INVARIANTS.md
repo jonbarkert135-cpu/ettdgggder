@@ -44,3 +44,8 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 29 | A Rust crate enters only through one `src/ffi.rs`, with no `unsafe` elsewhere and a provenance row | `scripts/check_languages.py` |
 | 30 | No filter-list data is ever committed to the tree; lists are fetched at runtime by the user | `scripts/check_provenance.py` |
 | 31 | A filter list becomes a default subscription only with a verified, dated licence row | `scripts/check_provenance.py`, `docs/privacy/FILTER_LISTS.md` |
+| 32 | The UI renders a protection control only for features the browser enforces | `privacy/core/privacy_engine` (`UiRenderableFeatures`), `privacy_engine_test` |
+| 33 | No unprovable claim and no unbacked counter in user-visible copy | `scripts/check_no_fake_features.py` |
+| 34 | Every major control is reachable from GUI, config file, policy and (where useful) CLI, or states why not | `settings/config_surface`, `config_surface_test` |
+| 35 | An unknown switch or invalid value is an error, never silently ignored | `settings/config_surface`, `config_surface_test` |
+| 36 | Every CLI switch is documented, and every documented switch exists | `scripts/check_config_surface.py` |

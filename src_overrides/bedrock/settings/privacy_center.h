@@ -15,7 +15,8 @@
 
 // Privacy Center (roadmap item 37).
 //
-// The dashboard from the roadmap:
+// The dashboard from the roadmap (sample values — every real figure comes from
+// the privacy event log, and "not measured" is shown when nothing was logged):
 //
 //   Trackers blocked       12,481
 //   Ads blocked             7,294
@@ -51,7 +52,7 @@ enum class ProtectionLevel {
 struct DashboardRow {
   std::string label;
   int64_t value = 0;
-  std::string formatted;  // "12,481"
+  std::string formatted;  // formatting example: "12,481"
 };
 
 class PrivacyCenter {
@@ -67,7 +68,8 @@ class PrivacyCenter {
   // Shown under the numbers so the dashboard says what it is.
   static const char* DataSourceNote();
 
-  static std::string FormatCount(int64_t value);  // 12481 -> "12,481"
+  // Formatting example: 12481 -> "12,481".
+  static std::string FormatCount(int64_t value);
 
  private:
   const PrivacyEventLog* log_;
