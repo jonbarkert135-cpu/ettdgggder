@@ -1,7 +1,7 @@
 # 010 — Anti-fingerprinting
 
 **Roadmap items 9 and 10.** Status: policy matrix, deterministic derivation and the per-surface
-docs landed (`src_overrides/bedrock/privacy/fingerprint_policy.{h,cc}`, `docs/privacy/fingerprinting/`).
+docs landed (`src_overrides/bedrock/privacy/fingerprinting/fingerprint_policy.{h,cc}`, `docs/privacy/fingerprinting/`).
 
 ## The two schools, and what we actually took
 

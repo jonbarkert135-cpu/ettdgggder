@@ -1,7 +1,7 @@
 # 014 — Behavioral tracker detection
 
 **Roadmap item 14.** Status: landed and host-tested
-(`src_overrides/bedrock/blocking/tracker_heuristic.{h,cc}`).
+(`src_overrides/bedrock/privacy/tracker_blocker/tracker_heuristic.{h,cc}`).
 
 ## The idea we studied
 

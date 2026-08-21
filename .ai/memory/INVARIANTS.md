@@ -38,3 +38,7 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 23 | Docs separate "runs in CI now" from "needs a real build" — no pretending | `docs/security/TESTING.md` |
 | 24 | New code directory ⇒ entry in `.ai/memory/modules.json` | `scripts/check_memory.py` |
 | 25 | Any change to code, docs or gates ⇒ project memory updated in the same PR | `scripts/check_memory.py` |
+| 26 | Include paths and header guards follow the file's path (ADR 0003) | review; guards are path-derived |
+| 27 | No Electron and no shipped Node/Python runtime | `scripts/check_languages.py` |
+| 28 | Web languages only in WebUI directories; no privacy decision is made in TypeScript | `scripts/check_languages.py` |
+| 29 | A Rust crate enters only through one `src/ffi.rs`, with no `unsafe` elsewhere and a provenance row | `scripts/check_languages.py` |

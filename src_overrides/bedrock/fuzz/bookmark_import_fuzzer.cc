@@ -11,7 +11,7 @@
 
 #include <string>
 
-#include "bedrock/data/bookmark_store.h"
+#include "bedrock/bookmarks/bookmark_store.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   const std::string html(reinterpret_cast<const char*>(data), size);

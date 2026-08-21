@@ -1,7 +1,7 @@
 # 008 — Privacy Engine
 
 **Roadmap item 8.** Status: architecture + feature registry landed
-(`src_overrides/bedrock/privacy/privacy_engine.h`).
+(`src_overrides/bedrock/privacy/core/privacy_engine.h`).
 
 ## The rule that shapes everything
 

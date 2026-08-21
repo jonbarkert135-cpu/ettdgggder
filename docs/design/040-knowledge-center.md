@@ -1,8 +1,8 @@
 # 040 — Privacy Knowledge Center
 
 **PrivacyTools.io brief items 6–11, 14–19.** Status: landed and host-tested
-(`src_overrides/bedrock/knowledge/knowledge_base.{h,cc}`,
-`src_overrides/bedrock/stats/privacy_posture.{h,cc}`).
+(`src_overrides/bedrock/settings/knowledge/knowledge_base.{h,cc}`,
+`src_overrides/bedrock/settings/privacy_posture.{h,cc}`).
 
 22 categories, from Privacy Basics to Travel Privacy, each with a stable name.
 

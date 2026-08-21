@@ -1,7 +1,7 @@
 # 022 — New Identity
 
 **Roadmap item 22.** Status: landed and host-tested
-(`src_overrides/bedrock/session/new_identity.{h,cc}`).
+(`src_overrides/bedrock/profiles/new_identity.{h,cc}`).
 
 ## Shown before, not after
 

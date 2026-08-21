@@ -73,7 +73,7 @@ is nothing to pin); the checker enforces this.
   binary. See `docs/LICENSING.md` §3.
 - **What is allowed instead:** (a) supporting uBO as a user-installed WebExtension (aggregation);
   (b) reimplementing the documented ABP/uBO filter syntax — this is what Bedrock does, see
-  `src_overrides/bedrock/blocking/filter_engine.cc`; (c) using `adblock-rust`, which already
+  `src_overrides/bedrock/privacy/tracker_blocker/filter_engine.cc`; (c) using `adblock-rust`, which already
   implements that syntax under MPL-2.0.
 - **Filter lists** are separate works with their own licenses (EasyList: CC BY-SA 3.0 / GPL-3.0
   dual) and are fetched at runtime, never compiled in.
@@ -106,13 +106,19 @@ is nothing to pin); the checker enforces this.
   isolation, Enhanced Tracking Protection tiering, container-style profile separation). Gecko code
   is not portable to Chromium; if any MPL-2.0 file were ever ported it would move to reuse mode
   `port` with a pinned revision.
+- **Research (item 49):** the mechanism-by-mechanism analysis — what is portable, what is idea
+  only, what is refused — is in [`docs/research/FIREFOX.md`](research/FIREFOX.md). Two things it
+  settles: mozilla-central is predominantly MPL-2.0 so *file-level* reuse with attribution is
+  legally possible (unlike uBO / Privacy Badger), while vendored dependencies inside that tree
+  carry their own licences and are checked per file; and Firefox's tracking-protection **list
+  data** is not ours to ship.
 
 ## PrivacyTools.io — `vendored`
 
 - **Copyright:** © 2026 PrivacyTools.io.
 - **What we use:** their *recommendations and reference metadata* — which extensions they list,
   the threat-level concept, and links to their guides. Curated into
-  `src_overrides/bedrock/catalog/bedrock_privacy_catalog.json`. No article text is copied into
+  `src_overrides/bedrock/extensions/catalog/bedrock_privacy_catalog.json`. No article text is copied into
   the browser; external material is shown as a link card (`docs/design/040`).
 - **Attribution:** required. The VERNAM License is permissive (a WTFPL derivative) with one
   binding condition: a clear, visible, working credit link back to https://www.privacytools.io

@@ -1,7 +1,7 @@
 # 013 — One blocking pipeline
 
 **Roadmap item 13.** Status: landed and host-tested
-(`src_overrides/bedrock/blocking/blocking_pipeline.{h,cc}`).
+(`src_overrides/bedrock/privacy/tracker_blocker/blocking_pipeline.{h,cc}`).
 
 ## The rule
 

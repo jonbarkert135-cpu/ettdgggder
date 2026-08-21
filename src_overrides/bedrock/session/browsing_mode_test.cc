@@ -12,7 +12,7 @@
 #include <set>
 #include <string>
 
-#include "bedrock/session/new_identity.h"
+#include "bedrock/profiles/new_identity.h"
 
 namespace {
 

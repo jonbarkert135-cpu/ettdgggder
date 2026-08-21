@@ -1,7 +1,7 @@
 # 011 — Protection Controller (shields)
 
 **Roadmap item 11.** Status: resolver landed and host-tested
-(`src_overrides/bedrock/privacy/protection_controller.{h,cc}`).
+(`src_overrides/bedrock/privacy/core/protection_controller.{h,cc}`).
 
 ## What we studied
 

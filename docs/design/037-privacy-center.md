@@ -1,7 +1,7 @@
 # 037 — Privacy Center
 
 **Roadmap item 37.** Status: landed and host-tested
-(`src_overrides/bedrock/stats/{privacy_event_log,privacy_center}.{h,cc}`).
+(`src_overrides/bedrock/privacy/stats/privacy_event_log.{h,cc}`, `bedrock/settings/privacy_center.{h,cc}`).
 
 ```
 PRIVACY CENTER

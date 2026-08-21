@@ -1,7 +1,7 @@
 # 016 — HTTPS
 
 **Roadmap item 16.** Status: landed and host-tested
-(`src_overrides/bedrock/net/https_policy.{h,cc}`).
+(`src_overrides/bedrock/privacy/network/https_policy.{h,cc}`).
 
 ## Two rules
 

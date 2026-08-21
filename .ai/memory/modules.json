@@ -1,14 +1,8 @@
 {
-  "_comment": "One-line summary per code directory. Required by scripts/check_memory.py: a new directory under src_overrides/bedrock/ fails CI until it is described here. Consumed by scripts/gen_memory.py to build MAP.md.",
+  "_comment": "One-line summary per source directory (paths relative to src_overrides/bedrock/, nested since ADR 0003). Required by scripts/check_memory.py: a new directory fails CI until it is described here. Consumed by scripts/gen_memory.py to build MAP.md.",
   "modules": {
-    "blocking": {
-      "summary": "Content blocking: ABP/uBO-syntax filter engine (independently implemented, rarest-token index), the behavioral Privacy-Badger-style heuristic, and the single `BlockingPipeline::Evaluate()` that every request goes through. Items 12-14."
-    },
-    "catalog": {
-      "summary": "Curated privacy-extension catalog (JSON data + validator) and the recommendation engine whose job is to say no. PrivacyTools.io brief."
-    },
-    "data": {
-      "summary": "History and bookmarks stores. History's hard requirement is deletion that also removes derived ranking data. Item 35."
+    "bookmarks": {
+      "summary": "Bookmark store: folders and tags together, search over title, URL and tags. Item 35. Mirrors Chromium's components/bookmarks placement."
     },
     "devtools": {
       "summary": "Added DevTools privacy panels. Rule zero: never break an upstream Chromium panel. Item 36."
@@ -19,14 +13,14 @@
     "extensions": {
       "summary": "Chromium-compatible extension API plus generated capability disclosure; an update can never grow an extension's powers. Item 23."
     },
+    "extensions/catalog": {
+      "summary": "Curated privacy-extension catalog (JSON data + validator) and the recommendation engine whose job is to say no. PrivacyTools.io brief."
+    },
     "fuzz": {
       "summary": "libFuzzer harnesses for every untrusted-input entry point, each also built as a deterministic CI smoke run via -DBEDROCK_FUZZ_SMOKE. Item 43."
     },
-    "knowledge": {
-      "summary": "Privacy Knowledge Center: native offline articles (layer A) kept separate from externally licensed material (layer B) for licensing reasons."
-    },
-    "net": {
-      "summary": "Network privacy: DNS settings (named resolvers, fail-closed strict mode), HTTPS policy, StorageKey isolation for every backend, WebRTC IP exposure modes. Items 15-18."
+    "history": {
+      "summary": "History store whose hard requirement is deletion: removing an entry removes the derived ranking data too. Item 35."
     },
     "omnibox": {
       "summary": "Omnibox input classification only — Chromium's own providers still rank bookmarks, history and tabs. Item 7."
@@ -37,26 +31,53 @@
     "perf": {
       "summary": "Performance budgets measured on every commit; unmeasurable budgets are marked pending instead of claimed. Item 46."
     },
-    "privacy": {
-      "summary": "The Privacy Engine: feature registry, anti-fingerprinting policy and deterministic derivation, per-site Protection Controller, the PrivacyPolicy resolver (single source of truth for ten layers), security-level presets, zero-telemetry policy. Items 8-11, 25, 39, 45."
+    "privacy/core": {
+      "summary": "The Privacy Engine core: feature registry, the PrivacyPolicy resolver (single source of truth for ten layers), per-site Protection Controller, security-level presets, zero-telemetry policy. Items 8, 11, 25, 39, 45."
+    },
+    "privacy/fingerprinting": {
+      "summary": "Anti-fingerprinting policy and deterministic value derivation: normalize first, never random per call, 21 documented surfaces. Items 9-10."
+    },
+    "privacy/network": {
+      "summary": "Network privacy: DNS settings (named resolvers, fail-closed strict mode), HTTPS upgrading and per-host certificate exceptions, WebRTC IP exposure modes. Items 16-18."
+    },
+    "privacy/security": {
+      "summary": "Security baseline audit: forbidden Chromium-weakening switches are rejected in tests, so privacy work cannot ship a less safe browser. Item 24."
+    },
+    "privacy/stats": {
+      "summary": "The one privacy event log feeding DevTools panels, Privacy Center and the per-site shield, so the numbers cannot disagree. Items 36-38."
+    },
+    "privacy/storage": {
+      "summary": "Cookie and storage isolation: one StorageKey decides where every backend reads and writes, cache, DNS and HSTS included. Item 15."
+    },
+    "privacy/tracker_blocker": {
+      "summary": "Content blocking: ABP/uBO-syntax filter engine (independently implemented, rarest-token index), the behavioral Privacy-Badger-style heuristic, and the single BlockingPipeline::Evaluate() every request goes through. Items 12-14."
+    },
+    "profiles": {
+      "summary": "Profiles, which share nothing by default, and New Identity — the controlled session reset that also states what it does not erase. Items 21-22."
     },
     "search": {
       "summary": "Search engine selection per context (default / private / Tor), pure logic feeding TemplateURLService. Item 6."
     },
-    "security": {
-      "summary": "Security baseline audit: forbidden Chromium-weakening switches are rejected in tests, so privacy work cannot ship a less safe browser. Item 24."
-    },
     "session": {
-      "summary": "Browsing modes (Normal / Private / Tor transport), profiles, workspaces, and New Identity with its honest what-is-not-reset list. Items 19-22, 32."
+      "summary": "Browsing modes: Normal, Private and the optional Tor transport with circuit isolation. Tor lives here rather than in its own tree because it is a transport, not a subsystem. Items 19-20."
     },
-    "stats": {
-      "summary": "One privacy event log feeding all three surfaces (DevTools panels, Privacy Center, per-site shield) plus the posture view, so the numbers cannot disagree. Items 36-38."
+    "settings": {
+      "summary": "Settings surfaces: the Privacy Center dashboard and the privacy configuration (posture) view. Item 37, brief item 19."
+    },
+    "settings/knowledge": {
+      "summary": "Privacy Knowledge Center: native offline articles (layer A) kept separate from externally licensed material (layer B) for licensing reasons."
+    },
+    "themes": {
+      "summary": "Theme engine: 5 modes, 14 live properties, contrast validation, and no 'restart required' apply kind. Items 27-29."
     },
     "ui": {
-      "summary": "Theme engine with live application (no 'restart required'), tab model with two layouts, sidebar, per-site privacy panel. Items 27-31, 38."
+      "summary": "Browser UI surfaces: tab model with two layouts, optional sidebar, per-site privacy panel. Items 30-31, 38."
     },
-    "update": {
+    "updater": {
       "summary": "Provider-agnostic update system: signature-verified, works without any project-run infrastructure. Item 40."
+    },
+    "workspaces": {
+      "summary": "Workspaces: named sets of tabs and visual settings inside one profile — an organisational boundary, never a privacy boundary. Item 32."
     }
   }
 }

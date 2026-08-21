@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "bedrock/privacy/protection_controller.h"
-#include "bedrock/stats/privacy_event_log.h"
+#include "bedrock/privacy/core/protection_controller.h"
+#include "bedrock/privacy/stats/privacy_event_log.h"
 
 // Per-site privacy panel — the Privacy Shield popup (roadmap item 38).
 //

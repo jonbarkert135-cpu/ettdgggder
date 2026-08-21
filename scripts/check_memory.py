@@ -65,12 +65,12 @@ def check_files(errors: list[str]) -> None:
 
 
 def check_modules(errors: list[str]) -> None:
+    import gen_memory
+
     described = json.loads(read(f"{MEMORY_DIR}/modules.json"))["modules"]
     base = os.path.join(ROOT, CODE_ROOT)
-    for name in sorted(os.listdir(base)):
+    for name in gen_memory.module_dirs():
         path = os.path.join(base, name)
-        if not os.path.isdir(path) or name.startswith("."):
-            continue
         summary = described.get(name, {}).get("summary", "").strip()
         if not summary:
             errors.append(

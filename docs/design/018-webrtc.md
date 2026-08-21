@@ -1,7 +1,7 @@
 # 018 — WebRTC
 
 **Roadmap item 18.** Status: landed and host-tested
-(`src_overrides/bedrock/net/webrtc_policy.{h,cc}`).
+(`src_overrides/bedrock/privacy/network/webrtc_policy.{h,cc}`).
 
 ## The problem
 

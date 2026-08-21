@@ -33,15 +33,15 @@ REQUIRED = {
 # no source in the tree means the open-source claim is false.
 CRITICAL_COMPONENTS = {
     "privacy engine": "src_overrides/bedrock/privacy",
-    "content blocker": "src_overrides/bedrock/blocking",
-    "network policy": "src_overrides/bedrock/net",
-    "sessions and profiles": "src_overrides/bedrock/session",
+    "content blocker": "src_overrides/bedrock/privacy/tracker_blocker",
+    "network policy": "src_overrides/bedrock/privacy/network",
+    "sessions and profiles": "src_overrides/bedrock/profiles",
     "passwords": "src_overrides/bedrock/passwords",
     "extensions": "src_overrides/bedrock/extensions",
-    "update system": "src_overrides/bedrock/update",
+    "update system": "src_overrides/bedrock/updater",
     "user interface": "src_overrides/bedrock/ui",
-    "extension catalog": "src_overrides/bedrock/catalog",
-    "knowledge base": "src_overrides/bedrock/knowledge",
+    "extension catalog": "src_overrides/bedrock/extensions/catalog",
+    "knowledge base": "src_overrides/bedrock/settings/knowledge",
     "build configuration": "build/args",
 }
 
