@@ -13,4 +13,6 @@ for test in src_overrides/bedrock/**/*_test.cc; do
   g++ -std=c++17 -Wall -Wextra -Werror -I src_overrides "$test" "$src" -o "$out/$name"
   "$out/$name" || status=1
 done
+python3 scripts/check_fp_docs.py || status=1
+
 exit $status
