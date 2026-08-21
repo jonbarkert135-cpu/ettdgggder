@@ -80,7 +80,7 @@
       "summary": "String catalog: every user-visible string by id, four complete locales, named placeholders and CLDR plurals. Item 61."
     },
     "updater": {
-      "summary": "Provider-agnostic update system: signature-verified, works without any project-run infrastructure. Item 40."
+      "summary": "Update system and release policy: provider-agnostic signature-verified updates (item 40); security updates always outrank features, with deadlines by severity (items 66, 69)."
     },
     "workspaces": {
       "summary": "Workspaces: named sets of tabs and visual settings inside one profile — an organisational boundary, never a privacy boundary. Item 32."

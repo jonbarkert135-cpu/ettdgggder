@@ -11,3 +11,5 @@ Applied by `build/sync.py` in sorted path order against the pinned Chromium tree
 Prefer a file in `src_overrides/` (mirrors the Chromium tree layout, symlinked in) over a
 patch when you are adding a new file rather than changing an existing one — new files do not
 conflict on Chromium rolls, patches do.
+
+Full rules, required header fields and the audit commands: [../docs/PATCHES.md](../docs/PATCHES.md).
