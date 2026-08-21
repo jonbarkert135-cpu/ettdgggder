@@ -1,0 +1,62 @@
+{
+  "_comment": "One-line summary per code directory. Required by scripts/check_memory.py: a new directory under src_overrides/bedrock/ fails CI until it is described here. Consumed by scripts/gen_memory.py to build MAP.md.",
+  "modules": {
+    "blocking": {
+      "summary": "Content blocking: ABP/uBO-syntax filter engine (independently implemented, rarest-token index), the behavioral Privacy-Badger-style heuristic, and the single `BlockingPipeline::Evaluate()` that every request goes through. Items 12-14."
+    },
+    "catalog": {
+      "summary": "Curated privacy-extension catalog (JSON data + validator) and the recommendation engine whose job is to say no. PrivacyTools.io brief."
+    },
+    "data": {
+      "summary": "History and bookmarks stores. History's hard requirement is deletion that also removes derived ranking data. Item 35."
+    },
+    "devtools": {
+      "summary": "Added DevTools privacy panels. Rule zero: never break an upstream Chromium panel. Item 36."
+    },
+    "downloads": {
+      "summary": "Download manager: honest pause/resume derived from Accept-Ranges, attacker-chosen names and MIME types treated as untrusted. Item 33."
+    },
+    "extensions": {
+      "summary": "Chromium-compatible extension API plus generated capability disclosure; an update can never grow an extension's powers. Item 23."
+    },
+    "fuzz": {
+      "summary": "libFuzzer harnesses for every untrusted-input entry point, each also built as a deterministic CI smoke run via -DBEDROCK_FUZZ_SMOKE. Item 43."
+    },
+    "knowledge": {
+      "summary": "Privacy Knowledge Center: native offline articles (layer A) kept separate from externally licensed material (layer B) for licensing reasons."
+    },
+    "net": {
+      "summary": "Network privacy: DNS settings (named resolvers, fail-closed strict mode), HTTPS policy, StorageKey isolation for every backend, WebRTC IP exposure modes. Items 15-18."
+    },
+    "omnibox": {
+      "summary": "Omnibox input classification only — Chromium's own providers still rank bookmarks, history and tabs. Item 7."
+    },
+    "passwords": {
+      "summary": "Local password store, platform keystore encryption, no sync and no server. Item 34."
+    },
+    "perf": {
+      "summary": "Performance budgets measured on every commit; unmeasurable budgets are marked pending instead of claimed. Item 46."
+    },
+    "privacy": {
+      "summary": "The Privacy Engine: feature registry, anti-fingerprinting policy and deterministic derivation, per-site Protection Controller, the PrivacyPolicy resolver (single source of truth for ten layers), security-level presets, zero-telemetry policy. Items 8-11, 25, 39, 45."
+    },
+    "search": {
+      "summary": "Search engine selection per context (default / private / Tor), pure logic feeding TemplateURLService. Item 6."
+    },
+    "security": {
+      "summary": "Security baseline audit: forbidden Chromium-weakening switches are rejected in tests, so privacy work cannot ship a less safe browser. Item 24."
+    },
+    "session": {
+      "summary": "Browsing modes (Normal / Private / Tor transport), profiles, workspaces, and New Identity with its honest what-is-not-reset list. Items 19-22, 32."
+    },
+    "stats": {
+      "summary": "One privacy event log feeding all three surfaces (DevTools panels, Privacy Center, per-site shield) plus the posture view, so the numbers cannot disagree. Items 36-38."
+    },
+    "ui": {
+      "summary": "Theme engine with live application (no 'restart required'), tab model with two layouts, sidebar, per-site privacy panel. Items 27-31, 38."
+    },
+    "update": {
+      "summary": "Provider-agnostic update system: signature-verified, works without any project-run infrastructure. Item 40."
+    }
+  }
+}
