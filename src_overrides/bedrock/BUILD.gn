@@ -42,8 +42,28 @@ source_set("extensions") {
   ]
 }
 
+source_set("stats") {
+  sources = [
+    "stats/privacy_center.cc",
+    "stats/privacy_center.h",
+    "stats/privacy_event_log.cc",
+    "stats/privacy_event_log.h",
+  ]
+  deps = [ ":privacy" ]
+}
+
+source_set("devtools") {
+  sources = [
+    "devtools/privacy_devtools.cc",
+    "devtools/privacy_devtools.h",
+  ]
+  deps = [ ":stats" ]
+}
+
 source_set("ui") {
   sources = [
+    "ui/site_privacy_panel.cc",
+    "ui/site_privacy_panel.h",
     "ui/sidebar.cc",
     "ui/sidebar.h",
     "ui/tab_model.cc",
