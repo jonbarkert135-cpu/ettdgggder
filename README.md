@@ -75,6 +75,10 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 20 Private window | one teardown path, shared with New Identity |
 | 21 Profiles | Personal/Work/School/Temporary/Custom, nothing shared |
 | 22 New Identity | plan shown up front, partial results reported honestly |
+| 23 Extensions | Chromium-compatible API, generated disclosure, updates cannot grow powers |
+| 24 Security baseline | audited in tests; forbidden switches rejected |
+| 25 PrivacyPolicy | one resolver for all ten layers, 84 combinations checked for conflicts |
+| 26 Visual language | design tokens + self-contained window mockup |
 | Extension catalog | designed ([009](docs/design/009-extension-catalog.md)) |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host

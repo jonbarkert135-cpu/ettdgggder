@@ -20,6 +20,35 @@ source_set("search") {
   ]
 }
 
+# The cross-layer resolver sits above every policy component, so it lives in
+# its own target: putting it in ":privacy" would make privacy depend on
+# session, which depends on privacy.
+source_set("policy") {
+  sources = [
+    "privacy/privacy_policy.cc",
+    "privacy/privacy_policy.h",
+  ]
+  deps = [
+    ":net",
+    ":privacy",
+    ":session",
+  ]
+}
+
+source_set("extensions") {
+  sources = [
+    "extensions/extension_registry.cc",
+    "extensions/extension_registry.h",
+  ]
+}
+
+source_set("security") {
+  sources = [
+    "security/security_baseline.cc",
+    "security/security_baseline.h",
+  ]
+}
+
 source_set("session") {
   sources = [
     "session/browsing_mode.cc",
