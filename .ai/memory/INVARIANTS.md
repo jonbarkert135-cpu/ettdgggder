@@ -49,3 +49,10 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 34 | Every major control is reachable from GUI, config file, policy and (where useful) CLI, or states why not | `settings/config_surface`, `config_surface_test` |
 | 35 | An unknown switch or invalid value is an error, never silently ignored | `settings/config_surface`, `config_surface_test` |
 | 36 | Every CLI switch is documented, and every documented switch exists | `scripts/check_config_surface.py` |
+| 37 | No advanced setting or policy can disable cert validation, the sandbox or site isolation | `settings/advanced_settings` (G9), `advanced_settings_test` |
+| 38 | An advanced input is accepted, warned about, or refused with a reason — never silently dropped | `settings/advanced_settings`, `advanced_settings_test` |
+| 39 | Every reset action states what it does *not* touch, and irreversible ones need the profile name typed | `settings/reset_controls`, `reset_controls_test` |
+| 40 | An import can lower privilege but never raise it; a newer file version is refused, not half-read | `settings/portability`, `portability_test` |
+| 41 | Exports carry no secrets unless explicitly requested and encrypted, and never third-party list contents | `settings/portability`, `docs/FORMATS.md` |
+| 42 | Every Bedrock control has a keyboard path and an accessible name | `ui/accessibility`, `accessibility_test`, `scripts/check_ui_style.py` |
+| 43 | A destructive dialog is an alertdialog that opens focused on the safe choice | `ui/accessibility` (`ContractFor`), `accessibility_test` |

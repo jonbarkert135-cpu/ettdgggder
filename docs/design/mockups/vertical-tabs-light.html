@@ -91,48 +91,55 @@
   .caption{display:flex;justify-content:space-between;margin-top:16px;font-size:12px;
            color:#8A8177}
   .caption b{color:#5C554D;font-weight:500}
+  /* Item 60: real controls, so the keyboard and the accessibility tree get them
+     for free. The reset keeps a <button> looking like the mockup's chrome. */
+  button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;
+         text-align:inherit;cursor:pointer;-webkit-appearance:none}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+  @media (prefers-reduced-motion: reduce){
+    *{transition-duration:0ms !important;animation-duration:0ms !important}}
 </style></head><body><div class="frame">
   <div class="window">
     <div class="rail">
-      <div class="i on">▤</div><div class="i">⌚</div><div class="i">⤓</div>
-      <div class="i">▦</div><div class="i">✎</div><div class="sp"></div>
-      <div class="i">⚙</div>
+      <button class="i on" type="button" aria-label="Bookmarks">▤</button><button class="i" type="button" aria-label="History">⌚</button><button class="i" type="button" aria-label="Downloads">⤓</button>
+      <button class="i" type="button" aria-label="Workspaces">▦</button><button class="i" type="button" aria-label="Notes">✎</button><div class="sp"></div>
+      <button class="i" type="button" aria-label="Settings">⚙</button>
     </div>
 
     <div class="side">
       <h2>Bookmarks</h2>
-      <div class="item"><i class="sq"></i>Reading queue</div>
-      <div class="item"><i class="sq"></i>Chromium docs</div>
-      <div class="item"><i class="sq"></i>Filter list syntax</div>
-      <div class="item"><i class="sq"></i>WCAG contrast</div>
+      <button class="item" type="button"><i class="sq" aria-hidden="true"></i>Reading queue</button>
+      <button class="item" type="button"><i class="sq" aria-hidden="true"></i>Chromium docs</button>
+      <button class="item" type="button"><i class="sq" aria-hidden="true"></i>Filter list syntax</button>
+      <button class="item" type="button"><i class="sq" aria-hidden="true"></i>WCAG contrast</button>
       <div class="sec"></div>
       <h2>Workspace · Bedrock</h2>
-      <div class="item"><i class="sq"></i>Roadmap 27–31</div>
-      <div class="item"><i class="sq"></i>Design tokens</div>
-      <div class="item"><i class="sq"></i>Host tests</div>
+      <button class="item" type="button"><i class="sq" aria-hidden="true"></i>Roadmap 27–31</button>
+      <button class="item" type="button"><i class="sq" aria-hidden="true"></i>Design tokens</button>
+      <button class="item" type="button"><i class="sq" aria-hidden="true"></i>Host tests</button>
     </div>
 
     <div class="tabcol">
-      <div class="tsearch">⌕ Search tabs<span style="margin-left:auto">⌘K</span></div>
+      <button class="tsearch" type="button">⌕ Search tabs<span style="margin-left:auto">⌘K</span></button>
       <div class="pin">
         <div class="p"><b></b></div><div class="p"><b></b></div><div class="p"><b></b></div>
       </div>
-      <div class="grp"><i class="d"></i>Work</div>
-      <div class="t on"><i class="fav"></i>Theme engine — design</div>
-      <div class="t"><i class="fav"></i>Tab model notes</div>
-      <div class="t"><i class="fav"></i>Sidebar panels<span class="mute">muted</span></div>
+      <div class="grp"><i class="d" aria-hidden="true"></i>Work</div>
+      <button class="t on" type="button" role="tab"><i class="fav" aria-hidden="true"></i>Theme engine — design</button>
+      <button class="t" type="button" role="tab"><i class="fav" aria-hidden="true"></i>Tab model notes</button>
+      <button class="t" type="button" role="tab"><i class="fav" aria-hidden="true"></i>Sidebar panels<span class="mute">muted</span></button>
       <div class="grp">Reading</div>
-      <div class="t sleep"><i class="fav"></i>Long article<span class="mute">asleep</span></div>
-      <div class="t sleep"><i class="fav"></i>Another long read<span class="mute">asleep</span></div>
-      <div class="t"><i class="fav"></i>Duplicate: Long article</div>
+      <button class="t sleep" type="button" role="tab"><i class="fav" aria-hidden="true"></i>Long article<span class="mute">asleep</span></button>
+      <button class="t sleep" type="button" role="tab"><i class="fav" aria-hidden="true"></i>Another long read<span class="mute">asleep</span></button>
+      <button class="t" type="button" role="tab"><i class="fav" aria-hidden="true"></i>Duplicate: Long article</button>
     </div>
 
     <div class="main">
       <div class="bar">
-        <div class="ic">←</div><div class="ic">→</div><div class="ic">⟳</div>
+        <button class="ic" type="button" aria-label="Back">←</button><button class="ic" type="button" aria-label="Forward">→</button><button class="ic" type="button" aria-label="Reload">⟳</button>
         <div class="omni"><span class="lock">▲</span>docs.test<span class="p">/theme/engine</span>
           <span class="chip">6 blocked</span></div>
-        <div class="ic">☰</div>
+        <button class="ic" type="button" aria-label="Main menu">☰</button>
       </div>
       <div class="content">
         <h1>Vertical tabs, sidebar on, compact density</h1>

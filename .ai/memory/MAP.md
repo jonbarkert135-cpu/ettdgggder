@@ -228,14 +228,23 @@ Settings surfaces: the Privacy Center dashboard and the privacy configuration (p
 
 | File | What it is |
 | --- | --- |
+| `advanced_settings.cc` | implementation |
+| `advanced_settings.h` | Advanced / enterprise controls (roadmap item 57). |
+| `advanced_settings_test.cc` | The interesting property of an advanced settings surface is not what it allows — it is what it refuses while an administrator is holding it wrong. |
 | `config_surface.cc` | implementation |
 | `config_surface.h` | The configuration surface (roadmap item 56). |
 | `config_surface_test.cc` | Host test, no Chromium. |
+| `portability.cc` | implementation |
+| `portability.h` | Import and export (roadmap item 59). |
+| `portability_test.cc` | An importer is a parser for hostile input that arrives wearing the user's trust. |
 | `privacy_center.cc` | implementation |
 | `privacy_center.h` | Privacy Center (roadmap item 37). |
 | `privacy_posture.cc` | implementation |
 | `privacy_posture.h` | Privacy configuration view (brief item 19). |
 | `privacy_posture_test.cc` | Host test, no Chromium. |
+| `reset_controls.cc` | implementation |
+| `reset_controls.h` | Reset and recovery (roadmap item 58). |
+| `reset_controls_test.cc` | — |
 
 ### `src_overrides/bedrock/settings/knowledge/`
 Privacy Knowledge Center: native offline articles (layer A) kept separate from externally licensed material (layer B) for licensing reasons.
@@ -260,6 +269,9 @@ Browser UI surfaces: tab model with two layouts, optional sidebar, per-site priv
 
 | File | What it is |
 | --- | --- |
+| `accessibility.cc` | implementation |
+| `accessibility.h` | Accessibility (roadmap item 60). |
+| `accessibility_test.cc` | An icon is not a name: names are words, so they contain a letter. |
 | `sidebar.cc` | implementation |
 | `sidebar.h` | Sidebar (roadmap item 31). |
 | `sidebar_test.cc` | Host test, no Chromium. |
@@ -291,8 +303,10 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 ## Docs
 | File | Title |
 | --- | --- |
+| [`docs/ACCESSIBILITY.md`](../../docs/ACCESSIBILITY.md) | Accessibility |
 | [`docs/BUILD.md`](../../docs/BUILD.md) | Building Bedrock |
 | [`docs/CONFIGURATION.md`](../../docs/CONFIGURATION.md) | Configuration |
+| [`docs/FORMATS.md`](../../docs/FORMATS.md) | Import and export formats |
 | [`docs/LICENSING.md`](../../docs/LICENSING.md) | Bedrock Browser — Licensing & Provenance Policy |
 | [`docs/REPRODUCIBILITY.md`](../../docs/REPRODUCIBILITY.md) | Reproducible Builds |
 | [`docs/THIRD_PARTY.md`](../../docs/THIRD_PARTY.md) | Bedrock Browser — Third-Party Inventory |
