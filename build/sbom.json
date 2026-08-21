@@ -1,0 +1,280 @@
+{
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://chromium.googlesource.com/chromium/src"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "BSD-3-Clause"
+          }
+        }
+      ],
+      "name": "Chromium",
+      "properties": [
+        {
+          "name": "bedrock:reuse_mode",
+          "value": "patched-base"
+        },
+        {
+          "name": "bedrock:notice",
+          "value": "THIRD_PARTY_NOTICES/chromium.txt"
+        }
+      ],
+      "type": "library",
+      "version": "151.0.7922.173"
+    },
+    {
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/brave/brave-core"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "MPL-2.0"
+          }
+        }
+      ],
+      "name": "brave-core",
+      "properties": [
+        {
+          "name": "bedrock:reuse_mode",
+          "value": "port"
+        },
+        {
+          "name": "bedrock:notice",
+          "value": "THIRD_PARTY_NOTICES/brave-core.txt"
+        }
+      ],
+      "type": "library",
+      "version": "v1.96.5"
+    },
+    {
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/brave/adblock-rust"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "MPL-2.0"
+          }
+        }
+      ],
+      "name": "adblock-rust",
+      "properties": [
+        {
+          "name": "bedrock:reuse_mode",
+          "value": "vendored"
+        },
+        {
+          "name": "bedrock:notice",
+          "value": "THIRD_PARTY_NOTICES/adblock-rust.txt"
+        }
+      ],
+      "type": "library",
+      "version": "v0.13.3"
+    },
+    {
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/ungoogled-software/ungoogled-chromium"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "BSD-3-Clause"
+          }
+        }
+      ],
+      "name": "ungoogled-chromium",
+      "properties": [
+        {
+          "name": "bedrock:reuse_mode",
+          "value": "port"
+        },
+        {
+          "name": "bedrock:notice",
+          "value": "THIRD_PARTY_NOTICES/ungoogled-chromium.txt"
+        }
+      ],
+      "type": "library",
+      "version": "151.0.7922.169-1"
+    },
+    {
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/gorhill/uBlock"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "GPL-3.0-or-later"
+          }
+        }
+      ],
+      "name": "uBlock Origin",
+      "properties": [
+        {
+          "name": "bedrock:reuse_mode",
+          "value": "separate-artifact"
+        },
+        {
+          "name": "bedrock:notice",
+          "value": "THIRD_PARTY_NOTICES/ublock-origin.txt"
+        }
+      ],
+      "type": "library",
+      "version": "1.73.0"
+    },
+    {
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/EFForg/privacybadger"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "GPL-3.0-or-later"
+          }
+        }
+      ],
+      "name": "Privacy Badger",
+      "properties": [
+        {
+          "name": "bedrock:reuse_mode",
+          "value": "separate-artifact"
+        },
+        {
+          "name": "bedrock:notice",
+          "value": "THIRD_PARTY_NOTICES/privacy-badger.txt"
+        }
+      ],
+      "type": "library",
+      "version": "release-2026.8.7"
+    },
+    {
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://gitlab.torproject.org/tpo/applications/tor-browser"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "MPL-2.0"
+          }
+        }
+      ],
+      "name": "Tor Browser (tor-browser)",
+      "properties": [
+        {
+          "name": "bedrock:reuse_mode",
+          "value": "reimplement"
+        },
+        {
+          "name": "bedrock:notice",
+          "value": "THIRD_PARTY_NOTICES/tor-browser.txt"
+        }
+      ],
+      "type": "library",
+      "version": "not-pinned-yet"
+    },
+    {
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/mozilla-firefox/firefox"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "MPL-2.0"
+          }
+        }
+      ],
+      "name": "Firefox (mozilla-central)",
+      "properties": [
+        {
+          "name": "bedrock:reuse_mode",
+          "value": "reimplement"
+        },
+        {
+          "name": "bedrock:notice",
+          "value": "THIRD_PARTY_NOTICES/firefox.txt"
+        }
+      ],
+      "type": "library",
+      "version": "not-pinned-yet"
+    },
+    {
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://www.privacytools.io"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "VERNAM License"
+          }
+        }
+      ],
+      "name": "PrivacyTools.io",
+      "properties": [
+        {
+          "name": "bedrock:reuse_mode",
+          "value": "vendored"
+        },
+        {
+          "name": "bedrock:notice",
+          "value": "THIRD_PARTY_NOTICES/privacytools-io.txt"
+        }
+      ],
+      "type": "library",
+      "version": "catalog-snapshot-2026-08-21"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "name": "Bedrock Browser",
+      "type": "application",
+      "version": "151.0.7922.173"
+    },
+    "properties": [
+      {
+        "name": "bedrock:chromium_commit",
+        "value": "a96602f30358e9b5d256a0464e7e4d4bec223004"
+      },
+      {
+        "name": "bedrock:generated_from",
+        "value": "docs/THIRD_PARTY.md + build/dependency-hashes.txt"
+      },
+      {
+        "name": "bedrock:generator",
+        "value": "scripts/generate_sbom.py"
+      }
+    ]
+  },
+  "specVersion": "1.5",
+  "version": 1
+}

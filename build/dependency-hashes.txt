@@ -1,0 +1,11 @@
+# SHA-256 of the archive Bedrock's build fetches for each dependency.
+# Format: "<sha256>  <Project name from docs/THIRD_PARTY.md>".
+#
+# A row here is a claim that has been checked against the artifact. Anything
+# without a verified hash is deliberately absent rather than filled with a
+# placeholder: an SBOM with invented digests is worse than one that is honest
+# about what has not been verified yet (docs/REPRODUCIBILITY.md).
+#
+# Chromium is fetched by build/sync.py at the pinned tag and verified by the
+# git commit in build/chromium.pin, which is the stronger check; it therefore
+# has no archive digest here.
