@@ -50,8 +50,10 @@ is nothing to pin); the checker enforces this.
 ## adblock-rust — `vendored`
 
 - **Copyright:** © The Brave Authors.
-- **What we use:** the Rust crate as-is, as the network + cosmetic filtering engine behind
-  Bedrock's content blocker. Consumed as a pinned crate, not copied file-by-file.
+- **Status at this commit: not in the tree.** No Rust code, no vendored crate. The row above
+  records the mode we would use *if* the backend is adopted (ADR 0002).
+- **What we would use:** the crate as-is, as an alternative matcher behind
+  `bedrock::blocking::FilterEngine`. Consumed as a pinned crate, not copied file-by-file.
 - **Trademark:** none used.
 - **Compatibility:** MPL-2.0; Rust-in-Chromium is supported by the upstream build.
 
@@ -69,8 +71,9 @@ is nothing to pin); the checker enforces this.
 - **Decision:** **not vendored, not linked, not ported.** GPL-3.0 would relicense the browser
   binary. See `docs/LICENSING.md` §3.
 - **What is allowed instead:** (a) supporting uBO as a user-installed WebExtension (aggregation);
-  (b) reimplementing the documented ABP/uBO filter syntax; (c) using `adblock-rust`, which
-  already implements that syntax under MPL-2.0.
+  (b) reimplementing the documented ABP/uBO filter syntax — this is what Bedrock does, see
+  `src_overrides/bedrock/blocking/filter_engine.cc`; (c) using `adblock-rust`, which already
+  implements that syntax under MPL-2.0.
 - **Filter lists** are separate works with their own licenses (EasyList: CC BY-SA 3.0 / GPL-3.0
   dual) and are fetched at runtime, never compiled in.
 - **Trademark:** "uBlock Origin" used descriptively only.

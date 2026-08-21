@@ -20,6 +20,18 @@ source_set("search") {
   ]
 }
 
+source_set("blocking") {
+  sources = [
+    "blocking/blocking_pipeline.cc",
+    "blocking/blocking_pipeline.h",
+    "blocking/filter_engine.cc",
+    "blocking/filter_engine.h",
+    "blocking/tracker_heuristic.cc",
+    "blocking/tracker_heuristic.h",
+  ]
+  deps = [ ":privacy" ]
+}
+
 source_set("privacy") {
   sources = [
     "privacy/fingerprint_policy.cc",

@@ -48,7 +48,9 @@ Permitted paths:
   GPL-3.0 depending on list**. They are downloaded at runtime by the user's browser or shipped
   as a separate data package, never compiled in. Attribution required for CC BY-SA lists.
 - **Filter *syntax*** (ABP/uBO syntax) is a documented format → reimplement a parser (ladder #1).
-- **Engine:** use Brave's `adblock-rust` (MPL-2.0, ladder #2/#3) instead of porting uBO's engine.
+- **Engine:** reimplement the documented ABP/uBO filter syntax (ladder #4, shipped as
+  `bedrock::blocking::FilterEngine`), with Brave's `adblock-rust` (MPL-2.0, ladder #2/#3) as a
+  swappable backend — see ADR 0002. Never port uBO's engine.
   It already implements the uBO/ABP syntax and cosmetic filtering, and its license fits.
 - **Privacy Badger's heuristic** (flag a third party seen tracking on ≥3 sites) is a published
   algorithm → reimplement (ladder #1). Do not copy its code, list files, or its "yellow list".

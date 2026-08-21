@@ -10,8 +10,9 @@ script blocking, fingerprinting level, third-party cookies, referrer and query-p
 handling, all overridable per site. The idea worth taking is the **panel as the single control
 surface**: one place that both shows what happened on this page and changes it.
 
-What we did not copy is the code — see `THIRD_PARTY_NOTICES/brave-core.txt`. The only Brave
-code in Bedrock is `adblock-rust`, used as a library under MPL-2.0.
+What we did not copy is the code — see `THIRD_PARTY_NOTICES/brave-core.txt`. No Brave code is
+in the tree; `adblock-rust` is a recorded, license-compatible option for the filter backend
+(ADR 0002), not a dependency at this commit.
 
 ## Model: three scopes, one rule
 

@@ -30,8 +30,10 @@ site is either a blocker rule, a network rewrite, a storage partition or an API 
 
 ## Content blocker
 
-Engine: **adblock-rust** (Brave, MPL-2.0, v0.13.3) — full uBO/ABP network + cosmetic syntax,
-license-compatible, already battle-tested at Brave's scale. See `docs/THIRD_PARTY.md` for why
+Engine: Bedrock's own `bedrock::blocking::FilterEngine` (ABP/uBO syntax, token-indexed), with
+`adblock-rust` (Brave, MPL-2.0, v0.13.3) kept as a swappable backend behind the same interface —
+see [ADR 0002](../adr/0002-filter-engine-backend.md) and
+[`012-content-blocker.md`](012-content-blocker.md). See `docs/THIRD_PARTY.md` for why
 uBlock Origin's own code (GPL-3.0) cannot be linked in, and `docs/design/009-extension-catalog.md`
 for how users still get uBO if they want it.
 
