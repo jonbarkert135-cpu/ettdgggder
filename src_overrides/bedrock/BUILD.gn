@@ -21,7 +21,13 @@ source_set("search") {
 }
 
 source_set("privacy") {
-  sources = [ "privacy/privacy_engine.h" ]
+  sources = [
+    "privacy/fingerprint_policy.cc",
+    "privacy/fingerprint_policy.h",
+    "privacy/privacy_engine.h",
+    "privacy/protection_controller.cc",
+    "privacy/protection_controller.h",
+  ]
 }
 
 group("bedrock") {

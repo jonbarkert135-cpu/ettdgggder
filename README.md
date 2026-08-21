@@ -62,6 +62,8 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 6 Search engine system | designed + selection logic landed, host-tested |
 | 7 Address bar / omnibox | designed + input classifier landed, host-tested |
 | 8 Privacy Engine | architecture + feature registry landed |
+| 9–10 Anti-fingerprinting | 4 levels, deterministic derivation, 21 documented surfaces |
+| 11 Protection Controller | per-site/domain/global resolver landed, host-tested |
 | Extension catalog | designed ([009](docs/design/009-extension-catalog.md)) |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host

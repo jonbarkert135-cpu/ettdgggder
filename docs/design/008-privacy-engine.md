@@ -39,18 +39,15 @@ Lists are **data fetched at runtime** from the list authors' own URLs (EasyList,
 uBO filters), on a schedule, directly from the user's machine — no Bedrock CDN, no Bedrock
 list proxy. Default: EasyList + EasyPrivacy + uBO badware/privacy lists.
 
-## Fingerprinting: the Tor lesson, applied honestly
+## Fingerprinting
 
-Two schools: **uniformity** (Tor Browser: everyone looks identical) and **randomisation**
-(Brave: everyone looks different every time). Bedrock's default is **Standard = randomisation
-per (site, session)** because uniformity only works if the whole population runs identical
-builds, which Bedrock's population will not. **Strict adds uniformity** where it does not
-break the page: quantised window/screen metrics (letterboxing), `en-US` language, UTC timezone,
-a fixed font list, reduced `hardwareConcurrency`/`deviceMemory`, coarsened timers.
-
-Each shim returns a *plausible* value, never an obviously fake one — a value that screams
-"anti-fingerprinting browser" is itself a fingerprint. The design source is the public Tor
-Browser design document; no Gecko code is used (see `THIRD_PARTY_NOTICES/tor-browser.txt`).
+Superseded by [`010-anti-fingerprinting.md`](010-anti-fingerprinting.md), which replaces this
+document's earlier "Standard = randomisation" wording. Bedrock is **normalization-first**:
+perturbation is used only for canvas, WebGL and audio, where a population-wide value cannot
+exist, and it is always deterministic per (session, site) — never random per call. Four levels
+(Compatibility / Balanced / Strict / Maximum) replace the two-level sketch this document
+originally proposed, and the per-site resolution of all protections now lives in the Protection
+Controller ([`011`](011-protection-controller.md)).
 
 ## Tracker learning (Privacy Badger's idea, our code)
 
@@ -74,8 +71,8 @@ Privacy Badger code, lists or yellow list (GPL-3.0, see notices).
 
 ## User-facing surface
 
-- **Shields panel** (per site): level, what was blocked, one-click "off for this site" that
-  reloads. Counts come from the local action log.
+- **Shields panel** (per site): the Protection Controller UI — see
+  [`011-protection-controller.md`](011-protection-controller.md).
 - **Settings → Privacy**: level selector, then the registry grouped by module, each row with
   its explanation and a `breaks_sites` warning where applicable.
 - **`bedrock://privacy-log`**: recent `Action` records — feature, site, detail. Local only,
