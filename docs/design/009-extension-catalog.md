@@ -5,7 +5,7 @@ Not a numbered roadmap item — requested in chat on 2026-08-21: *«сделае
 
 ## Decision
 
-1. **Default blocking is built in**, not an extension: the adblock-rust Privacy Engine
+1. **Default blocking is built in**, not an extension: the Privacy Engine's filter engine
    (item 8). A fresh profile blocks ads and trackers with **zero** extensions installed.
 2. **`bedrock://extensions/catalog`** is a curated list of well-known extensions. It is a
    *catalog*, not a store: no accounts, no payments, no Bedrock-hosted review system, no

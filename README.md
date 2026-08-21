@@ -64,6 +64,9 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 8 Privacy Engine | architecture + feature registry landed |
 | 9–10 Anti-fingerprinting | 4 levels, deterministic derivation, 21 documented surfaces |
 | 11 Protection Controller | per-site/domain/global resolver landed, host-tested |
+| 12 Content blocker | ABP/uBO-syntax filter engine, token-indexed, 50k rules in ~0.2 us |
+| 13 One blocking pipeline | single `Evaluate()`; lists, heuristic and shields are stages |
+| 14 Behavioral detection | Privacy Badger-style local learning, GPC/DNT, link cleaning |
 | Extension catalog | designed ([009](docs/design/009-extension-catalog.md)) |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host
