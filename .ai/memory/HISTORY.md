@@ -4,6 +4,24 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #18 — Roadmap 61–64: localization, platform tiers, Windows and Linux integration
+- **61** `ui/l10n/string_catalog.{h,cc}`: 12 ids × 4 complete locales (en, uk, ru, de). Named
+  placeholders parsed out of the text rather than declared twice; CLDR plural categories, so
+  Russian and Ukrainian counted strings carry one/few/many/other while English and German carry
+  two. No sentence is assembled from fragments. Fallback is locale → English only: Ukrainian never
+  falls back to Russian. Unknown tags resolve to English instead of failing to start. `ui.language`
+  / `--lang=` added to the config surface (15 settings now).
+- **62–64** `platform/platform_support.{h,cc}`: three platforms × eleven integration points = 33
+  requirements, each with an owner (Chromium-inherited vs Bedrock-owned), the requirement and the
+  failure mode it prevents. Windows and Linux supported, macOS best effort *with a written reason*.
+  Wayland and X11 both first class; six Linux package formats (snap deliberately not produced —
+  single-vendor store). ADR 0005 records the abstraction rule.
+- Gates: `scripts/check_strings.py` (locale completeness, placeholder parity, plural coverage, docs
+  sync) and `scripts/check_platform.py` (platform macros only under `platform/`, no desktop
+  environment named in a requirement, docs sync). Both have `--selftest`; four negative cases
+  verified by breaking them on purpose.
+- Docs: `docs/LOCALIZATION.md`, `docs/PLATFORMS.md`, `docs/adr/0005-platform-abstraction.md`.
+
 ## PR #17 — Roadmap 57–60: advanced settings, reset/recovery, import/export, accessibility
 - **57** `settings/advanced_settings.{h,cc}`: one evaluator for custom filter lists, DNS, proxy,
   UA policy, per-site permissions/policies, CSP-like rules and managed profiles. Three verdicts —

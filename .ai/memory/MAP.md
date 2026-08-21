@@ -106,6 +106,15 @@ Performance budgets measured on every commit; unmeasurable budgets are marked pe
 | `perf_budgets.h` | Performance budgets (roadmap item 46). |
 | `perf_budgets_test.cc` | Host test, no Chromium. |
 
+### `src_overrides/bedrock/platform/`
+Platform support tiers (Windows/Linux supported, macOS best effort) and the 33 native-integration requirements; the only place platform macros are allowed. Items 62-64.
+
+| File | What it is |
+| --- | --- |
+| `platform_support.cc` | implementation |
+| `platform_support.h` | Platform support and native integration (roadmap items 62, 63, 64). |
+| `platform_support_test.cc` | Item 62: every platform answers for every integration point. |
+
 ### `src_overrides/bedrock/privacy/core/`
 The Privacy Engine core: feature registry, the PrivacyPolicy resolver (single source of truth for ten layers), per-site Protection Controller, security-level presets, zero-telemetry policy. Items 8, 11, 25, 39, 45.
 
@@ -282,6 +291,15 @@ Browser UI surfaces: tab model with two layouts, optional sidebar, per-site priv
 | `tab_model.h` | Tab system (roadmap item 30). |
 | `tab_model_test.cc` | Host test, no Chromium. |
 
+### `src_overrides/bedrock/ui/l10n/`
+String catalog: every user-visible string by id, four complete locales, named placeholders and CLDR plurals. Item 61.
+
+| File | What it is |
+| --- | --- |
+| `string_catalog.cc` | implementation |
+| `string_catalog.h` | Localization (roadmap item 61). |
+| `string_catalog_test.cc` | Item 61: a locale is offered only when it is finished. |
+
 ### `src_overrides/bedrock/updater/`
 Provider-agnostic update system: signature-verified, works without any project-run infrastructure. Item 40.
 
@@ -308,12 +326,15 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/CONFIGURATION.md`](../../docs/CONFIGURATION.md) | Configuration |
 | [`docs/FORMATS.md`](../../docs/FORMATS.md) | Import and export formats |
 | [`docs/LICENSING.md`](../../docs/LICENSING.md) | Bedrock Browser — Licensing & Provenance Policy |
+| [`docs/LOCALIZATION.md`](../../docs/LOCALIZATION.md) | Localization |
+| [`docs/PLATFORMS.md`](../../docs/PLATFORMS.md) | Platform support |
 | [`docs/REPRODUCIBILITY.md`](../../docs/REPRODUCIBILITY.md) | Reproducible Builds |
 | [`docs/THIRD_PARTY.md`](../../docs/THIRD_PARTY.md) | Bedrock Browser — Third-Party Inventory |
 | [`docs/adr/0001-chromium-overlay.md`](../../docs/adr/0001-chromium-overlay.md) | ADR 0001 — Chromium base, overlay repository (not a fork) |
 | [`docs/adr/0002-filter-engine-backend.md`](../../docs/adr/0002-filter-engine-backend.md) | ADR 0002 — One matcher behind one interface: built-in C++ engine, adblock-rust as a swappable backend |
 | [`docs/adr/0003-source-layout.md`](../../docs/adr/0003-source-layout.md) | ADR 0003 — Source layout: subsystem tree where it helps, Chromium's layout where it must |
 | [`docs/adr/0004-languages.md`](../../docs/adr/0004-languages.md) | ADR 0004 — Languages: C++ for the engine, Rust behind an FFI boundary, TypeScript for UI, never Electron |
+| [`docs/adr/0005-platform-abstraction.md`](../../docs/adr/0005-platform-abstraction.md) | ADR 0005 — Platform support and the abstraction that keeps it honest |
 | [`docs/design/006-search-system.md`](../../docs/design/006-search-system.md) | 006 — Search engine system |
 | [`docs/design/007-omnibox.md`](../../docs/design/007-omnibox.md) | 007 — Address bar / omnibox |
 | [`docs/design/008-privacy-engine.md`](../../docs/design/008-privacy-engine.md) | 008 — Privacy Engine |
@@ -397,8 +418,10 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | `scripts/check_no_telemetry.py` | Fail if anything that reports home appears in the tree, or if the build |
 | `scripts/check_open_source.py` | Fail if the project calls itself open source without the parts that make the |
 | `scripts/check_perf_claims.py` | Fail if the project makes a performance claim without a number. |
+| `scripts/check_platform.py` | Platform abstraction gate (roadmap items 62, 63, 64). |
 | `scripts/check_provenance.py` | Fail if the licensing record is incomplete. Run: python3 scripts/check_provenance.py |
 | `scripts/check_security_testing.py` | Fail if the security testing setup has decayed. Run: |
+| `scripts/check_strings.py` | Localization gate (roadmap item 61). |
 | `scripts/check_ui_style.py` | Roadmap item 27's taste rules, as a gate. |
 | `scripts/run_host_tests.sh` | Builds and runs every `*_test.cc` and fuzz smoke harness with plain g++. |
 

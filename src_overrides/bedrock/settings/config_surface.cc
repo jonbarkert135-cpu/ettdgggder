@@ -58,6 +58,11 @@ const std::vector<SettingSpec>& Table() {
        "Default search engine id, for example duckduckgo.",
        {}, "duckduckgo", kAllSurfaces, "", true},
 
+      {"ui.language", "lang", "UiLanguage",
+       "Interface language as a BCP-47 tag; unknown tags fall back to English "
+       "(see docs/LOCALIZATION.md). Separate from what websites are told.",
+       {"en-US", "uk-UA", "ru-RU", "de-DE"}, "", kAllSurfaces, "", true},
+
       {"profile.name", "profile", "", "Profile to start with.",
        {}, "", static_cast<int>(Surface::kGui) | static_cast<int>(Surface::kConfigFile) |
                static_cast<int>(Surface::kCommandLine),

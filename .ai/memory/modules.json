@@ -31,6 +31,9 @@
     "perf": {
       "summary": "Performance budgets measured on every commit; unmeasurable budgets are marked pending instead of claimed. Item 46."
     },
+    "platform": {
+      "summary": "Platform support tiers (Windows/Linux supported, macOS best effort) and the 33 native-integration requirements; the only place platform macros are allowed. Items 62-64."
+    },
     "privacy/core": {
       "summary": "The Privacy Engine core: feature registry, the PrivacyPolicy resolver (single source of truth for ten layers), per-site Protection Controller, security-level presets, zero-telemetry policy. Items 8, 11, 25, 39, 45."
     },
@@ -72,6 +75,9 @@
     },
     "ui": {
       "summary": "Browser UI surfaces: tab model with two layouts, optional sidebar, per-site privacy panel. Items 30-31, 38."
+    },
+    "ui/l10n": {
+      "summary": "String catalog: every user-visible string by id, four complete locales, named placeholders and CLDR plurals. Item 61."
     },
     "updater": {
       "summary": "Provider-agnostic update system: signature-verified, works without any project-run infrastructure. Item 40."

@@ -138,7 +138,11 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 58 Reset / recovery | five actions, each stating what it leaves alone; typed confirmation + export offer before anything irreversible |
 | 59 Import / export | five documented formats, versioned, secret-free — [docs/FORMATS.md](docs/FORMATS.md) |
 | 60 Accessibility | eight requirements with evidence, mockups gated — [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md) |
-| 61+ | awaiting specification |
+| 61 Localization | catalog-only strings, four complete locales, named placeholders and CLDR plurals — [docs/LOCALIZATION.md](docs/LOCALIZATION.md) |
+| 62 Platform support | Windows and Linux supported, macOS best effort; platform macros confined to the platform layer — [ADR 0005](docs/adr/0005-platform-abstraction.md) |
+| 63 Windows UX | eleven integration points with owner and failure mode — [docs/PLATFORMS.md](docs/PLATFORMS.md#windows-item-63) |
+| 64 Linux UX | Wayland **and** X11, portals over desktop guesses, six package formats — [docs/PLATFORMS.md](docs/PLATFORMS.md#linux-item-64) |
+| 65+ | awaiting specification |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host
 tests — `./scripts/run_host_tests.sh` builds and runs them with plain `g++`, no Chromium
