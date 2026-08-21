@@ -130,7 +130,11 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 50 Brave research | [docs/research/BRAVE.md](docs/research/BRAVE.md) — CNAME uncloaking, query stripping, referrer and client-hints policy queued |
 | 51 Tor Browser research | [docs/research/TOR_BROWSER.md](docs/research/TOR_BROWSER.md) — letterboxing and circuit display queued; no anonymity claim |
 | 52 uBlock Origin research | [docs/research/UBLOCK_ORIGIN.md](docs/research/UBLOCK_ORIGIN.md) + per-list licence inventory in [docs/privacy/FILTER_LISTS.md](docs/privacy/FILTER_LISTS.md) |
-| 53+ | awaiting specification |
+| 53 Privacy Badger research | [docs/research/PRIVACY_BADGER.md](docs/research/PRIVACY_BADGER.md) — cookie-blocking as the default learned outcome; DNT policy allowlist refused |
+| 54 "Origin Tools" | searched, no such project exists — [docs/research/ORIGIN_TOOLS.md](docs/research/ORIGIN_TOOLS.md); nothing invented |
+| 55 No fake features | feature registry carries a Status; UI renders only enforced features; `scripts/check_no_fake_features.py` |
+| 56 Configuration system | GUI / config file / policy / CLI from one table, strict parsing, [docs/CONFIGURATION.md](docs/CONFIGURATION.md) |
+| 57+ | awaiting specification |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host
 tests — `./scripts/run_host_tests.sh` builds and runs them with plain `g++`, no Chromium

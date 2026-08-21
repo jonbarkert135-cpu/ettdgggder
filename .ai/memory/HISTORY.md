@@ -4,6 +4,29 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #16 — Roadmap 53–56: Privacy Badger research, "Origin Tools", no fake features, configuration
+- **53** `docs/research/PRIVACY_BADGER.md`: GPL-3.0, ideas only. Queued: cookie-blocking
+  (`kReduce`) as the *default* learned outcome, no learning inside private/Tor windows (a leak,
+  not a nuance), one navigation-cleaning stage shared with items 50/52, and a "why was this
+  flagged" view. Refused: the yellow list and the DNT compliance allowlist (unblocking on a
+  promise).
+- **54** `docs/research/ORIGIN_TOOLS.md`: searched on 2026-08-21 — **no such project**. Nearest
+  hits recorded and rejected. Two plausible meanings answered instead: uBO's tooling (item 52),
+  and Chromium **Origin Trials**, which are a real unruled fingerprinting surface — a
+  recommendation is recorded, not implemented.
+- **55** The registry was declared and never defined — a settings UI generated from a table that
+  did not exist. Now `privacy_engine.cc` defines 30 features, each with a `Status`
+  (kDesigned / kPolicyLanded / kEnforced); `UiRenderableFeatures()` returns only kEnforced, which
+  is **empty today** because no Chromium build runs. `scripts/check_no_fake_features.py` fails on
+  unprovable claims in user-visible copy, on thousands-separated counters not marked as sample
+  data, and on any feature marked kEnforced without a `build/ENFORCEMENT.md` record. Verified by
+  planting a fake "Fingerprint Protected — you are anonymous. 12,481 trackers blocked" banner.
+- **56** `settings/config_surface.{h,cc}`: one table, four surfaces (GUI / config file / policy /
+  CLI), precedence policy > CLI > config > GUI > default with the origin reported and policy
+  values locked. Parsing is strict — unknown switch, missing value or disallowed value is an
+  error, never a silent shrug. `--disable-telemetry` is accepted and cannot be inverted.
+  `docs/CONFIGURATION.md` + `scripts/check_config_surface.py` keep code and manual identical.
+
 ## PR #15 — Roadmap 50–52: Brave, Tor Browser and uBlock Origin research
 Three research documents in `docs/research/` in the item-49 format (mechanism → verdict →
 licence → cost), plus a per-list filter-list licence inventory.

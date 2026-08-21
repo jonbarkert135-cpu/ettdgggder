@@ -88,21 +88,43 @@ enum class Setting {
   kStrict,
 };
 
+// How far a feature actually is. Roadmap item 55: the UI may not offer a
+// control for a protection the browser does not perform, so the distance
+// between "designed" and "enforced" is data, not folklore.
+enum class Status {
+  kDesigned,      // design doc only — no logic in the tree
+  kPolicyLanded,  // logic + host tests here, not wired into a Chromium build
+  kEnforced,      // the running browser performs it
+};
+
 // One row of the registry that drives both enforcement and the settings UI.
 struct FeatureInfo {
   Feature feature;
   Module module;
   const char* id;            // stable string id, e.g. "canvas_protection"
-  int title_string_id;       // IDS_BEDROCK_PRIVACY_*_TITLE
-  int explanation_string_id; // IDS_BEDROCK_PRIVACY_*_EXPLANATION — required
+  const char* title_string;      // resource name, IDS_BEDROCK_PRIVACY_*_TITLE
+  const char* explanation_string; // IDS_BEDROCK_PRIVACY_*_EXPLANATION — required
   Setting standard_default;
   Setting strict_default;
   bool breaks_sites;         // shown as a warning next to the control
+  Status status;
 };
 
 // The single source of truth. Defined in privacy_engine.cc; the settings page,
 // the shields panel and the per-site override store all iterate this.
 const std::vector<FeatureInfo>& GetFeatureRegistry();
+
+// Registry lookup; nullptr if the feature has no row (which is a bug the test
+// catches, not a state the browser should handle at runtime).
+const FeatureInfo* FindFeature(Feature feature);
+
+// The only list the settings UI is allowed to render: features the browser
+// actually enforces. Empty today, and that is the honest answer while no
+// Chromium build runs.
+std::vector<const FeatureInfo*> UiRenderableFeatures();
+
+// Default setting for a feature at a profile level.
+Setting DefaultFor(const FeatureInfo& info, Level level);
 
 // Resolved value for a site: per-site override, else the profile level default.
 Setting GetEffectiveSetting(Feature feature,

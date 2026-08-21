@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** roadmap 50–52 merged (PR #15, CI green).
+**As of:** roadmap 53–56 merged (PR #16, CI green).
 
 ## Position on the roadmap
 
@@ -26,11 +26,17 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 | 48 Languages: C++ / Rust / TypeScript, no Electron (ADR 0004) | policy + gate done; no Rust code yet |
 | 49 Firefox research (`docs/research/FIREFOX.md`) | done — analysis only, nothing implemented |
 | 50–52 Brave / Tor Browser / uBlock Origin research | done — analysis + filter-list licence inventory, nothing implemented |
-| 53+ | **not yet specified — waiting on the project owner** |
+| 53–54 Privacy Badger research; "Origin Tools" searched and not found | done |
+| 55 No fake features (registry Status + gate) | done |
+| 56 Configuration system (GUI / config / policy / CLI) | done |
+| 57+ | **not yet specified — waiting on the project owner** |
 
 ## What is real vs. what is documented
 
-- **Runs in CI today:** 34 host test binaries, 4 fuzz smoke harnesses (~860
+- **Nothing is `Status::kEnforced`** in the feature registry, so the settings UI
+  renders no protection switches yet. That is item 55 working, not a gap to paper over:
+  enforcement needs a Chromium build, and `build/ENFORCEMENT.md` must record it.
+- **Runs in CI today:** 36 host test binaries, 4 fuzz smoke harnesses (~860
   inputs each), 6 measured performance metrics, 10 static gates.
 - **Tree shape since item 47:** code is nested under `src_overrides/bedrock/`
   (`privacy/{core,fingerprinting,tracker_blocker,storage,network,security,stats}`,
@@ -57,7 +63,7 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 
 ## Open threads
 
-- Roadmap items 53+ awaited from the project owner.
+- Roadmap items 57+ awaited from the project owner.
 - **Default filter lists are empty** until each list's licence is verified and dated in
   `docs/privacy/FILTER_LISTS.md` (item 52 rule). This is a deliberate blocker, not an oversight.
 - Research queue, highest value first: CNAME uncloaking · query stripping + debouncing ·
