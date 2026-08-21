@@ -67,6 +67,10 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 12 Content blocker | ABP/uBO-syntax filter engine, token-indexed, 50k rules in ~0.2 us |
 | 13 One blocking pipeline | single `Evaluate()`; lists, heuristic and shields are stages |
 | 14 Behavioral detection | Privacy Badger-style local learning, GPC/DNT, link cleaning |
+| 15 Storage isolation | one StorageKey for every backend, incl. cache, DNS and HSTS |
+| 16 HTTPS | upgrade / HTTPS-Only, mixed content, per-host cert exceptions only |
+| 17 DNS | system default, named DoH providers, fail-closed strict mode |
+| 18 WebRTC | Default / Privacy / Strict, no local IP outside Default |
 | Extension catalog | designed ([009](docs/design/009-extension-catalog.md)) |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host
