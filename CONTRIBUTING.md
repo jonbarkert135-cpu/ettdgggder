@@ -56,6 +56,15 @@ One roadmap item batch per branch and PR. The description says what landed, the 
 each judgement call, and what was verified. Green CI is required; a red gate is never "flaky, will
 fix later".
 
+## Project memory
+
+Every PR that touches `src_overrides/`, `docs/`, `scripts/`, `build/` or CI updates the project
+memory in `.ai/` in the *same* PR: rewrite [`.ai/memory/STATE.md`](.ai/memory/STATE.md), add an
+entry on top of [`.ai/memory/HISTORY.md`](.ai/memory/HISTORY.md), regenerate the map with
+`python3 scripts/gen_memory.py`, and describe any new code directory in
+`.ai/memory/modules.json`. Full procedure: [`.ai/memory/PROTOCOL.md`](.ai/memory/PROTOCOL.md).
+`scripts/check_memory.py` enforces this, so an out-of-date memory is a red build, not a habit.
+
 ## Security issues
 
 Do not open a public issue. See `SECURITY.md`.

@@ -18,6 +18,29 @@ shell over someone else's build. This repository is the **overlay**: patches, ne
 build args, branding and tooling. `build/sync.py` fetches the pinned Chromium tree and applies
 them. See [ADR 0001](docs/adr/0001-chromium-overlay.md) for why overlay and not fork.
 
+## AI agents & new contributors start here
+
+This repository keeps a **maintained project memory** so context is restored by reading two
+short files instead of the whole tree:
+
+1. [`.ai/MEMORY.md`](.ai/MEMORY.md) — what Bedrock is, the non-negotiables, the layout, the
+   working agreement.
+2. [`.ai/memory/STATE.md`](.ai/memory/STATE.md) — where the work stands right now, what actually
+   runs in CI versus what needs a real Chromium build, and the open threads.
+
+That is the whole restore (~2.5k tokens). From there, open on demand:
+[`MAP.md`](.ai/memory/MAP.md) (generated file-by-file map — use it instead of grepping),
+[`INVARIANTS.md`](.ai/memory/INVARIANTS.md) (what must stay true, and which gate checks it),
+[`DECISIONS.md`](.ai/memory/DECISIONS.md) (why it is like this),
+[`HISTORY.md`](.ai/memory/HISTORY.md) (what landed, newest first).
+[`AGENTS.md`](AGENTS.md) points auto-loading agents at the same entry point.
+
+**The memory is updated in the same PR as the change it describes** — the procedure is
+[`.ai/memory/PROTOCOL.md`](.ai/memory/PROTOCOL.md), the map is regenerated with
+`python3 scripts/gen_memory.py`, and `scripts/check_memory.py` fails CI when the map is stale,
+a new code directory is undescribed, or code changed without the memory following. Memory that
+is optional is memory that is wrong within a month.
+
 ## Principles
 
 1. **Autonomous.** Everything — history, bookmarks, passwords, profiles, sessions, settings,
@@ -41,7 +64,8 @@ patches/        patches against the Chromium tree (bedrock/ and upstream/<projec
 src_overrides/  new files mirrored into the Chromium tree layout (preferred over patches)
 docs/           LICENSING.md, THIRD_PARTY.md, BUILD.md, adr/
 THIRD_PARTY_NOTICES/  one notice file per dependency, 1:1 with the inventory
-scripts/        check_provenance.py — the licensing gate
+scripts/        the CI gates (licensing, telemetry, perf claims, memory, ...)
+.ai/            project memory for AI agents and new contributors
 branding/       Bedrock name and logo assets
 ```
 
@@ -85,6 +109,15 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 30 Tab system | one model, two layouts, groups/pinned/sleeping/search/duplicates |
 | 31 Sidebar | 8 panels, optional, every one reachable without it |
 | Extension catalog | designed ([009](docs/design/009-extension-catalog.md)) |
+| 32–35 Workspaces, downloads, passwords, bookmarks and history | done |
+| 36–38 DevTools privacy panels, Privacy Center, per-site privacy panel | done |
+| PrivacyTools.io ecosystem | catalog, recommendation engine, knowledge center, posture view |
+| 39–42 Zero telemetry, provider-agnostic updates, open-source and reproducibility gates | done |
+| 43 Fuzzing and sanitizers | 4 libFuzzer harnesses + deterministic CI smoke, ASan/MSan/TSan/fuzz configs |
+| 44 Threat model | 14 adversaries, each with where Bedrock's protection ends |
+| 45 Security levels | Standard / Balanced / Strict / Maximum as the single source of truth |
+| 46 Performance budgets | 6 metrics measured per commit, 8 marked pending until a real build |
+| 47+ | awaiting specification |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host
 tests — `./scripts/run_host_tests.sh` builds and runs them with plain `g++`, no Chromium

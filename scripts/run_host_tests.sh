@@ -45,5 +45,16 @@ python3 scripts/check_perf_claims.py || status=1
 python3 scripts/check_no_telemetry.py || status=1
 python3 scripts/check_open_source.py || status=1
 python3 scripts/generate_sbom.py --check || status=1
+python3 scripts/check_memory.py --selftest || status=1
+
+# Project memory. On a pull request GitHub sets GITHUB_BASE_REF, and the gate
+# additionally requires that this change updated the memory (see
+# .ai/memory/PROTOCOL.md). Locally it just checks the memory is consistent.
+if [ -n "${GITHUB_BASE_REF:-}" ]; then
+  git fetch --no-tags --quiet origin "$GITHUB_BASE_REF" || true
+  python3 scripts/check_memory.py --base "origin/$GITHUB_BASE_REF" || status=1
+else
+  python3 scripts/check_memory.py || status=1
+fi
 
 exit $status
