@@ -68,10 +68,35 @@ source_set("session") {
     "session/new_identity.h",
     "session/profile_manager.cc",
     "session/profile_manager.h",
+    "session/workspace_manager.cc",
+    "session/workspace_manager.h",
   ]
   deps = [
     ":net",
     ":privacy",
+  ]
+}
+
+source_set("downloads") {
+  sources = [
+    "downloads/download_manager.cc",
+    "downloads/download_manager.h",
+  ]
+}
+
+source_set("passwords") {
+  sources = [
+    "passwords/password_store.cc",
+    "passwords/password_store.h",
+  ]
+}
+
+source_set("data") {
+  sources = [
+    "data/bookmark_store.cc",
+    "data/bookmark_store.h",
+    "data/history_store.cc",
+    "data/history_store.h",
   ]
 }
 
