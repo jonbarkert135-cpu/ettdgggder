@@ -155,7 +155,11 @@ python3 build/sync.py --workspace ~/bedrock-src   # ~100 GB, long
 | 75 Privacy regression suite | 13 scenarios on local fixtures, two local origins, stock-Chromium baseline recorded — [tests/privacy/](tests/privacy) |
 | 76 Security fuzzing | 9 fuzz targets: URL, filter list, privacy rules, configuration, search, extension permissions, custom rules, download names, bookmark import |
 | 77 Zero-trust dependencies | every dependency identified, pinned, licensed, reviewed **and justified**; gate rejects "it looks nicer" — [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md) |
-| 78+ | awaiting specification |
+| 78 No unnecessary frameworks | WebUI is custom elements and plain CSS; no React/Vue/bundler, no npm step — [docs/adr/0006-no-ui-frameworks.md](docs/adr/0006-no-ui-frameworks.md) |
+| 79 Debug logging | off by default, two local sinks, scrubbed before storage, no upload path exists — [docs/DIAGNOSTICS.md](docs/DIAGNOSTICS.md) |
+| 80 Error handling | meaningful, actionable, localized in 4 languages, internal detail withheld — [docs/ERRORS.md](docs/ERRORS.md) |
+| 81 Crash handling | local crash store, upload off by default and per-report, whitelisted fields only |
+| 82+ | awaiting specification |
 
 Design docs live in [`docs/design/`](docs/design). Pure logic ships with dependency-free host
 tests — `./scripts/run_host_tests.sh` builds and runs them with plain `g++`, no Chromium

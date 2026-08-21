@@ -7,8 +7,14 @@
     "devtools": {
       "summary": "Added DevTools privacy panels. Rule zero: never break an upstream Chromium panel. Item 36."
     },
+    "diagnostics": {
+      "summary": "Local debug log and crash diagnostics plus the shared scrubber. Off by default, no sink that can reach the network, whitelisted crash fields. Items 79 and 81."
+    },
     "downloads": {
       "summary": "Download manager: honest pause/resume derived from Accept-Ranges, attacker-chosen names and MIME types treated as untrusted. Item 33."
+    },
+    "errors": {
+      "summary": "Error catalog: stable BR- codes, localized title and action per error, internal detail routed to the log instead of the UI. Item 80."
     },
     "extensions": {
       "summary": "Chromium-compatible extension API plus generated capability disclosure; an update can never grow an extension's powers. Item 23."

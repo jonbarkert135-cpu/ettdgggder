@@ -75,3 +75,7 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 60 | Privacy tests use local fixtures only; no fixture may reference an off-machine URL, and no measurement leaves the machine | `scripts/check_privacy_suite.py`, `tests/privacy/` |
 | 61 | A claim that Bedrock changes a browser-observable value is comparable against a recorded stock-Chromium measurement | `tests/privacy/baseline-chromium.json` |
 | 62 | A dependency needs a dated review and a justification about what breaks without it; "looks nicer" is rejected | `scripts/check_provenance.py` (`check_zero_trust`), `docs/DEPENDENCIES.md` |
+| 63 | No JS framework, bundler, Node manifest or off-machine asset anywhere in the tree; WebUI uses the platform | `scripts/check_frameworks.py`, ADR 0006 |
+| 64 | Debug logging is off by default and has no sink that can reach the network; lines are scrubbed before they are stored | `diagnostics/debug_log`, `scripts/check_diagnostics.py` |
+| 65 | Crash upload defaults to never, needs per-report consent, and a report carries whitelisted fields only — never URLs, cookies, credentials or the profile path | `diagnostics/crash_report`, `crash_report_test` |
+| 66 | Every error has a localized title *and* an action in all four locales, and its internal detail goes to the log, not the screen | `errors/error_catalog`, `scripts/check_diagnostics.py` |

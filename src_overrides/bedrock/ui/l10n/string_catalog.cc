@@ -41,6 +41,18 @@ const RawMessage kMessages[] = {
     {Locale::kEnglish, MessageId::kImportPreviewHeading, PluralCategory::kOther, "Review before importing", false},
     {Locale::kEnglish, MessageId::kImportRefusedReason, PluralCategory::kOther, "Not imported: {reason}", false},
     {Locale::kEnglish, MessageId::kAdvancedGuardRejected, PluralCategory::kOther, "Refused by {guard}: {reason}", false},
+    {Locale::kEnglish, MessageId::kErrorNetworkUnreachable, PluralCategory::kOther, "Bedrock could not reach the network", false},
+    {Locale::kEnglish, MessageId::kErrorNetworkUnreachableAction, PluralCategory::kOther, "Check your connection, then reload the page. If you are using Tor mode, the circuit may still be building.", false},
+    {Locale::kEnglish, MessageId::kErrorCertificateInvalid, PluralCategory::kOther, "The certificate for {site} could not be verified", false},
+    {Locale::kEnglish, MessageId::kErrorCertificateInvalidAction, PluralCategory::kOther, "Do not enter passwords on this page. Leave the site, or continue only if you know why the certificate is wrong.", false},
+    {Locale::kEnglish, MessageId::kErrorProfileLocked, PluralCategory::kOther, "This profile is already open in another window", false},
+    {Locale::kEnglish, MessageId::kErrorProfileLockedAction, PluralCategory::kOther, "Switch to the running window, or close it and try again. Nothing was lost.", false},
+    {Locale::kEnglish, MessageId::kErrorDownloadRefused, PluralCategory::kOther, "The download was refused: {reason}", false},
+    {Locale::kEnglish, MessageId::kErrorDownloadRefusedAction, PluralCategory::kOther, "Save it to a different folder, or allow this file type in Settings, Downloads.", false},
+    {Locale::kEnglish, MessageId::kErrorExtensionBlocked, PluralCategory::kOther, "{extension} was blocked", false},
+    {Locale::kEnglish, MessageId::kErrorExtensionBlockedAction, PluralCategory::kOther, "Review the permissions it asked for in Settings, Extensions. You can allow it there if you trust it.", false},
+    {Locale::kEnglish, MessageId::kErrorConfigInvalid, PluralCategory::kOther, "The configuration file could not be read", false},
+    {Locale::kEnglish, MessageId::kErrorConfigInvalidAction, PluralCategory::kOther, "Fix the line shown in the details, or rename the file to start from defaults. Bedrock started with the previous settings.", false},
 
     // --- Ukrainian ---
     {Locale::kUkrainian, MessageId::kAppName, PluralCategory::kOther, "Bedrock", false},
@@ -58,6 +70,18 @@ const RawMessage kMessages[] = {
     {Locale::kUkrainian, MessageId::kImportPreviewHeading, PluralCategory::kOther, "Перегляньте перед імпортом", false},
     {Locale::kUkrainian, MessageId::kImportRefusedReason, PluralCategory::kOther, "Не імпортовано: {reason}", false},
     {Locale::kUkrainian, MessageId::kAdvancedGuardRejected, PluralCategory::kOther, "Відхилено правилом {guard}: {reason}", false},
+    {Locale::kUkrainian, MessageId::kErrorNetworkUnreachable, PluralCategory::kOther, "Bedrock не зміг зʼєднатися з мережею", false},
+    {Locale::kUkrainian, MessageId::kErrorNetworkUnreachableAction, PluralCategory::kOther, "Перевірте зʼєднання та перезавантажте сторінку. Якщо ввімкнено режим Tor, ланцюжок ще може будуватися.", false},
+    {Locale::kUkrainian, MessageId::kErrorCertificateInvalid, PluralCategory::kOther, "Не вдалося перевірити сертифікат для {site}", false},
+    {Locale::kUkrainian, MessageId::kErrorCertificateInvalidAction, PluralCategory::kOther, "Не вводьте паролі на цій сторінці. Залиште сайт або продовжуйте, лише якщо знаєте, чому сертифікат помилковий.", false},
+    {Locale::kUkrainian, MessageId::kErrorProfileLocked, PluralCategory::kOther, "Цей профіль уже відкрито в іншому вікні", false},
+    {Locale::kUkrainian, MessageId::kErrorProfileLockedAction, PluralCategory::kOther, "Перейдіть до відкритого вікна або закрийте його і спробуйте ще раз. Нічого не втрачено.", false},
+    {Locale::kUkrainian, MessageId::kErrorDownloadRefused, PluralCategory::kOther, "Завантаження відхилено: {reason}", false},
+    {Locale::kUkrainian, MessageId::kErrorDownloadRefusedAction, PluralCategory::kOther, "Збережіть файл до іншої теки або дозвольте цей тип файлів у Налаштуваннях, розділ Завантаження.", false},
+    {Locale::kUkrainian, MessageId::kErrorExtensionBlocked, PluralCategory::kOther, "{extension} заблоковано", false},
+    {Locale::kUkrainian, MessageId::kErrorExtensionBlockedAction, PluralCategory::kOther, "Перегляньте запитані дозволи в Налаштуваннях, розділ Розширення. Там же можна дозволити його, якщо ви йому довіряєте.", false},
+    {Locale::kUkrainian, MessageId::kErrorConfigInvalid, PluralCategory::kOther, "Не вдалося прочитати файл конфігурації", false},
+    {Locale::kUkrainian, MessageId::kErrorConfigInvalidAction, PluralCategory::kOther, "Виправте рядок, показаний у подробицях, або перейменуйте файл, щоб почати з типових значень. Bedrock запустився з попередніми налаштуваннями.", false},
 
     // --- Russian ---
     {Locale::kRussian, MessageId::kAppName, PluralCategory::kOther, "Bedrock", false},
@@ -75,6 +99,18 @@ const RawMessage kMessages[] = {
     {Locale::kRussian, MessageId::kImportPreviewHeading, PluralCategory::kOther, "Проверьте перед импортом", false},
     {Locale::kRussian, MessageId::kImportRefusedReason, PluralCategory::kOther, "Не импортировано: {reason}", false},
     {Locale::kRussian, MessageId::kAdvancedGuardRejected, PluralCategory::kOther, "Отклонено правилом {guard}: {reason}", false},
+    {Locale::kRussian, MessageId::kErrorNetworkUnreachable, PluralCategory::kOther, "Bedrock не смог подключиться к сети", false},
+    {Locale::kRussian, MessageId::kErrorNetworkUnreachableAction, PluralCategory::kOther, "Проверьте соединение и перезагрузите страницу. Если включён режим Tor, цепочка может ещё строиться.", false},
+    {Locale::kRussian, MessageId::kErrorCertificateInvalid, PluralCategory::kOther, "Не удалось проверить сертификат для {site}", false},
+    {Locale::kRussian, MessageId::kErrorCertificateInvalidAction, PluralCategory::kOther, "Не вводите пароли на этой странице. Покиньте сайт или продолжайте, только если знаете, почему сертификат неверен.", false},
+    {Locale::kRussian, MessageId::kErrorProfileLocked, PluralCategory::kOther, "Этот профиль уже открыт в другом окне", false},
+    {Locale::kRussian, MessageId::kErrorProfileLockedAction, PluralCategory::kOther, "Перейдите в открытое окно или закройте его и попробуйте снова. Ничего не потеряно.", false},
+    {Locale::kRussian, MessageId::kErrorDownloadRefused, PluralCategory::kOther, "Загрузка отклонена: {reason}", false},
+    {Locale::kRussian, MessageId::kErrorDownloadRefusedAction, PluralCategory::kOther, "Сохраните файл в другую папку или разрешите этот тип файлов в Настройках, раздел Загрузки.", false},
+    {Locale::kRussian, MessageId::kErrorExtensionBlocked, PluralCategory::kOther, "{extension} заблокировано", false},
+    {Locale::kRussian, MessageId::kErrorExtensionBlockedAction, PluralCategory::kOther, "Посмотрите запрошенные разрешения в Настройках, раздел Расширения. Там же можно разрешить его, если вы ему доверяете.", false},
+    {Locale::kRussian, MessageId::kErrorConfigInvalid, PluralCategory::kOther, "Не удалось прочитать файл конфигурации", false},
+    {Locale::kRussian, MessageId::kErrorConfigInvalidAction, PluralCategory::kOther, "Исправьте строку, показанную в подробностях, или переименуйте файл, чтобы начать со значений по умолчанию. Bedrock запустился с прежними настройками.", false},
 
     // --- German ---
     {Locale::kGerman, MessageId::kAppName, PluralCategory::kOther, "Bedrock", false},
@@ -90,6 +126,18 @@ const RawMessage kMessages[] = {
     {Locale::kGerman, MessageId::kImportPreviewHeading, PluralCategory::kOther, "Vor dem Import prüfen", false},
     {Locale::kGerman, MessageId::kImportRefusedReason, PluralCategory::kOther, "Nicht importiert: {reason}", false},
     {Locale::kGerman, MessageId::kAdvancedGuardRejected, PluralCategory::kOther, "Abgelehnt durch {guard}: {reason}", false},
+    {Locale::kGerman, MessageId::kErrorNetworkUnreachable, PluralCategory::kOther, "Bedrock konnte das Netzwerk nicht erreichen", false},
+    {Locale::kGerman, MessageId::kErrorNetworkUnreachableAction, PluralCategory::kOther, "Prüfen Sie Ihre Verbindung und laden Sie die Seite neu. Im Tor-Modus wird der Kanal möglicherweise noch aufgebaut.", false},
+    {Locale::kGerman, MessageId::kErrorCertificateInvalid, PluralCategory::kOther, "Das Zertifikat für {site} konnte nicht geprüft werden", false},
+    {Locale::kGerman, MessageId::kErrorCertificateInvalidAction, PluralCategory::kOther, "Geben Sie auf dieser Seite keine Passwörter ein. Verlassen Sie die Website, oder fahren Sie nur fort, wenn Sie wissen, warum das Zertifikat falsch ist.", false},
+    {Locale::kGerman, MessageId::kErrorProfileLocked, PluralCategory::kOther, "Dieses Profil ist bereits in einem anderen Fenster geöffnet", false},
+    {Locale::kGerman, MessageId::kErrorProfileLockedAction, PluralCategory::kOther, "Wechseln Sie zum offenen Fenster, oder schließen Sie es und versuchen Sie es erneut. Es ging nichts verloren.", false},
+    {Locale::kGerman, MessageId::kErrorDownloadRefused, PluralCategory::kOther, "Der Download wurde abgelehnt: {reason}", false},
+    {Locale::kGerman, MessageId::kErrorDownloadRefusedAction, PluralCategory::kOther, "Speichern Sie die Datei in einem anderen Ordner, oder erlauben Sie diesen Dateityp in den Einstellungen unter Downloads.", false},
+    {Locale::kGerman, MessageId::kErrorExtensionBlocked, PluralCategory::kOther, "{extension} wurde blockiert", false},
+    {Locale::kGerman, MessageId::kErrorExtensionBlockedAction, PluralCategory::kOther, "Prüfen Sie die angeforderten Berechtigungen in den Einstellungen unter Erweiterungen. Dort können Sie sie erlauben, wenn Sie ihr vertrauen.", false},
+    {Locale::kGerman, MessageId::kErrorConfigInvalid, PluralCategory::kOther, "Die Konfigurationsdatei konnte nicht gelesen werden", false},
+    {Locale::kGerman, MessageId::kErrorConfigInvalidAction, PluralCategory::kOther, "Korrigieren Sie die in den Details angezeigte Zeile, oder benennen Sie die Datei um, um mit Standardwerten zu starten. Bedrock wurde mit den vorherigen Einstellungen gestartet.", false},
 };
 // clang-format on
 
@@ -253,6 +301,30 @@ const char* StringCatalog::Name(MessageId id) {
       return "IDS_IMPORT_REFUSED_REASON";
     case MessageId::kAdvancedGuardRejected:
       return "IDS_ADVANCED_GUARD_REJECTED";
+    case MessageId::kErrorNetworkUnreachable:
+      return "IDS_ERROR_NETWORK_UNREACHABLE";
+    case MessageId::kErrorNetworkUnreachableAction:
+      return "IDS_ERROR_NETWORK_UNREACHABLE_ACTION";
+    case MessageId::kErrorCertificateInvalid:
+      return "IDS_ERROR_CERTIFICATE_INVALID";
+    case MessageId::kErrorCertificateInvalidAction:
+      return "IDS_ERROR_CERTIFICATE_INVALID_ACTION";
+    case MessageId::kErrorProfileLocked:
+      return "IDS_ERROR_PROFILE_LOCKED";
+    case MessageId::kErrorProfileLockedAction:
+      return "IDS_ERROR_PROFILE_LOCKED_ACTION";
+    case MessageId::kErrorDownloadRefused:
+      return "IDS_ERROR_DOWNLOAD_REFUSED";
+    case MessageId::kErrorDownloadRefusedAction:
+      return "IDS_ERROR_DOWNLOAD_REFUSED_ACTION";
+    case MessageId::kErrorExtensionBlocked:
+      return "IDS_ERROR_EXTENSION_BLOCKED";
+    case MessageId::kErrorExtensionBlockedAction:
+      return "IDS_ERROR_EXTENSION_BLOCKED_ACTION";
+    case MessageId::kErrorConfigInvalid:
+      return "IDS_ERROR_CONFIG_INVALID";
+    case MessageId::kErrorConfigInvalidAction:
+      return "IDS_ERROR_CONFIG_INVALID_ACTION";
   }
   return "IDS_UNKNOWN";
 }
