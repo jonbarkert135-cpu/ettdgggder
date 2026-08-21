@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** roadmap 65–69 merged (PR #19); brand assets finalised (PR #20).
+**As of:** roadmap 70–73 merged (PR #21); brand assets finalised (PR #20).
 
 ## Position on the roadmap
 
@@ -42,14 +42,18 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 | 67 Patch management | done |
 | 68 Upstream sync tooling | done |
 | 69 Security update priority | done |
-| 70+ | **not yet specified — waiting on the project owner** |
+| 70 Supply chain security | done |
+| 71 Release engineering | done |
+| 72 Documentation | done |
+| 73 Build system | done |
+| 74+ | **not yet specified — waiting on the project owner** |
 
 ## What is real vs. what is documented
 
 - **Nothing is `Status::kEnforced`** in the feature registry, so the settings UI
   renders no protection switches yet. That is item 55 working, not a gap to paper over:
   enforcement needs a Chromium build, and `build/ENFORCEMENT.md` must record it.
-- **Runs in CI today:** 47 host test binaries, 4 fuzz smoke harnesses (~860
+- **Runs in CI today:** 48 host test binaries, 4 fuzz smoke harnesses (~860
   inputs each), 6 measured performance metrics, 10 static gates.
 - **Tree shape since item 47:** code is nested under `src_overrides/bedrock/`
   (`privacy/{core,fingerprinting,tracker_blocker,storage,network,security,stats}`,
@@ -76,7 +80,7 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 
 ## Open threads
 
-- Roadmap items 70+ awaited from the project owner.
+- Roadmap items 74+ awaited from the project owner.
 - **Default filter lists are empty** until each list's licence is verified and dated in
   `docs/privacy/FILTER_LISTS.md` (item 52 rule). This is a deliberate blocker, not an oversight.
 - Research queue, highest value first: CNAME uncloaking · query stripping + debouncing ·

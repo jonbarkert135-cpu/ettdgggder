@@ -301,10 +301,13 @@ String catalog: every user-visible string by id, four complete locales, named pl
 | `string_catalog_test.cc` | Item 61: a locale is offered only when it is finished. |
 
 ### `src_overrides/bedrock/updater/`
-Update system and release policy: provider-agnostic signature-verified updates (item 40); security updates always outrank features, with deadlines by severity (items 66, 69).
+Update system, release policy and release channels: provider-agnostic signed updates (40); security beats features with deadlines by severity (66, 69); nightly/beta/stable with soak, promotion and the six mandatory release-note fields (71).
 
 | File | What it is |
 | --- | --- |
+| `release_channels.cc` | implementation |
+| `release_channels.h` | Release channels and what a release must state (roadmap item 71). |
+| `release_channels_test.cc` | Host test, no Chromium. |
 | `release_policy.cc` | implementation |
 | `release_policy.h` | Release policy: security update vs feature (roadmap items 66 and 69). |
 | `release_policy_test.cc` | Host test, no Chromium. |
@@ -325,6 +328,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | File | Title |
 | --- | --- |
 | [`docs/ACCESSIBILITY.md`](../../docs/ACCESSIBILITY.md) | Accessibility |
+| [`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md) | Architecture |
 | [`docs/BRAND.md`](../../docs/BRAND.md) | Brand identity |
 | [`docs/BUILD.md`](../../docs/BUILD.md) | Building Bedrock |
 | [`docs/CONFIGURATION.md`](../../docs/CONFIGURATION.md) | Configuration |
@@ -333,8 +337,13 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/LOCALIZATION.md`](../../docs/LOCALIZATION.md) | Localization |
 | [`docs/PATCHES.md`](../../docs/PATCHES.md) | Patch management |
 | [`docs/PLATFORMS.md`](../../docs/PLATFORMS.md) | Platform support |
+| [`docs/PRIVACY.md`](../../docs/PRIVACY.md) | Privacy |
+| [`docs/README.md`](../../docs/README.md) | Documentation index |
+| [`docs/RELEASES.md`](../../docs/RELEASES.md) | Releases |
 | [`docs/REPRODUCIBILITY.md`](../../docs/REPRODUCIBILITY.md) | Reproducible Builds |
+| [`docs/SUPPLY_CHAIN.md`](../../docs/SUPPLY_CHAIN.md) | Supply chain security |
 | [`docs/THIRD_PARTY.md`](../../docs/THIRD_PARTY.md) | Bedrock Browser — Third-Party Inventory |
+| [`docs/THREAT_MODEL.md`](../../docs/THREAT_MODEL.md) | Bedrock Threat Model |
 | [`docs/UPSTREAM_SYNC.md`](../../docs/UPSTREAM_SYNC.md) | Upstream sync |
 | [`docs/adr/0001-chromium-overlay.md`](../../docs/adr/0001-chromium-overlay.md) | ADR 0001 — Chromium base, overlay repository (not a fork) |
 | [`docs/adr/0002-filter-engine-backend.md`](../../docs/adr/0002-filter-engine-backend.md) | ADR 0002 — One matcher behind one interface: built-in C++ engine, adblock-rust as a swappable backend |
@@ -401,6 +410,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/privacy/fingerprinting/user-agent.md`](../../docs/privacy/fingerprinting/user-agent.md) | User-Agent |
 | [`docs/privacy/fingerprinting/webgl.md`](../../docs/privacy/fingerprinting/webgl.md) | WebGL |
 | [`docs/privacy/fingerprinting/webrtc.md`](../../docs/privacy/fingerprinting/webrtc.md) | WebRTC |
+| [`docs/releases/TEMPLATE.md`](../../docs/releases/TEMPLATE.md) | Bedrock <version> |
 | [`docs/research/BRAVE.md`](../../docs/research/BRAVE.md) | Brave research (brave-core) |
 | [`docs/research/FIREFOX.md`](../../docs/research/FIREFOX.md) | Firefox research |
 | [`docs/research/ORIGIN_TOOLS.md`](../../docs/research/ORIGIN_TOOLS.md) | "Origin Tools" — searched for, not found |
@@ -408,7 +418,6 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/research/TOR_BROWSER.md`](../../docs/research/TOR_BROWSER.md) | Tor Browser research |
 | [`docs/research/UBLOCK_ORIGIN.md`](../../docs/research/UBLOCK_ORIGIN.md) | uBlock Origin research |
 | [`docs/security/TESTING.md`](../../docs/security/TESTING.md) | Security testing |
-| [`docs/security/THREAT_MODEL.md`](../../docs/security/THREAT_MODEL.md) | Bedrock Threat Model |
 
 ## CI gates — `scripts/`
 A gate is a rule the repository enforces on itself. Do not weaken one to make a change land.
@@ -418,6 +427,7 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | `scripts/check_branding.py` | Branding gate (roadmap item 65). |
 | `scripts/check_catalog.py` | Validate the privacy extension catalog. Run: python3 scripts/check_catalog.py |
 | `scripts/check_config_surface.py` | Fail if the configuration surface and its documentation disagree (item 56). |
+| `scripts/check_docs.py` | Documentation gate (roadmap item 72). |
 | `scripts/check_fp_docs.py` | Every anti-fingerprinting surface must have a documented rationale. |
 | `scripts/check_languages.py` | Fail if the language policy of ADR 0004 is broken. |
 | `scripts/check_memory.py` | Fail if the project memory in `.ai/` is missing, stale or out of sync. |
@@ -427,6 +437,7 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | `scripts/check_perf_claims.py` | Fail if the project makes a performance claim without a number. |
 | `scripts/check_platform.py` | Platform abstraction gate (roadmap items 62, 63, 64). |
 | `scripts/check_provenance.py` | Fail if the licensing record is incomplete. Run: python3 scripts/check_provenance.py |
+| `scripts/check_releases.py` | Release channel and release-notes gate (roadmap item 71). |
 | `scripts/check_security_testing.py` | Fail if the security testing setup has decayed. Run: |
 | `scripts/check_strings.py` | Localization gate (roadmap item 61). |
 | `scripts/check_ui_style.py` | Roadmap item 27's taste rules, as a gate. |
