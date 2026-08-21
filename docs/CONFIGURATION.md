@@ -35,6 +35,7 @@ that is the same failure as a fake toggle (item 55), typed on a command line.
 | `network.dns.provider` | `--dns-provider=` | `DnsProvider` | provider id (**empty**) |
 | `network.webrtc` | `--webrtc-policy=` | `WebRtcPolicy` | default, privacy, strict (**privacy**) |
 | `blocking.lists` | `--filter-lists=` | `FilterLists` | comma-separated list ids (**empty**, see [FILTER_LISTS.md](privacy/FILTER_LISTS.md)) |
+| `ui.language` | `--lang=` | `UiLanguage` | BCP-47 tag: en-US, uk-UA, ru-RU, de-DE (**empty** = follow the system) |
 | `search.default_engine` | `--search-engine=` | `DefaultSearchEngine` | engine id (**duckduckgo**) |
 | `profile.name` | `--profile=` | — | profile name (**empty**) |
 | `session.tor_window` | `--tor-window` | — | flag |

@@ -55,4 +55,10 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 40 | An import can lower privilege but never raise it; a newer file version is refused, not half-read | `settings/portability`, `portability_test` |
 | 41 | Exports carry no secrets unless explicitly requested and encrypted, and never third-party list contents | `settings/portability`, `docs/FORMATS.md` |
 | 42 | Every Bedrock control has a keyboard path and an accessible name | `ui/accessibility`, `accessibility_test`, `scripts/check_ui_style.py` |
+| 44 | No user-visible string is written at its display site; it comes from the catalog by id | `ui/l10n/string_catalog`, `scripts/check_strings.py` |
+| 45 | A locale is offered only when every id is translated; placeholders match the English source | `scripts/check_strings.py`, `string_catalog_test` |
+| 46 | Ukrainian never falls back to Russian — only to English | `string_catalog` (`FallbackChain`), `string_catalog_test` |
+| 47 | Platform macros appear only under `src_overrides/bedrock/platform/` | `scripts/check_platform.py` |
+| 48 | No Linux code path assumes a desktop environment; Wayland and X11 are both first class | `platform/platform_support`, `scripts/check_platform.py` |
+| 49 | A platform is called supported only when it is built, tested and released | `platform_support` (tiers + reasons), `platform_support_test` |
 | 43 | A destructive dialog is an alertdialog that opens focused on the safe choice | `ui/accessibility` (`ContractFor`), `accessibility_test` |
