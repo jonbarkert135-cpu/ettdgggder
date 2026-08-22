@@ -5,6 +5,9 @@
 
 #include "bedrock/privacy/core/privacy_policy.h"
 
+#include <string>
+#include <vector>
+
 namespace bedrock {
 namespace privacy {
 namespace {

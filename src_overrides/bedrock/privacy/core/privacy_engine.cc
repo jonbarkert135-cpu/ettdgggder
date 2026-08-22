@@ -5,6 +5,8 @@
 
 #include "bedrock/privacy/core/privacy_engine.h"
 
+#include <vector>
+
 // The feature registry, defined once (roadmap items 8 and 55).
 //
 // Until this file existed, `GetFeatureRegistry()` was declared and never

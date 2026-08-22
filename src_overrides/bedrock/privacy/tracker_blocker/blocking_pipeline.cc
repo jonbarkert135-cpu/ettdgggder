@@ -5,7 +5,9 @@
 
 #include "bedrock/privacy/tracker_blocker/blocking_pipeline.h"
 
+#include <cstddef>
 #include <set>
+#include <string>
 
 namespace bedrock {
 namespace blocking {

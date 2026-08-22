@@ -6,6 +6,8 @@
 #include "bedrock/ui/sidebar.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <vector>
 
 namespace bedrock {
 namespace ui {

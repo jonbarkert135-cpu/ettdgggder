@@ -6,8 +6,14 @@
 #include "bedrock/themes/theme_engine.h"
 
 #include <algorithm>
+#include <cerrno>
 #include <cmath>
+#include <cstddef>
+#include <cstdlib>
+#include <limits>
 #include <sstream>
+#include <string>
+#include <vector>
 
 namespace bedrock {
 namespace ui {
@@ -18,9 +24,45 @@ bool IsColor(Property property) {
          property == Property::kBackgroundColor;
 }
 
+// Chromium builds with -fno-exceptions, so std::stoi/std::stod are unusable
+// here: a malformed theme file must fail as a return value, not as a throw.
+// These helpers return false instead and leave the output untouched.
+bool ParseInt(const std::string& text, int base, int* out) {
+  if (text.empty()) {
+    return false;
+  }
+  errno = 0;
+  char* end = nullptr;
+  const long value = std::strtol(text.c_str(), &end, base);
+  if (errno != 0 || end != text.c_str() + text.size() ||
+      value < std::numeric_limits<int>::min() ||
+      value > std::numeric_limits<int>::max()) {
+    return false;
+  }
+  *out = static_cast<int>(value);
+  return true;
+}
+
+bool ParseDouble(const std::string& text, double* out) {
+  if (text.empty()) {
+    return false;
+  }
+  errno = 0;
+  char* end = nullptr;
+  const double value = std::strtod(text.c_str(), &end);
+  if (errno != 0 || end != text.c_str() + text.size()) {
+    return false;
+  }
+  *out = value;
+  return true;
+}
+
 double Channel(const std::string& hex, size_t offset) {
-  const std::string byte = hex.substr(offset, 2);
-  return static_cast<double>(std::stoi(byte, nullptr, 16)) / 255.0;
+  int byte = 0;
+  if (!ParseInt(hex.substr(offset, 2), 16, &byte)) {
+    return 0.0;
+  }
+  return static_cast<double>(byte) / 255.0;
 }
 
 double Linearize(double channel) {
@@ -251,14 +293,12 @@ bool ThemeEngine::Import(const std::string& text) {
     const std::string key = line.substr(0, equals);
     const std::string value = line.substr(equals + 1);
     if (key == "mode") {
-      try {
-        const int mode = std::stoi(value);
-        if (mode >= 0 && mode <= static_cast<int>(ThemeMode::kCustom)) {
-          SetMode(static_cast<ThemeMode>(mode));
-          any = true;
-        }
-      } catch (...) {
-        // Ignore: a malformed line must not take the whole theme down.
+      // A malformed line must not take the whole theme down.
+      int mode = 0;
+      if (ParseInt(value, 10, &mode) && mode >= 0 &&
+          mode <= static_cast<int>(ThemeMode::kCustom)) {
+        SetMode(static_cast<ThemeMode>(mode));
+        any = true;
       }
       continue;
     }
@@ -270,11 +310,11 @@ bool ThemeEngine::Import(const std::string& text) {
       if (IsColor(property)) {
         SetColor(property, value);
       } else {
-        try {
-          Set(property, std::stod(value));
-        } catch (...) {
+        double number = 0.0;
+        if (!ParseDouble(value, &number)) {
           break;
         }
+        Set(property, number);
       }
       any = true;
       break;

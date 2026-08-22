@@ -6,6 +6,9 @@
 #include "bedrock/extensions/extension_registry.h"
 
 #include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace bedrock {
 namespace extensions {

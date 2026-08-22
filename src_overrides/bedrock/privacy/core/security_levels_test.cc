@@ -7,6 +7,7 @@
 
 #include "bedrock/privacy/core/security_levels.h"
 
+#include <cstddef>
 #include <iostream>
 #include <string>
 

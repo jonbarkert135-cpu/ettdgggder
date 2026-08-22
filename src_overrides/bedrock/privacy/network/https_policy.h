@@ -6,6 +6,7 @@
 #ifndef BEDROCK_PRIVACY_NETWORK_HTTPS_POLICY_H_
 #define BEDROCK_PRIVACY_NETWORK_HTTPS_POLICY_H_
 
+#include <cstddef>
 #include <map>
 #include <string>
 

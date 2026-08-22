@@ -5,6 +5,8 @@
 
 #include "bedrock/privacy/core/security_levels.h"
 
+#include <vector>
+
 namespace bedrock {
 namespace privacy {
 

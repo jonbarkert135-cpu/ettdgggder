@@ -8,8 +8,10 @@
 #include "bedrock/ui/tab_model.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <iostream>
 #include <string>
+#include <vector>
 
 namespace {
 

@@ -6,6 +6,9 @@
 #include "bedrock/workspaces/workspace_manager.h"
 
 #include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace bedrock {
 namespace session {

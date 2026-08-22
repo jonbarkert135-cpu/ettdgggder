@@ -16,6 +16,8 @@
 
 #include "bedrock/fuzz/fuzz_main.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <string>
 
 #include "bedrock/privacy/core/privacy_policy.h"

@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <set>
 #include <string>
+#include <vector>
 
 namespace bedrock {
 namespace platform {

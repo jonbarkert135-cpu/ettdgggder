@@ -6,6 +6,7 @@
 #ifndef BEDROCK_UPDATER_UPDATE_PROVIDER_H_
 #define BEDROCK_UPDATER_UPDATE_PROVIDER_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>

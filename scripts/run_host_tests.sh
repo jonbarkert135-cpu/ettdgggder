@@ -81,6 +81,9 @@ python3 scripts/check_config_surface.py --selftest || status=1
 python3 scripts/check_config_surface.py || status=1
 python3 scripts/check_open_source.py || status=1
 python3 scripts/generate_sbom.py --check || status=1
+python3 scripts/gen_build_gn.py --selftest || status=1
+python3 scripts/gen_build_gn.py || status=1
+
 python3 scripts/check_memory.py --selftest || status=1
 
 # Project memory. On a pull request GitHub sets GITHUB_BASE_REF, and the gate

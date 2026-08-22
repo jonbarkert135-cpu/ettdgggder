@@ -6,6 +6,7 @@
 #ifndef BEDROCK_PRIVACY_TRACKER_BLOCKER_FILTER_ENGINE_H_
 #define BEDROCK_PRIVACY_TRACKER_BLOCKER_FILTER_ENGINE_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <map>
 #include <set>

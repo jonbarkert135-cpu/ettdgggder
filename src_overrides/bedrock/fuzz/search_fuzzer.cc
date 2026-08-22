@@ -14,6 +14,8 @@
 
 #include "bedrock/fuzz/fuzz_main.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <string>
 #include <vector>
 

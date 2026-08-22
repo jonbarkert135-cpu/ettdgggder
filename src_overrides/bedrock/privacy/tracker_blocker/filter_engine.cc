@@ -6,6 +6,14 @@
 #include "bedrock/privacy/tracker_blocker/filter_engine.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <map>
+#include <set>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 namespace bedrock {
 namespace blocking {

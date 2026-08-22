@@ -5,6 +5,10 @@
 
 #include "bedrock/diagnostics/debug_log.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <string>
+
 namespace bedrock {
 namespace diagnostics {
 

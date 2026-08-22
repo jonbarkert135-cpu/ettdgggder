@@ -8,6 +8,7 @@
 
 #include "bedrock/privacy/fingerprinting/fingerprint_policy.h"
 
+#include <cstdint>
 #include <iostream>
 #include <set>
 #include <string>

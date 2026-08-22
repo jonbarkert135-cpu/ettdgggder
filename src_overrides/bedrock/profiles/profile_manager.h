@@ -6,6 +6,7 @@
 #ifndef BEDROCK_PROFILES_PROFILE_MANAGER_H_
 #define BEDROCK_PROFILES_PROFILE_MANAGER_H_
 
+#include <cstddef>
 #include <map>
 #include <string>
 #include <vector>

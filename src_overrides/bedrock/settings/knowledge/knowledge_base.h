@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 // Privacy Knowledge Center (brief items 6–11, 14–17).

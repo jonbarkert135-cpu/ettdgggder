@@ -6,6 +6,7 @@
 #ifndef BEDROCK_EXTENSIONS_CATALOG_RECOMMENDATION_ENGINE_H_
 #define BEDROCK_EXTENSIONS_CATALOG_RECOMMENDATION_ENGINE_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 

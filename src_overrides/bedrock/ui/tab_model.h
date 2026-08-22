@@ -6,6 +6,7 @@
 #ifndef BEDROCK_UI_TAB_MODEL_H_
 #define BEDROCK_UI_TAB_MODEL_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <deque>
 #include <map>

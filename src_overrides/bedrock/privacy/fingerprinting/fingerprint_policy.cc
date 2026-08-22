@@ -6,6 +6,9 @@
 #include "bedrock/privacy/fingerprinting/fingerprint_policy.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <string>
 
 namespace bedrock {
 namespace privacy {

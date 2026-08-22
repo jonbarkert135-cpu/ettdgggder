@@ -5,6 +5,9 @@
 
 #include "bedrock/perf/perf_budgets.h"
 
+#include <string>
+#include <vector>
+
 namespace bedrock {
 namespace perf {
 

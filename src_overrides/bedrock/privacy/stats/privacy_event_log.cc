@@ -6,6 +6,9 @@
 #include "bedrock/privacy/stats/privacy_event_log.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 namespace bedrock {
 namespace stats {

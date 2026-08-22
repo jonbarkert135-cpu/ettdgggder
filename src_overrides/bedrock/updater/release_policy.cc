@@ -6,6 +6,7 @@
 #include "bedrock/updater/release_policy.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <string>
 #include <vector>
 

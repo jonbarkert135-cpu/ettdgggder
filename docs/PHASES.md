@@ -23,7 +23,7 @@ can be before the overlay has ever been applied to a checkout.
 | Phase | Work | Status | Where it is |
 | --- | --- | --- | --- |
 | 0 | Repository, licensing, architecture | `done` | ADRs 0001–0014, `docs/LICENSING.md`, gates in CI |
-| 1 | **Chromium build** | `not-started` | `build/chromium.pin` (151.0.7922.173), `docs/BUILD.md` — instructions exist, no build has been run |
+| 1 | **Chromium build** | `done` | Built 2026-08-22 at the pinned revision, overlay compiled in-tree — `build/ENFORCEMENT.md` |
 | 2 | Minimal browser shell | `not-started` | Blocked on phase 1 |
 | 3 | Tabs, navigation, profiles | `policy-landed` | `ui/tab_model`, `session/`, `profiles/` + host tests |
 | 4 | Search engine abstraction | `policy-landed` | `search/engine_selector`, `omnibox/input_parser`, ADR 0009 |
@@ -51,19 +51,22 @@ free:
   commit, plus documents and gates that keep the two in step. None of it is a mock. The design
   work — how blocking, fingerprinting, storage and settings fit together — is done and reviewable,
   and it is the part that is expensive to change later.
-* **What it costs.** Nothing has been proven against the engine. `Status::kEnforced` appears
-  nowhere in the feature registry, `build/ENFORCEMENT.md` does not exist, and the settings UI
-  renders no protection switches, exactly as item 55 requires. Some of the policy code will
-  change on contact with Chromium's actual seams; that is the bill for the order chosen.
+* **What it costs.** Almost nothing has been proven against the engine yet. Phase 1 changed one
+  thing and it is worth being precise about which: all 106 overlay sources now compile under
+  Chromium's clang and reach the `chrome` link line, so the integration is real — but no Chromium
+  code calls into `bedrock::` yet, the linker drops the objects from the final binary, and
+  `Status::kEnforced` still appears nowhere in the feature registry. `build/ENFORCEMENT.md`
+  records exactly that distinction. The bill for building out of order came due immediately:
+  `-fno-exceptions`, the `raw_ptr` plugin and Chromium's strict standard-library includes each
+  required real changes to code that had passed its host tests for weeks.
 
 ## What comes next, in order
 
-1. **Phase 1: build Chromium** at the pinned revision, apply the overlay, and record the result.
-   This is the single largest unblocker in the project — it converts twelve `policy-landed`
-   phases into things that can be verified, turns eight performance budgets from `pending` into
-   numbers, and lets `tests/browser/run.py --browser out/Release/bedrock` run against Bedrock
-   instead of stock Chromium.
-2. **Phase 2: the shell**, then re-verify phases 3–5 against it.
+1. **Phase 2: the shell** — the first Chromium call site into `bedrock::`. Until one exists the
+   overlay compiles and is then discarded by `--gc-sections`, so phase 2 is what turns phase 1's
+   result into a browser that actually runs Bedrock code. It also unblocks the first
+   `Status::kEnforced` feature and the first row in `build/ENFORCEMENT.md`.
+2. **Re-verify phases 3–5 against that shell**, then the privacy phases behind them.
 3. **Phase 13 and 16**, the two remaining `not-started` product phases.
 
 Until step 1 happens, no phase between 3 and 15 may be described as done — in this document, in

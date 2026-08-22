@@ -7,6 +7,7 @@
 
 #include "bedrock/passwords/password_store.h"
 
+#include <cstddef>
 #include <iostream>
 #include <memory>
 #include <string>

@@ -6,6 +6,7 @@
 #ifndef BEDROCK_EXTENSIONS_EXTENSION_REGISTRY_H_
 #define BEDROCK_EXTENSIONS_EXTENSION_REGISTRY_H_
 
+#include <cstddef>
 #include <map>
 #include <string>
 #include <vector>

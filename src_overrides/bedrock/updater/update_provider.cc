@@ -5,7 +5,11 @@
 
 #include "bedrock/updater/update_provider.h"
 
+#include <cstddef>
 #include <cstdlib>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace bedrock {
 namespace update {

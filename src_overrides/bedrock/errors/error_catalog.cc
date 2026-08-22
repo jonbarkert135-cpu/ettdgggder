@@ -5,6 +5,10 @@
 
 #include "bedrock/errors/error_catalog.h"
 
+#include <iterator>
+#include <string>
+#include <vector>
+
 #include "bedrock/diagnostics/scrubber.h"
 
 namespace bedrock {

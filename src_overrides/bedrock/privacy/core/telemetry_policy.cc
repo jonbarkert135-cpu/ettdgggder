@@ -5,6 +5,10 @@
 
 #include "bedrock/privacy/core/telemetry_policy.h"
 
+#include <string>
+#include <utility>
+#include <vector>
+
 namespace bedrock {
 namespace privacy {
 

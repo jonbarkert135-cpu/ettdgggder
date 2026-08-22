@@ -5,7 +5,9 @@
 
 #include "bedrock/diagnostics/scrubber.h"
 
+#include <cstddef>
 #include <regex>
+#include <string>
 
 namespace bedrock {
 namespace diagnostics {

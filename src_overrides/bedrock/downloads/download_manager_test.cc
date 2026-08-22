@@ -7,6 +7,7 @@
 
 #include "bedrock/downloads/download_manager.h"
 
+#include <cstdint>
 #include <iostream>
 #include <string>
 

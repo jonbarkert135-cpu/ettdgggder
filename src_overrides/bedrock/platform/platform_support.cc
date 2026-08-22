@@ -5,6 +5,8 @@
 
 #include "bedrock/platform/platform_support.h"
 
+#include <vector>
+
 namespace bedrock {
 namespace platform {
 

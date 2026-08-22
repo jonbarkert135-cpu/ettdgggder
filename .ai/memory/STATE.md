@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** roadmap 82–89 merged (PR #24).
+**As of:** phase 1 done — Chromium built, overlay compiled in-tree (PR #25).
 
 ## Position on the roadmap
 
@@ -60,14 +60,17 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 | 85 Privacy-vs-usability scoring table | done |
 | 86 ADRs (14 records, indexed and mapped) | done |
 | 87–88 Research-first process, timeboxed | done — `docs/PROCESS.md` |
-| 89 Implementation order | documented honestly in `docs/PHASES.md`: phases 3–15 are `policy-landed`, **phase 1 (Chromium build) is not started** |
+| 89 Implementation order | `docs/PHASES.md`: **phase 1 done** (build recorded in `build/ENFORCEMENT.md`), phases 3–15 still `policy-landed`, phase 2 is next |
 | 90+ | **not yet specified — waiting on the project owner** |
 
 ## What is real vs. what is documented
 
 - **Nothing is `Status::kEnforced`** in the feature registry, so the settings UI
-  renders no protection switches yet. That is item 55 working, not a gap to paper over:
-  enforcement needs a Chromium build, and `build/ENFORCEMENT.md` must record it.
+  renders no protection switches yet. The Chromium build now exists, but enforcement means a
+  running browser performs the protection — and no Chromium code calls `bedrock::` yet, so the
+  linker discards the overlay objects from the final binary. First call site = phase 2.
+- **The overlay compiles inside Chromium** (2026-08-22, 53 objects, `chrome` links, exit 0). That
+  is build-system integration, not behaviour. `build/ENFORCEMENT.md` states the difference.
 - **Runs in CI today:** 49 host test binaries, 9 fuzz smoke harnesses (~860
   inputs each), 6 measured performance metrics, 29 static gates.
 - **Runs against a real browser binary (not in CI):**
@@ -116,18 +119,19 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 - From item 49, three recorded follow-ups: letterboxing, one "forget about this
   site" action, and an ADR deciding whether extensions keep blocking `webRequest`.
   Parked as too large for now: RLBox-style library sandboxing, a Bedrock root store.
-- No real Chromium build has been run in CI; everything requiring one is marked
-  as such in `docs/security/TESTING.md` and `docs/performance/BUDGETS.md`.
+- A Chromium build has been run **once, by hand, on Linux** — not in CI, and never on Windows.
+  Sanitizer builds, libFuzzer campaigns and the 8 performance budgets still have no numbers;
+  they stay marked pending in `docs/security/TESTING.md` and `docs/performance/BUDGETS.md`.
 - Fuzz corpora are seed-sized only; no long campaign has run yet.
 - No WebUI file exists yet (`settings/`, `ui/`, `devtools/` are C++ so far), so
   ADR 0006's framework ban is currently enforced against an empty set plus the
   test fixtures. It matters the day the first Settings page is written.
-- `src_overrides/bedrock/BUILD.gn` still lists the pre-item-47 flat paths and is
-  not checked by any gate. Harmless until a real Chromium build runs; fix it in
-  the same change that first builds against Chromium.
-- **The next real unblocker is phase 1: build Chromium.** `docs/PHASES.md` states
-  it plainly — twelve subsystems are `policy-landed`, meaning tested here and
-  never run by an engine. Do not describe them as done.
+- **The next real unblocker is phase 2: the minimal shell** — the first Chromium call site into
+  `bedrock::`. Twelve subsystems are still `policy-landed`: tested here, never run by an engine.
+  Do not describe them as done.
+- Building in-tree is not free of surprises: `-fno-exceptions`, the `chromium-rawptr` plugin and
+  C++20 std-module includes all reject code that `g++` accepts. New overlay code should include
+  what it uses and avoid `std::stoi`/`stod` — see the table in `docs/BUILD.md`.
 - Item 85's scoring caught four features that ship on against their own score
   (cosmetic filtering, WebGL controls, gamepad/sensors, notification gating);
   each now carries a written `default_on_reason`, and the test fails if one is

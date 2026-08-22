@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <string>
+#include <utility>
 
 #include "bedrock/privacy/core/telemetry_policy.h"
 

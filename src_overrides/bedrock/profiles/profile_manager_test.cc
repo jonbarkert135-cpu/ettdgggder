@@ -7,6 +7,7 @@
 
 #include "bedrock/profiles/profile_manager.h"
 
+#include <cstddef>
 #include <iostream>
 #include <set>
 #include <string>

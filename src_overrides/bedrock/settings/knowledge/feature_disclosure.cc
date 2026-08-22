@@ -5,6 +5,8 @@
 
 #include "bedrock/settings/knowledge/feature_disclosure.h"
 
+#include <vector>
+
 namespace bedrock {
 namespace settings {
 

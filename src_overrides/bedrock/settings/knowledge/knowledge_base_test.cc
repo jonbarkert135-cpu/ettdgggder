@@ -7,6 +7,7 @@
 
 #include "bedrock/settings/knowledge/knowledge_base.h"
 
+#include <cstdint>
 #include <iostream>
 #include <set>
 #include <string>

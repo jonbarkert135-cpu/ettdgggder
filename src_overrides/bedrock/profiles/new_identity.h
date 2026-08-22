@@ -6,6 +6,7 @@
 #ifndef BEDROCK_PROFILES_NEW_IDENTITY_H_
 #define BEDROCK_PROFILES_NEW_IDENTITY_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
