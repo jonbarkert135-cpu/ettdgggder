@@ -5,6 +5,9 @@
 
 #include "bedrock/devtools/privacy_devtools.h"
 
+#include <string>
+#include <vector>
+
 namespace bedrock {
 namespace devtools {
 namespace {

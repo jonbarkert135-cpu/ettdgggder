@@ -6,6 +6,8 @@
 #include "bedrock/updater/release_channels.h"
 
 #include <algorithm>
+#include <string>
+#include <vector>
 
 namespace bedrock {
 namespace update {

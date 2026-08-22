@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <set>
 #include <string>
+#include <vector>
 
 // An importer is a parser for hostile input that arrives wearing the user's
 // trust. These tests are mostly about what it refuses to do with that trust.

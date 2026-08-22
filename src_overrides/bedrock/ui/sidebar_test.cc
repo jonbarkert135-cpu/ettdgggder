@@ -7,6 +7,7 @@
 
 #include "bedrock/ui/sidebar.h"
 
+#include <cstddef>
 #include <iostream>
 #include <set>
 #include <string>

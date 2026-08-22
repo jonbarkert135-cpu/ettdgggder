@@ -7,8 +7,10 @@
 
 #include "bedrock/history/history_store.h"
 
+#include <cstdint>
 #include <iostream>
 #include <string>
+#include <vector>
 
 namespace {
 

@@ -5,6 +5,10 @@
 
 #include "bedrock/profiles/profile_manager.h"
 
+#include <string>
+#include <utility>
+#include <vector>
+
 namespace bedrock {
 namespace session {
 

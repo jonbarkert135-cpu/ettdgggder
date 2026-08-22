@@ -6,6 +6,8 @@
 #include "bedrock/extensions/catalog/recommendation_engine.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <vector>
 
 namespace bedrock {
 namespace catalog {

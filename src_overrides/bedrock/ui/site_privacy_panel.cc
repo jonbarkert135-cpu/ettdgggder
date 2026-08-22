@@ -5,6 +5,9 @@
 
 #include "bedrock/ui/site_privacy_panel.h"
 
+#include <string>
+#include <vector>
+
 namespace bedrock {
 namespace ui {
 namespace {

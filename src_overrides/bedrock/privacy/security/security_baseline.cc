@@ -6,6 +6,8 @@
 #include "bedrock/privacy/security/security_baseline.h"
 
 #include <algorithm>
+#include <string>
+#include <vector>
 
 namespace bedrock {
 namespace security {

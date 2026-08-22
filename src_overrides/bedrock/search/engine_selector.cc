@@ -6,6 +6,8 @@
 #include "bedrock/search/engine_selector.h"
 
 #include <algorithm>
+#include <string>
+#include <vector>
 
 namespace bedrock {
 namespace {

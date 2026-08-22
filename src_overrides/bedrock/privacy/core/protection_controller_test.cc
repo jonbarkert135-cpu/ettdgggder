@@ -7,6 +7,7 @@
 
 #include "bedrock/privacy/core/protection_controller.h"
 
+#include <cstddef>
 #include <iostream>
 #include <set>
 #include <string>

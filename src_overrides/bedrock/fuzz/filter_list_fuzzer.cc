@@ -10,6 +10,8 @@
 
 #include "bedrock/fuzz/fuzz_main.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <string>
 
 #include "bedrock/privacy/tracker_blocker/filter_engine.h"

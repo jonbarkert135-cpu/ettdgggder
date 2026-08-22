@@ -5,6 +5,11 @@
 
 #include "bedrock/privacy/core/protection_controller.h"
 
+#include <cstddef>
+#include <map>
+#include <string>
+#include <vector>
+
 namespace bedrock {
 namespace privacy {
 namespace {

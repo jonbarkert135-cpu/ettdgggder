@@ -6,9 +6,13 @@
 #include "bedrock/passwords/password_store.h"
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
+#include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 namespace bedrock {
 namespace passwords {

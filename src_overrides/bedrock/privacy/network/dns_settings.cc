@@ -5,6 +5,9 @@
 
 #include "bedrock/privacy/network/dns_settings.h"
 
+#include <string>
+#include <vector>
+
 namespace bedrock {
 namespace net {
 namespace {

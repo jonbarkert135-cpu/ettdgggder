@@ -5,6 +5,8 @@
 
 #include "bedrock/privacy/network/https_policy.h"
 
+#include <string>
+
 namespace bedrock {
 namespace net {
 namespace {

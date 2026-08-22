@@ -7,6 +7,10 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstddef>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 namespace bedrock {
 namespace downloads {

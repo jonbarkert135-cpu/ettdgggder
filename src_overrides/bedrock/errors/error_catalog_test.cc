@@ -7,6 +7,7 @@
 
 #include "bedrock/errors/error_catalog.h"
 
+#include <cstddef>
 #include <iostream>
 #include <set>
 #include <string>

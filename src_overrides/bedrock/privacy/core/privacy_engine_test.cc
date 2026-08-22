@@ -5,6 +5,7 @@
 
 #include "bedrock/privacy/core/privacy_engine.h"
 
+#include <cstddef>
 #include <cstdio>
 #include <cstring>
 #include <set>

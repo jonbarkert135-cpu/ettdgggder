@@ -6,6 +6,11 @@
 #include "bedrock/diagnostics/crash_report.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <map>
+#include <string>
+#include <vector>
 
 #include "bedrock/diagnostics/scrubber.h"
 

@@ -5,6 +5,9 @@
 
 #include "bedrock/settings/privacy_posture.h"
 
+#include <string>
+#include <vector>
+
 namespace bedrock {
 namespace stats {
 namespace {

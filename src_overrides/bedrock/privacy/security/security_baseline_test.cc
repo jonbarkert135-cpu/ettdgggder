@@ -8,6 +8,7 @@
 #include "bedrock/privacy/security/security_baseline.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <iostream>
 #include <string>
 

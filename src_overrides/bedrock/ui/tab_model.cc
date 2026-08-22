@@ -6,6 +6,11 @@
 #include "bedrock/ui/tab_model.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace bedrock {
 namespace ui {

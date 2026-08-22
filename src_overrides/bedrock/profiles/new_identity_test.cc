@@ -8,8 +8,11 @@
 #include "bedrock/profiles/new_identity.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <iostream>
 #include <string>
+#include <vector>
 
 namespace {
 

@@ -7,8 +7,11 @@
 
 #include "bedrock/extensions/catalog/extension_catalog.h"
 
+#include <cstdint>
 #include <iostream>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "bedrock/extensions/catalog/recommendation_engine.h"
 

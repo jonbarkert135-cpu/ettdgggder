@@ -5,7 +5,13 @@
 
 #include "bedrock/privacy/tracker_blocker/tracker_heuristic.h"
 
+#include <cerrno>
+#include <cstddef>
+#include <cstdlib>
+#include <limits>
 #include <sstream>
+#include <string>
+#include <utility>
 
 namespace bedrock {
 namespace blocking {
@@ -152,12 +158,18 @@ bool TrackerHeuristic::Import(const std::string& text) {
     const std::string flags =
         second_tab == std::string::npos ? "" : line.substr(second_tab + 1);
     Entry entry;
-    try {
-      entry.count = std::stoi(count);
-    } catch (...) {
+    // Chromium builds with -fno-exceptions, so std::stoi is unusable here: a
+    // corrupt line has to be rejected by return value, not by a throw.
+    errno = 0;
+    char* end = nullptr;
+    const long parsed = std::strtol(count.c_str(), &end, 10);
+    if (count.empty() || errno != 0 || end != count.c_str() + count.size() ||
+        parsed < std::numeric_limits<int>::min() ||
+        parsed > std::numeric_limits<int>::max()) {
       ok = false;
       continue;
     }
+    entry.count = static_cast<int>(parsed);
     entry.partition_only = flags.find('p') != std::string::npos;
     entry.honours_signals = flags.find('s') != std::string::npos;
     if (flags.find('A') != std::string::npos) {

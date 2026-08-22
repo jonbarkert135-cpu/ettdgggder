@@ -5,6 +5,10 @@
 
 #include "bedrock/settings/privacy_center.h"
 
+#include <cstdint>
+#include <string>
+#include <vector>
+
 #include "bedrock/privacy/core/security_levels.h"
 
 namespace bedrock {

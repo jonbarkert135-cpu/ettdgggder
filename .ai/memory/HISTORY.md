@@ -4,6 +4,21 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #25 — Phase 1: Chromium built, overlay compiled in-tree
+- Stock Chromium 151.0.7922.173 built from the pin: 56 105 steps, **12 h 16 m**, 194 MB binary,
+  headless screenshot smoke test passed. Numbers and caveats: `build/ENFORCEMENT.md`.
+- `//bedrock` wired into `//chrome/browser:browser` by
+  `patches/bedrock/build/0001-add-bedrock-to-chrome-browser.patch`; 53 Bedrock objects now reach
+  the `chrome` link. They are then dropped by `--gc-sections`, because **no Chromium code calls
+  `bedrock::` yet** — phase 2 is what changes that. Do not claim Bedrock code runs.
+- Three toolchain constraints cost the whole day and will recur: `-fno-exceptions` (no
+  `std::stoi`/`stod`/`catch` — two call sites rewritten on `strtol`/`strtod`), the
+  `chromium-rawptr` plugin (the target removes `find_bad_constructs`; `raw_ptr<T>` needs `//base`,
+  which the overlay must not depend on), and C++20 std modules (**103 files** were relying on
+  libstdc++ transitive includes; each now includes what it uses). Table in `docs/BUILD.md`.
+- `scripts/gen_build_gn.py` now generates `src_overrides/bedrock/BUILD.gn` (one `source_set`, 106
+  files) and runs as a gate, replacing the stale hand-written pre-item-47 file.
+
 ## PR #24 — Roadmap 82–89: transparency, defaults, trade-off scores, ADRs, process, phases
 - **82 + 85** one table, `settings/knowledge/feature_disclosure`: all 30 registry features get how
   it works / what it protects / **what it cannot protect** / compatibility impact, plus five scores

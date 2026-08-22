@@ -8,9 +8,11 @@
 #include "bedrock/session/browsing_mode.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <iostream>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "bedrock/profiles/new_identity.h"
 

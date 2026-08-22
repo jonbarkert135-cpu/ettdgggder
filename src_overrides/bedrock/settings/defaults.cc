@@ -5,6 +5,9 @@
 
 #include "bedrock/settings/defaults.h"
 
+#include <string>
+#include <vector>
+
 namespace bedrock {
 namespace settings {
 

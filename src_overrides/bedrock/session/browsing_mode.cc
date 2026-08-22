@@ -5,6 +5,9 @@
 
 #include "bedrock/session/browsing_mode.h"
 
+#include <string>
+#include <vector>
+
 namespace bedrock {
 namespace session {
 

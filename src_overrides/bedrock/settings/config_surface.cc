@@ -6,6 +6,10 @@
 #include "bedrock/settings/config_surface.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace bedrock {
 namespace settings {

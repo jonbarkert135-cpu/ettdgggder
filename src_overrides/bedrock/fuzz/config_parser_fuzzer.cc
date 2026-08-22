@@ -13,6 +13,8 @@
 
 #include "bedrock/fuzz/fuzz_main.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <map>
 #include <string>
 #include <vector>

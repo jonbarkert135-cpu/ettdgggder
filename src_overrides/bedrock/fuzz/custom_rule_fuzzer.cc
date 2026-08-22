@@ -13,6 +13,8 @@
 
 #include "bedrock/fuzz/fuzz_main.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <string>
 
 #include "bedrock/settings/advanced_settings.h"

@@ -6,6 +6,8 @@
 #include "bedrock/profiles/new_identity.h"
 
 #include <algorithm>
+#include <string>
+#include <vector>
 
 namespace bedrock {
 namespace session {

@@ -1,0 +1,27 @@
+# Bedrock-Patch: 0001-add-bedrock-to-chrome-browser
+# Area: build
+# Upstream-Paths: chrome/browser/BUILD.gn
+# Reason: phase 1 (item 89) — the overlay's source_set has to be reachable from a
+#   Chromium target or nothing in src_overrides/bedrock is ever compiled by the
+#   engine build. //chrome/browser:browser is the narrowest target that owns the
+#   browser process, which is where every Bedrock subsystem belongs.
+# Owner: build
+# Chromium-Version: 151.0.7922.173
+# Upstream-Bug: none
+# Drop-When: never for as long as Bedrock is an overlay; replace it only if the
+#   overlay gains its own top-level target that chrome/BUILD.gn depends on directly.
+diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
+index bfc8555485..e9e2977a32 100644
+--- a/chrome/browser/BUILD.gn
++++ b/chrome/browser/BUILD.gn
+@@ -1975,6 +1975,10 @@ source_set("browser") {
+     ":browser_public_dependencies",
+     ":chrome_content_browser_client_parts",
+     ":core",
++
++    # Bedrock overlay (MPL-2.0). Single entry point: //bedrock. See
++    # docs/ARCHITECTURE.md in the Bedrock repository.
++    "//bedrock",
+     "//chrome/browser/browsing_data",
+     "//chrome/browser/download",
+     "//chrome/browser/enterprise/connectors/reporting:impl",

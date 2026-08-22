@@ -88,9 +88,10 @@ def main() -> int:
             print(f"FAIL {error}")
         return 1
     counts = {status: sum(1 for row in rows if row["status"] == status) for status in STATUSES}
+    built = "a Chromium build is recorded" if ENFORCEMENT.is_file() else "no Chromium build yet"
     print(f"phases OK: 19 phases, {counts['done']} done, "
-          f"{counts['policy-landed']} policy-landed (no Chromium build yet), "
-          f"{counts['not-started']} not started")
+          f"{counts['policy-landed']} policy-landed, "
+          f"{counts['not-started']} not started ({built})")
     return 0
 
 

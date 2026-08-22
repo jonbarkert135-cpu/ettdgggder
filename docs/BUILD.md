@@ -5,12 +5,14 @@ No step says "install the dependencies and build".
 
 Two honest warnings before the first command:
 
-- **Nothing here has been executed end to end by the maintainers yet.** The overlay's host tests run
-  on every commit; a full Chromium build has not been performed in this project's CI. Where a value
-  must match the Chromium tree exactly, this document gives the command that prints the
-  authoritative value instead of a number that will be stale in a month.
-- **A first build is measured in hours and hundreds of gigabytes.** Nothing about that is Bedrock's
-  doing; it is what building a browser engine costs.
+- **The Linux path has now been executed end to end once** (2026-08-22, pinned revision, overlay
+  compiled in-tree — see [`../build/ENFORCEMENT.md`](../build/ENFORCEMENT.md) for the numbers). The
+  Windows path has not. Neither runs in CI. Where a value must match the Chromium tree exactly,
+  this document gives the command that prints the authoritative value instead of a number that
+  will be stale in a month.
+- **A first build is measured in hours and hundreds of gigabytes.** The reference build took
+  **12 h 16 m** for 56 105 steps on 17 cores, and produced a 194 MB binary. Nothing about that is
+  Bedrock's doing; it is what building a browser engine costs.
 
 ## Requirements
 
@@ -158,6 +160,28 @@ autoninja -C out\Bedrock mini_installer
 
 Code signing: the artifact is signed as part of release, not of build
 ([`SUPPLY_CHAIN.md`](SUPPLY_CHAIN.md)). Do not sign a local build with a release key.
+
+## What Chromium's toolchain requires from overlay code
+
+The overlay is plain C++17 and its host tests build with `g++`, but inside the Chromium tree it is
+compiled by Chromium's clang with Chromium's flags and plugins. Three differences are strict, and
+all three were found the hard way by the first in-tree build:
+
+| Constraint | What breaks | What to do instead |
+| --- | --- | --- |
+| `-fno-exceptions` | `std::stoi`, `std::stod`, any `try`/`catch` | parse with `strtol`/`strtod` and return a failure value |
+| `chromium-rawptr` clang plugin | raw pointer *fields* in classes | `//bedrock` removes `find_bad_constructs` and documents its non-owning back-pointers; a target that depends on `//base` must use `raw_ptr<T>` |
+| C++20 standard-library modules | a standard symbol used without including its own header — libstdc++ hides this, clang does not | include `<utility>`, `<cstdint>`, `<cstddef>`, … in every file that names a symbol from it |
+
+Check the first two before pushing, without a Chromium checkout:
+
+```bash
+grep -rn 'std::sto[id]\|catch (' src_overrides/   # must find nothing outside comments
+```
+
+`scripts/gen_build_gn.py` owns `src_overrides/bedrock/BUILD.gn`; add a source file and re-run it
+with `--write`. The gate in `scripts/run_host_tests.sh` fails if the generated file is stale, so a
+new file cannot silently miss the engine build.
 
 ## Debug and sanitizer builds
 

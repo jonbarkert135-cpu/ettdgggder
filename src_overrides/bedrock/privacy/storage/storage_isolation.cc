@@ -6,6 +6,8 @@
 #include "bedrock/privacy/storage/storage_isolation.h"
 
 #include <algorithm>
+#include <string>
+#include <vector>
 
 namespace bedrock {
 namespace net {

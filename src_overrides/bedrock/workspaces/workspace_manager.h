@@ -7,6 +7,7 @@
 #define BEDROCK_WORKSPACES_WORKSPACE_MANAGER_H_
 
 #include <string>
+#include <utility>
 #include <vector>
 
 // Workspaces (roadmap item 32).

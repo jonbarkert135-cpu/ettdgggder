@@ -5,6 +5,9 @@
 
 #include "bedrock/ui/accessibility.h"
 
+#include <string>
+#include <vector>
+
 #include "bedrock/settings/advanced_settings.h"
 #include "bedrock/settings/reset_controls.h"
 #include "bedrock/ui/sidebar.h"

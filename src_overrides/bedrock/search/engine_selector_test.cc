@@ -8,6 +8,8 @@
 #include "bedrock/search/engine_selector.h"
 
 #include <iostream>
+#include <string>
+#include <vector>
 
 namespace {
 

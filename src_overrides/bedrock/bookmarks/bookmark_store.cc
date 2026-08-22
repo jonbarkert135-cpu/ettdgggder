@@ -7,6 +7,10 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstddef>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace bedrock {
 namespace data {
