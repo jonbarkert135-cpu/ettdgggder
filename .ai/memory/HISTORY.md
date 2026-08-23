@@ -4,6 +4,22 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #31 — new tab, search field, chrome
+
+- `bedrock/ui/new_tab.{h,cc}`: the new tab state. Shortcut row = pinned first,
+  deduplicated, capped, labelled from the host. In a private window the row is
+  empty and `historyHidden` is true; bookmarks stay, because they are not
+  history. Tested in `new_tab_test.cc`.
+- `ui/new_tab.html` + `new_tab.js`: wordmark, one wide glass search field, fast
+  shortcut row, bookmark bar. Plain WebUI, `window.bedrockSetModel(json)` in,
+  `chrome.send('bedrockNewTab', [action, value])` out. No option list and no
+  privacy rule in JavaScript (invariant 28).
+- `docs/design/mockups/browser-window.html` moved to the token palette and got
+  the full toolbar (Extensions, Profile) plus a bookmark bar and an address-bar
+  focus state. `docs/design/043-new-tab-and-chrome.md` records items 11-16.
+- Fixed a false negative in `check_ui_style.py`: the transition-duration regex
+  matched the "." in `var(--motion-standard)` and crashed instead of checking.
+
 ## PR #30 — dark surface system
 
 - Dark is the default theme, in the engine (`ThemeEngine::mode_`), in setup

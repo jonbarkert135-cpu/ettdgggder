@@ -1,0 +1,125 @@
+<!doctype html>
+<!-- Bedrock new tab (design items 11-14). Self-contained: no network, no
+     framework, no bundler (ADR 0006). Shortcuts, bookmarks and the engine
+     selector arrive from bedrock/ui/new_tab.h; this file decides nothing.
+     Colours, type and motion come from tokens.css, generated from
+     branding/design-tokens.json by scripts/gen_theme_css.py. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+<title>New tab</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--surface);color:var(--text);font-family:var(--font-ui);
+       font-size:var(--text-base);line-height:var(--line-height);
+       min-height:100vh;-webkit-font-smoothing:antialiased}
+  /* One light source, high and slightly left, plus a graphite floor. Calm
+     enough to read over; no imagery, nothing moving. */
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;
+       background:radial-gradient(1100px 640px at 42% -12%,
+                  rgba(255,255,255,.05), rgba(255,255,255,0) 68%)}
+
+  /* The bookmark bar sits where a bookmark bar belongs: under the chrome,
+     one row, quiet until pointed at. */
+  .bookmarks{position:relative;display:flex;gap:var(--space-2);
+             align-items:center;padding:var(--space-6) var(--space-16);
+             border-bottom:1px solid var(--border);overflow:hidden}
+  .bookmarks a{display:flex;align-items:center;gap:var(--space-8);
+       padding:var(--space-6) var(--space-8);border-radius:var(--radius-sm);
+       color:var(--text-muted);text-decoration:none;font-size:var(--text-sm);
+       white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis;
+       transition:background var(--motion-standard),color var(--motion-standard)}
+  .bookmarks a:hover{background:var(--surface-raised);color:var(--text)}
+  .bookmarks .mark{width:16px;height:16px;flex:none;border-radius:var(--radius-sm);
+       background:var(--surface-raised);border:1px solid var(--border);
+       display:grid;place-items:center;font-size:9px;color:var(--text-muted)}
+
+  main{position:relative;width:100%;max-width:720px;margin:0 auto;
+       padding:18vh var(--space-24) var(--space-48);text-align:center}
+  h1{font-size:34px;font-weight:var(--weight-semibold);letter-spacing:.16em;
+     margin-bottom:var(--space-32)}
+
+  /* Item 13: the one glass surface on this page. */
+  .search{display:flex;align-items:center;gap:var(--space-12);
+      background:var(--surface-glass);backdrop-filter:blur(10px);
+      border:1px solid var(--border);border-radius:var(--radius-lg);
+      padding:0 var(--space-8) 0 var(--space-16);height:52px;
+      box-shadow:var(--elevation-raised),inset 0 1px 0 rgba(255,255,255,.04);
+      transition:border-color var(--motion-standard),
+                 box-shadow var(--motion-standard)}
+  .search:focus-within{border-color:var(--border-strong);
+      box-shadow:var(--elevation-overlay),inset 0 1px 0 rgba(255,255,255,.07)}
+  .search input{flex:1;background:none;border:0;color:var(--text);font:inherit;
+      font-size:var(--text-md);outline:none;min-width:0}
+  .search input::placeholder{color:var(--text-muted)}
+  .search .glyph{color:var(--text-muted);font-size:var(--text-md);flex:none}
+
+  /* Item 14: part of the system, not a widget bolted on. */
+  .engine{display:flex;align-items:center;gap:var(--space-6);flex:none;
+      height:36px;padding:0 var(--space-12);border-radius:var(--radius-md);
+      background:none;border:1px solid var(--border);color:var(--text-muted);
+      font:inherit;font-size:var(--text-sm);cursor:pointer;
+      transition:background var(--motion-standard),color var(--motion-standard)}
+  .engine:hover{background:var(--surface-raised);color:var(--text)}
+  .engine[aria-expanded="true"]{color:var(--text);border-color:var(--border-strong)}
+  .menu{list-style:none;margin:var(--space-8) 0 0;padding:var(--space-4);
+      background:var(--surface-raised);border:1px solid var(--border);
+      border-radius:var(--radius-md);box-shadow:var(--elevation-overlay);
+      position:absolute;right:0;min-width:180px;text-align:left;z-index:2}
+  .menu[hidden]{display:none}
+  .menu button{display:flex;width:100%;justify-content:space-between;
+      gap:var(--space-12);background:none;border:0;color:var(--text);font:inherit;
+      font-size:var(--text-sm);padding:var(--space-8) var(--space-12);
+      border-radius:var(--radius-sm);cursor:pointer;min-height:var(--hit-target-min)}
+  .menu button:hover{background:var(--surface-sunken)}
+  .menu .tick{color:var(--accent)}
+  .searchwrap{position:relative}
+
+  /* Item 11: the fast row under the search, the part Chrome gets right. */
+  .tiles{display:flex;flex-wrap:wrap;justify-content:center;
+         gap:var(--space-8);margin-top:var(--space-32)}
+  .tile{width:104px;padding:var(--space-12) var(--space-6);border-radius:var(--radius-md);
+        display:flex;flex-direction:column;align-items:center;gap:var(--space-8);
+        color:var(--text-muted);text-decoration:none;font-size:var(--text-sm);
+        transition:background var(--motion-standard),color var(--motion-standard)}
+  .tile:hover{background:var(--surface-raised);color:var(--text)}
+  .tile .disc{width:44px;height:44px;border-radius:var(--radius-pill);
+        background:var(--surface-raised);border:1px solid var(--border);
+        display:grid;place-items:center;font-size:var(--text-md);
+        color:var(--text);font-weight:var(--weight-medium)}
+  .tile.pin .disc{border-color:var(--border-strong)}
+  .tile span.name{max-width:100%;overflow:hidden;text-overflow:ellipsis;
+        white-space:nowrap}
+  .note{margin-top:var(--space-32);color:var(--text-muted);font-size:var(--text-sm)}
+
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<nav class="bookmarks" id="bookmarks" aria-label="Bookmarks"></nav>
+<main>
+  <h1>BEDROCK</h1>
+  <div class="searchwrap">
+    <form class="search" id="form">
+      <span class="glyph" aria-hidden="true">&#9906;</span>
+      <input id="q" type="text" autocomplete="off" spellcheck="false"
+             aria-label="Search the web or enter address"
+             placeholder="Search the web or enter address">
+      <button class="engine" id="engine" type="button" aria-haspopup="true"
+              aria-expanded="false" aria-controls="menu">
+        <span id="engineLabel">Search</span>
+        <span aria-hidden="true">&#8964;</span>
+      </button>
+    </form>
+    <ul class="menu" id="menu" hidden></ul>
+  </div>
+  <div class="tiles" id="tiles"></div>
+  <p class="note" id="note" hidden></p>
+</main>
+<script src="new_tab.js"></script>
+</body>
+</html>

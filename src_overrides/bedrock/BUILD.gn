@@ -131,6 +131,8 @@ source_set("bedrock") {
     "ui/accessibility.h",
     "ui/l10n/string_catalog.cc",
     "ui/l10n/string_catalog.h",
+    "ui/new_tab.cc",
+    "ui/new_tab.h",
     "ui/sidebar.cc",
     "ui/sidebar.h",
     "ui/site_privacy_panel.cc",
