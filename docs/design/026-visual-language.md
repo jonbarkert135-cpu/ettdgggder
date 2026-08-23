@@ -45,3 +45,40 @@ renders the tab strip, omnibox with the protection chip, the mode chip, and the 
 whose rows are exactly the layers `PrivacyPolicy::Explain()` produces. It is the reference the
 implementation is measured against, and it doubles as the visual regression target once the UI
 is built.
+
+## Surface system (dark by default)
+
+Dark is the default theme, not a preference read off the OS. `tokens.css` is
+generated from `branding/design-tokens.json` by `scripts/gen_theme_css.py`, so
+there is exactly one palette and a stale stylesheet fails the build.
+`[data-theme="system"]` is the only selector that follows
+`prefers-color-scheme` — "System" is a choice made in setup (item 98).
+
+Five levels, small steps between them, so depth reads as light rather than as
+decoration:
+
+| Level | Token | Where |
+| --- | --- | --- |
+| 0 background | `--surface` `#0B0C0D` | the window behind everything |
+| 1 sunken | `--surface-sunken` `#08090A` | wells, hover on quiet rows |
+| 2 raised | `--surface-raised` `#141517` | cards, panels, toolbars |
+| 3 glass | `--surface-glass` `rgba(26,27,29,.72)` | rare: overlays and disclosure panels only |
+| 4 focused | `--accent-quiet` + `--border-strong` | the selected row, nothing else |
+
+Rules that keep it from becoming glass soup:
+
+- **Glass is level 3 and nothing else.** Not buttons, not cards, not rows. Blur
+  stays within the 12 px ceiling `check_ui_style.py` enforces.
+- **One light source.** A single soft radial highlight, high and slightly left,
+  at roughly 5% white. No second glow, no neon, no luminous borders. The
+  gradient budget in the style gate is 2 per file, so this cannot creep.
+- **Borders are barely there.** `--border` `#232527` at rest, `--border-strong`
+  `#34373A` when something is active — low contrast on purpose, never a frame.
+- **Radii are a scale, not a mood.** 6 px for small controls, 10 px for buttons
+  and rows, 14 px for panels and modal surfaces. Pills are for chips only.
+- **The accent stays scarce.** Copper marks protection state, focus and
+  progress. The primary button is the brightest neutral instead, because a
+  screen where every call to action shouts has no hierarchy left.
+- **Air is a component.** 64 px page padding, 32 px between blocks, 24–28 px
+  under headings. Secondary text is `#9B9EA2` — subdued, still above the 4.5:1
+  floor from ACCESSIBILITY.md, never dimmed for atmosphere.

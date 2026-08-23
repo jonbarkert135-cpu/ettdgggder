@@ -1,5 +1,5 @@
 {
-  "$comment": "Bedrock design tokens. Single source of truth for the UI; see docs/design/026-visual-language.md. Values are deliberately few — a token set nobody can hold in their head gets ignored.",
+  "$comment": "Bedrock design tokens. Single source of truth for the UI; see docs/design/026-visual-language.md; scripts/gen_theme_css.py turns this file into src_overrides/bedrock/ui/tokens.css. Values are deliberately few \u2014 a token set nobody can hold in their head gets ignored.",
   "color": {
     "light": {
       "surface": "#F7F6F4",
@@ -13,18 +13,20 @@
       "accent-quiet": "#F2E4DA",
       "positive": "#2F6B4F",
       "warning": "#8A5B12",
-      "danger": "#9A2F2F"
+      "danger": "#9A2F2F",
+      "surface-glass": "rgba(255,255,255,.72)"
     },
     "dark": {
-      "surface": "#16181A",
-      "surface-raised": "#1E2124",
-      "surface-sunken": "#101214",
-      "border": "#2C3033",
-      "border-strong": "#3D4347",
-      "text": "#EDEEEF",
-      "text-muted": "#9AA1A6",
+      "surface": "#0B0C0D",
+      "surface-raised": "#141517",
+      "surface-sunken": "#08090A",
+      "surface-glass": "rgba(26,27,29,.72)",
+      "border": "#232527",
+      "border-strong": "#34373A",
+      "text": "#F2F3F4",
+      "text-muted": "#9B9EA2",
       "accent": "#E08A4C",
-      "accent-quiet": "#2A211B",
+      "accent-quiet": "#241C15",
       "positive": "#6FBF95",
       "warning": "#D9A441",
       "danger": "#E07070"
@@ -33,17 +35,46 @@
   "typography": {
     "family-ui": "Inter, 'SF Pro Text', 'Segoe UI Variable', system-ui, sans-serif",
     "family-mono": "'JetBrains Mono', 'SF Mono', Consolas, monospace",
-    "scale": { "xs": 11, "sm": 12, "base": 13, "md": 15, "lg": 19, "xl": 24 },
-    "weight": { "regular": 400, "medium": 500, "semibold": 600 },
+    "scale": {
+      "xs": 11,
+      "sm": 12,
+      "base": 13,
+      "md": 15,
+      "lg": 19,
+      "xl": 24
+    },
+    "weight": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600
+    },
     "line-height": 1.45,
     "letter-spacing-tight": "-0.01em"
   },
-  "space": { "unit": 4, "scale": [2, 4, 6, 8, 12, 16, 24, 32, 48] },
-  "radius": { "sm": 6, "md": 10, "lg": 14, "pill": 999 },
+  "space": {
+    "unit": 4,
+    "scale": [
+      2,
+      4,
+      6,
+      8,
+      12,
+      16,
+      24,
+      32,
+      48
+    ]
+  },
+  "radius": {
+    "sm": 6,
+    "md": 10,
+    "lg": 14,
+    "pill": 999
+  },
   "elevation": {
     "flat": "none",
-    "raised": "0 1px 2px rgba(0,0,0,.06), 0 0 0 1px var(--border)",
-    "overlay": "0 12px 32px rgba(0,0,0,.18), 0 0 0 1px var(--border)"
+    "raised": "0 1px 2px rgba(0,0,0,.28), 0 0 0 1px var(--border)",
+    "overlay": "0 16px 40px rgba(0,0,0,.46), 0 0 0 1px var(--border)"
   },
   "motion": {
     "instant": "90ms cubic-bezier(.2,.7,.3,1)",
@@ -54,5 +85,6 @@
     "toolbar-height": 44,
     "tab-height": 34,
     "hit-target-min": 32
-  }
+  },
+  "default-theme": "dark"
 }

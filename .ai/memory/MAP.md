@@ -347,6 +347,7 @@ Browser UI surfaces: tab model with two layouts, optional sidebar, per-site priv
 | `tab_model.cc` | implementation |
 | `tab_model.h` | Tab system (roadmap item 30). |
 | `tab_model_test.cc` | Host test, no Chromium. |
+| `tokens.css` | — |
 
 ### `src_overrides/bedrock/ui/l10n/`
 String catalog: every user-visible string by id, four complete locales, named placeholders and CLDR plurals. Item 61.

@@ -2,68 +2,70 @@
 <!-- Bedrock first run (roadmap items 93, 98, 99). Self-contained: no network,
      no framework, no bundler (ADR 0006). Every string, option and disclosure
      line arrives from bedrock/onboarding/first_run_page.h — this file decides
-     nothing. Colours follow branding/design-tokens.json. -->
+     nothing. Colours, type and motion come from tokens.css, generated from
+     branding/design-tokens.json by scripts/gen_theme_css.py. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy"
-      content="default-src 'none'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+      content="default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
 <title>Bedrock setup</title>
+<link rel="stylesheet" href="tokens.css">
 <style>
-  :root{
-    --surface:#F7F6F4; --raised:#FFFFFF; --sunken:#EDEBE7;
-    --border:#DCD8D2; --border-strong:#C3BDB4;
-    --text:#1B1A18; --muted:#6B655D;
-    --accent:#B4622A; --accent-quiet:#F2E4DA;
-    --r-sm:6px; --r-md:10px; --r-lg:14px;
-    --ui:Inter,'SF Pro Text','Segoe UI Variable',system-ui,sans-serif;
-  }
-  @media (prefers-color-scheme: dark){
-    :root{
-      --surface:#16181A; --raised:#1E2124; --sunken:#101214;
-      --border:#2C3033; --border-strong:#3D4347;
-      --text:#EDEEEF; --muted:#9AA1A6;
-      --accent:#E08A4C; --accent-quiet:#2A211B;
-    }
-  }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--surface);color:var(--text);font-family:var(--ui);
-       font-size:13px;line-height:1.45;display:flex;justify-content:center;
-       padding:48px 24px}
-  main{width:640px}
-  .rail{display:flex;gap:6px;margin-bottom:24px}
-  .rail span{height:3px;flex:1;background:var(--border);border-radius:999px}
+  body{background:var(--surface);color:var(--text);font-family:var(--font-ui);
+       font-size:var(--text-base);line-height:var(--line-height);
+       display:flex;justify-content:center;padding:64px 24px;min-height:100vh;
+       -webkit-font-smoothing:antialiased}
+  /* One soft light source, high and slightly left: depth without decoration. */
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;
+       background:radial-gradient(900px 520px at 38% -8%,
+                  rgba(255,255,255,.055), rgba(255,255,255,0) 70%)}
+  main{width:640px;position:relative}
+  .rail{display:flex;gap:6px;margin-bottom:32px}
+  .rail span{height:2px;flex:1;background:var(--border);border-radius:var(--radius-pill)}
   .rail span.at{background:var(--accent)}
-  h1{font-size:24px;font-weight:600;letter-spacing:-0.01em;margin-bottom:8px}
-  p.lead{color:var(--muted);margin-bottom:24px}
-  .card{background:var(--raised);border:1px solid var(--border);
-        border-radius:var(--r-lg);padding:8px}
+  h1{font-size:var(--text-xl);font-weight:var(--weight-semibold);
+     letter-spacing:var(--tracking-tight);margin-bottom:8px}
+  p.lead{color:var(--text-muted);margin-bottom:28px}
+  .card{background:var(--surface-raised);border:1px solid var(--border);
+        border-radius:var(--radius-lg);padding:8px;
+        box-shadow:var(--elevation-raised)}
   .opt{display:block;width:100%;text-align:left;background:none;
-       border:1px solid transparent;border-radius:var(--r-md);
-       padding:12px 14px;min-height:32px;color:var(--text);font:inherit;
-       cursor:pointer;transition:background 160ms cubic-bezier(.2,.7,.3,1)}
-  .opt:hover{background:var(--sunken)}
+       border:1px solid transparent;border-radius:var(--radius-md);
+       padding:12px 14px;min-height:var(--hit-target-min);color:var(--text);
+       font:inherit;cursor:pointer;
+       transition:background var(--motion-standard),
+                  border-color var(--motion-standard)}
+  .opt:hover{background:var(--surface-sunken)}
   .opt[aria-checked="true"]{background:var(--accent-quiet);
                             border-color:var(--border-strong)}
-  .opt .name{font-weight:500;display:block}
-  .opt .detail{color:var(--muted);display:block;margin-top:2px}
-  .disclose{margin-top:16px;border:1px solid var(--border);
-            border-radius:var(--r-md);padding:14px 16px;background:var(--raised)}
-  .disclose dt{color:var(--muted);font-size:11px;text-transform:uppercase;
-               letter-spacing:.04em;margin-top:10px}
+  .opt .name{font-weight:var(--weight-medium);display:block}
+  .opt .detail{color:var(--text-muted);display:block;margin-top:3px}
+  .disclose{margin-top:20px;border:1px solid var(--border);
+            border-radius:var(--radius-md);padding:14px 16px;
+            background:var(--surface-glass)}
+  .disclose dt{color:var(--text-muted);font-size:var(--text-xs);
+               text-transform:uppercase;letter-spacing:.06em;margin-top:12px}
   .disclose dt:first-child{margin-top:0}
-  #body > div > p{margin-top:20px;font-weight:500}
-  .notes{margin:8px 0 0 18px}
-  .notes li{margin-top:8px;color:var(--muted)}
-  .row{display:flex;gap:8px;margin-top:24px}
+  #body > div > p{margin-top:24px;font-weight:var(--weight-medium)}
+  .notes{margin:10px 0 0 18px}
+  .notes li{margin-top:8px;color:var(--text-muted)}
+  .row{display:flex;gap:8px;margin-top:32px}
   .row .grow{flex:1}
-  button.act{min-height:32px;padding:0 16px;border-radius:var(--r-sm);
-             border:1px solid var(--border-strong);background:var(--raised);
-             color:var(--text);font:inherit;cursor:pointer}
-  button.act.primary{background:var(--accent);border-color:var(--accent);
-                     color:#FFFFFF;font-weight:500}
-  label.toggle{display:flex;gap:10px;align-items:center;margin-top:14px;
-               color:var(--muted);min-height:32px}
+  button.act{min-height:var(--hit-target-min);padding:0 16px;
+             border-radius:var(--radius-sm);border:1px solid var(--border-strong);
+             background:var(--surface-raised);color:var(--text);font:inherit;
+             cursor:pointer;transition:background var(--motion-instant)}
+  button.act:hover{background:var(--surface-sunken)}
+  /* The accent marks protection state, not buttons (docs/BRAND.md), so the
+     primary action is the brightest neutral rather than a splash of colour. */
+  button.act.primary{background:var(--text);border-color:var(--text);
+                     color:var(--surface);font-weight:var(--weight-medium)}
+  button.act.primary:hover{background:#FFFFFF}
+  input[type="checkbox"]{accent-color:var(--accent);width:15px;height:15px}
+  label.toggle{display:flex;gap:10px;align-items:center;margin-top:16px;
+               color:var(--text-muted);min-height:var(--hit-target-min)}
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   @media (prefers-reduced-motion: reduce){*{transition:none !important}}
 </style>

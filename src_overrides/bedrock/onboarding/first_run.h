@@ -72,7 +72,7 @@ struct SearchDisclosure {
 struct Choices {
   settings::PrivacyChoice privacy = settings::PrivacyChoice::kBalanced;
   std::string engine_id;
-  ui::ThemeMode theme = ui::ThemeMode::kSystem;
+  ui::ThemeMode theme = ui::ThemeMode::kDark;  // the shipped default
   bool search_suggestions = false;
   ImportSource import_source = ImportSource::kSkip;
 };
