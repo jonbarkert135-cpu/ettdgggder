@@ -37,6 +37,17 @@ bool StartsWith(const std::string& text, const char* prefix) {
   return text.size() >= p.size() && text.compare(0, p.size(), p) == 0;
 }
 
+// A row needs a short title and a full explanation, and `ConfigSurface` only
+// carries the one line --help prints. Rather than keep a second table of
+// labels that would drift from it, take the clause before the first colon or
+// full stop as the title and show the whole line underneath.
+std::string TitleOf(const std::string& description) {
+  const std::string::size_type cut = description.find_first_of(":.");
+  if (cut == std::string::npos || cut < 3)
+    return description;
+  return description.substr(0, cut);
+}
+
 }  // namespace
 
 const std::vector<SectionInfo>& Sections() {
@@ -143,8 +154,16 @@ std::string SettingsPageJson(Section active,
     if (!first_row)
       rows += ",";
     first_row = false;
+    // When the title is the whole line, there is nothing to add underneath;
+    // repeating it would be noise pretending to be help.
+    const std::string title = TitleOf(spec.description);
+    const std::string detail =
+        (title == spec.description || title + "." == spec.description)
+            ? std::string()
+            : std::string(spec.description);
     rows += "{" + Quote("key") + ":" + Quote(spec.key) + "," + Quote("label") +
-            ":" + Quote(spec.description) + "," + Quote("value") + ":" +
+            ":" + Quote(title) + "," + Quote("detail") + ":" + Quote(detail) +
+            "," + Quote("value") + ":" +
             Quote(value) + "," + Quote("default") + ":" +
             Quote(spec.default_value) + ",\"values\":" + values + "," +
             Quote("origin") + ":" + Quote(OriginName(origin)) +

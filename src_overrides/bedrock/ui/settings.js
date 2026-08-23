@@ -65,12 +65,24 @@ function control(row) {
   return input;
 }
 
+// One glyph per section. Drawn from the same restrained set as the toolbar;
+// the section list itself still comes from the model.
+const ICONS = {
+  general: '\u2699', privacy: '\u25C9', search: '\u2315', appearance: '\u25D0',
+  tabs: '\u25EB', downloads: '\u2193', profiles: '\u25CB',
+  extensions: '\u29C9', advanced: '\u2261',
+};
+
 function renderNav() {
   const nav = document.getElementById('nav');
   nav.textContent = '';
   model.nav.forEach((section) => {
-    const button = el('button', null, section.title);
+    const button = el('button');
     button.type = 'button';
+    const icon = el('span', 'ic', ICONS[section.id] || '\u25CB');
+    icon.setAttribute('aria-hidden', 'true');
+    button.appendChild(icon);
+    button.appendChild(el('span', null, section.title));
     if (section.active) button.setAttribute('aria-current', 'page');
     button.addEventListener('click', () => send('section', section.id));
     nav.appendChild(button);
@@ -84,6 +96,8 @@ function renderRows() {
     const line = el('div', 'row');
     const left = el('div');
     left.appendChild(el('div', 'k', row.label));
+    if (row.detail && row.detail !== row.label)
+      left.appendChild(el('div', 'meta', row.detail));
     const meta = originLine(row);
     if (meta) left.appendChild(el('div', row.locked ? 'meta managed' : 'meta', meta));
     line.appendChild(left);
@@ -121,6 +135,8 @@ window.bedrockSetModel = function(json) {
   document.getElementById('summary').textContent = model.summary;
   renderNav();
   renderRows();
+  // An empty card is a grey bar with nothing in it.
+  document.getElementById('rows').hidden = model.rows.length === 0;
   renderExtensions();
   document.getElementById('note').textContent =
       model.section === 'extensions' && model.extensions.length === 0

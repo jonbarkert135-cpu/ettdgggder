@@ -56,6 +56,22 @@ read, whether it runs in private windows, its risk classification from
 rather than a rating, because what an extension can read is the only thing about
 it that matters to privacy.
 
+## Revision after review
+
+The first pass was cramped: 13 px text, a rail of small labels floating at the
+top, rows on a bare background. Fixed in the same PR series:
+
+- The type scale moved up one step across the whole product (base 13 → 14 px,
+  headings 24 → 28). It is a browser chrome, not a dense data grid.
+- The rail has an icon and a 44 px row per section, so it reads as a list of
+  places instead of small text in a corner.
+- Rows live inside one card per section — the grouping Firefox gets right,
+  without the white — with a 72 px minimum row height and the control vertically
+  centred against the label.
+- Each row now shows a short title with the full `--help` line underneath, and
+  the line is dropped when it would just repeat the title. The GUI and the
+  terminal still explain a setting with the same words, from the same table.
+
 ## Verification
 
 - `settings_page_test.cc` — every `ConfigSurface` key belongs to exactly one

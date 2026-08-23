@@ -4,6 +4,22 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #34 — settings redesign, profiles, window modes, customisation
+
+- Settings redesign after review: type scale up one step product-wide (base 14),
+  icon + 44px rows in the rail, one card per section with 72px rows, short row
+  titles with the `--help` line underneath (dropped when it repeats the title).
+- `themes/theme_css.{h,cc}`: the engine's state plus the window mode as a
+  `:root` override over tokens.css. Clamps are the engine's, so no unclamped
+  value can reach CSS; animations-off beats any duration.
+- `ThemeEngine` gained surface colour, text colour, grain, shadow strength,
+  glow and transition duration (design item 30's full list).
+- Private/Tor windows shift the two surface colours (30% / 45% darker) and keep
+  the user's accent. Each mode carries one sentence stating its limit as well as
+  its benefit; a test asserts both halves.
+- `ui/profile_menu.{h,cc,html,js}`: small selector, honest "Not synced" line,
+  no account prompt.
+
 ## PR #33 — settings, Privacy Center, extensions
 
 - `settings/settings_page.{h,cc}`: the settings page as a view over

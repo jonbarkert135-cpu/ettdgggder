@@ -22,6 +22,10 @@
 // asserts it — a new setting that nobody placed fails the build instead of
 // dropping out of the GUI unnoticed.
 //
+// Each row carries a short title and, under it, the full one-line description
+// that --help prints, so the GUI and the terminal explain a setting with the
+// same words.
+//
 // Rows also carry where their current value came from and whether policy has
 // locked it, so the page can say *why* a control is greyed out. "Managed by
 // your organisation" is information; a dead control is not.

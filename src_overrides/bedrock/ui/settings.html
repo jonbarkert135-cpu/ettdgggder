@@ -17,44 +17,56 @@
        font-size:var(--text-base);line-height:var(--line-height);
        min-height:100vh;display:flex;-webkit-font-smoothing:antialiased}
   body::before{content:"";position:fixed;inset:0;pointer-events:none;
-       background:radial-gradient(900px 520px at 22% -10%,
+       background:radial-gradient(1000px 560px at 24% -10%,
                   rgba(255,255,255,.045), rgba(255,255,255,0) 70%)}
 
-  /* left: navigation */
-  nav{position:relative;width:264px;flex:none;padding:var(--space-48) var(--space-16);
-      border-right:1px solid var(--border)}
+  /* left: navigation. Icon plus label, one comfortable row height, so the rail
+     reads as a list of places rather than as small text floating at the top. */
+  nav{position:relative;width:288px;flex:none;padding:var(--space-32) var(--space-12);
+      border-right:1px solid var(--border);display:flex;flex-direction:column;
+      gap:var(--space-4)}
   nav h1{font-family:var(--font-display);font-size:var(--text-lg);
      font-weight:var(--weight-semibold);letter-spacing:var(--tracking-tight);
-     padding:0 var(--space-12);margin-bottom:var(--space-24)}
-  nav button{display:block;width:100%;text-align:left;background:none;border:0;
-     color:var(--text-muted);font:inherit;padding:var(--space-8) var(--space-12);
-     border-radius:var(--radius-md);cursor:pointer;min-height:var(--hit-target-min);
+     padding:0 var(--space-12) var(--space-8);margin-bottom:var(--space-16)}
+  nav button{display:flex;align-items:center;gap:var(--space-12);width:100%;
+     text-align:left;background:none;border:0;color:var(--text-muted);font:inherit;
+     font-size:var(--text-base);padding:0 var(--space-12);height:44px;
+     border-radius:var(--radius-md);cursor:pointer;
      transition:background var(--motion-standard),color var(--motion-standard)}
+  nav button .ic{width:20px;flex:none;text-align:center;font-size:var(--text-md);
+     opacity:.9}
   nav button:hover{background:var(--surface-raised);color:var(--text)}
   nav button[aria-current="page"]{background:var(--surface-raised);color:var(--text);
      box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+  nav .spacer{flex:1}
 
-  /* right: content */
-  main{position:relative;flex:1;padding:var(--space-48);max-width:780px}
+  /* right: content, centred in its column */
+  main{position:relative;flex:1;display:flex;justify-content:center;
+       padding:var(--space-48) var(--space-32) 12vh;overflow:auto}
+  .col{width:100%;max-width:720px}
   h2{font-family:var(--font-display);font-size:var(--text-xl);
      font-weight:var(--weight-semibold);letter-spacing:var(--tracking-tight)}
-  .lead{color:var(--text-muted);margin:var(--space-8) 0 var(--space-32)}
+  .lead{color:var(--text-muted);margin:var(--space-8) 0 var(--space-32);
+        font-size:var(--text-md)}
 
-  .row{display:flex;align-items:flex-start;justify-content:space-between;
-       gap:var(--space-24);padding:var(--space-16) 0;
+  /* One card per section, rows inside it: the grouping Firefox gets right,
+     without the white. */
+  .group{background:var(--surface-raised);border:1px solid var(--border);
+         border-radius:var(--radius-lg);padding:0 var(--space-24);
+         box-shadow:var(--elevation-raised)}
+  .row{display:flex;align-items:center;justify-content:space-between;
+       gap:var(--space-32);padding:var(--space-16) 0;min-height:72px;
        border-bottom:1px solid var(--border)}
-  .row:last-of-type{border-bottom:0}
+  .row:last-child{border-bottom:0}
   .row .k{font-size:var(--text-base)}
   .row .meta{color:var(--text-muted);font-size:var(--text-sm);margin-top:var(--space-4)}
   .row .managed{color:var(--warning)}
 
-  /* A segmented control, because a value out of three named options is not a
-     dropdown and not a slider. */
   .seg{display:flex;gap:var(--space-2);background:var(--surface-sunken);
        border:1px solid var(--border);border-radius:var(--radius-md);
-       padding:var(--space-2);flex:none}
+       padding:var(--space-4);flex:none}
   .seg button{background:none;border:0;color:var(--text-muted);font:inherit;
-       font-size:var(--text-sm);padding:var(--space-6) var(--space-12);
+       font-size:var(--text-sm);padding:var(--space-8) var(--space-16);
        border-radius:var(--radius-sm);cursor:pointer;white-space:nowrap;
        transition:background var(--motion-standard),color var(--motion-standard)}
   .seg button[aria-pressed="true"]{background:var(--surface-raised);color:var(--text);
@@ -62,31 +74,33 @@
   .seg button:disabled{opacity:.55;cursor:not-allowed}
   input[type="text"]{background:var(--surface-sunken);border:1px solid var(--border);
        border-radius:var(--radius-md);color:var(--text);font:inherit;
-       padding:var(--space-8) var(--space-12);min-width:220px}
+       padding:var(--space-8) var(--space-12);min-width:240px;height:40px}
 
   /* extensions: cards, not a list of toggles */
   .cards{display:grid;gap:var(--space-12);margin-top:var(--space-8)}
   .card{background:var(--surface-raised);border:1px solid var(--border);
-        border-radius:var(--radius-lg);padding:var(--space-16);
-        display:flex;gap:var(--space-16);align-items:flex-start}
-  .card .glyph{width:34px;height:34px;flex:none;border-radius:var(--radius-md);
+        border-radius:var(--radius-lg);padding:var(--space-16) var(--space-24);
+        display:flex;gap:var(--space-16);align-items:center;min-height:84px;
+        box-shadow:var(--elevation-raised)}
+  .card .glyph{width:40px;height:40px;flex:none;border-radius:var(--radius-md);
         background:var(--surface-sunken);border:1px solid var(--border);
-        display:grid;place-items:center;font-weight:var(--weight-medium)}
+        display:grid;place-items:center;font-weight:var(--weight-medium);
+        font-size:var(--text-md)}
   .card .body{flex:1;min-width:0}
-  .card .name{font-weight:var(--weight-medium)}
+  .card .name{font-weight:var(--weight-medium);font-size:var(--text-md)}
   .card .facts{color:var(--text-muted);font-size:var(--text-sm);margin-top:var(--space-4)}
   .risk{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.08em;
-        padding:var(--space-2) var(--space-8);border-radius:var(--radius-pill);
-        border:1px solid var(--border);color:var(--text-muted)}
+        padding:var(--space-4) var(--space-8);border-radius:var(--radius-pill);
+        border:1px solid var(--border);color:var(--text-muted);flex:none}
   .risk.high{color:var(--danger);border-color:#3A2224}
   .risk.medium{color:var(--warning);border-color:#3A3020}
-
   .toggle{background:none;border:1px solid var(--border-strong);color:var(--text-muted);
-        font:inherit;font-size:var(--text-sm);padding:var(--space-6) var(--space-12);
-        border-radius:var(--radius-md);cursor:pointer;min-height:var(--hit-target-min);
+        font:inherit;font-size:var(--text-sm);padding:0 var(--space-16);height:40px;
+        min-width:76px;border-radius:var(--radius-md);cursor:pointer;flex:none;
         transition:background var(--motion-standard),color var(--motion-standard)}
   .toggle[aria-pressed="true"]{background:var(--surface-sunken);color:var(--text)}
-  .note{margin-top:var(--space-32);color:var(--text-muted);font-size:var(--text-sm)}
+
+  .note{margin-top:var(--space-24);color:var(--text-muted);font-size:var(--text-sm)}
   :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   @media (prefers-reduced-motion: reduce){*{transition:none !important}}
 </style>
@@ -94,11 +108,13 @@
 <body>
 <nav aria-label="Settings sections"><h1>Settings</h1><div id="nav"></div></nav>
 <main>
-  <h2 id="title"></h2>
-  <p class="lead" id="summary"></p>
-  <div id="rows"></div>
-  <div class="cards" id="cards"></div>
-  <p class="note" id="note"></p>
+  <div class="col">
+    <h2 id="title"></h2>
+    <p class="lead" id="summary"></p>
+    <div class="group" id="rows"></div>
+    <div class="cards" id="cards"></div>
+    <p class="note" id="note"></p>
+  </div>
 </main>
 <script src="settings.js"></script>
 </body>

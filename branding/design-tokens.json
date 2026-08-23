@@ -37,12 +37,12 @@
     "family-display": "Poppins, Inter, 'SF Pro Display', system-ui, sans-serif",
     "family-mono": "'JetBrains Mono', 'SF Mono', Consolas, monospace",
     "scale": {
-      "xs": 11,
-      "sm": 12,
-      "base": 13,
-      "md": 15,
-      "lg": 19,
-      "xl": 24
+      "xs": 12,
+      "sm": 13,
+      "base": 14,
+      "md": 16,
+      "lg": 21,
+      "xl": 28
     },
     "weight": {
       "regular": 400,

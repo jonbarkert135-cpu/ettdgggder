@@ -43,6 +43,12 @@ enum class ThemeMode {
 enum class Property {
   kAccentColor,
   kBackgroundColor,
+  kSurfaceColor,    // panels and cards
+  kTextColor,       // primary text
+  kGrain,           // 0..1, film grain over large surfaces
+  kShadowStrength,  // 0..1.5 multiplier on the three elevations
+  kGlow,            // 0..1, accent bloom around the focused surface
+  kTransitionMs,    // 0..kMaxAnimationMs
   kTabShape,        // 0 rectangular, 1 rounded, 2 pill
   kToolbarDensity,  // 0 compact, 1 default, 2 comfortable
   kSidebarVisible,
