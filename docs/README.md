@@ -69,7 +69,8 @@ where GitHub looks for them; `check_open_source.py` enforces their presence and 
 | [`PROCESS.md`](PROCESS.md) | the ten steps before code, and where the research stops |
 | [`PHASES.md`](PHASES.md) | the implementation order, and the honest state of each phase |
 | [`research/`](research/BRAVE.md) | studies of Brave, Firefox, Tor Browser, uBlock Origin, Privacy Badger, and the "Origin Tools" search that found nothing |
-| [`design/`](design/041-open-source.md) | per-batch design notes |
+| [`ACCEPTANCE.md`](ACCEPTANCE.md) | item 101's criteria and the honest status of each |
+| [`design/`](design/042-first-run.md) | per-batch design notes |
 | [`releases/TEMPLATE.md`](releases/TEMPLATE.md) | the release-notes template |
 
 ## For agents and new contributors

@@ -125,6 +125,15 @@ Omnibox input classification only — Chromium's own providers still rank bookma
 | `input_parser.h` | Bedrock omnibox input classification. |
 | `input_parser_test.cc` | Host test: no Chromium, no gtest. |
 
+### `src_overrides/bedrock/onboarding/`
+First-run flow (welcome, privacy level, search engine, theme, import, finish), the per-provider search disclosure and the five honest privacy notes. Items 93, 98, 99. Logic only; no WebUI renders it yet.
+
+| File | What it is |
+| --- | --- |
+| `first_run.cc` | implementation |
+| `first_run.h` | First run (item 98) and what it must tell the truth about (items 93 and 99). |
+| `first_run_test.cc` | Host test, no Chromium. |
+
 ### `src_overrides/bedrock/passwords/`
 Local password store, platform keystore encryption, no sync and no server. Item 34.
 
@@ -370,6 +379,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 ## Docs
 | File | Title |
 | --- | --- |
+| [`docs/ACCEPTANCE.md`](../../docs/ACCEPTANCE.md) | Acceptance criteria (roadmap item 101) |
 | [`docs/ACCESSIBILITY.md`](../../docs/ACCESSIBILITY.md) | Accessibility |
 | [`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md) | Architecture |
 | [`docs/BRAND.md`](../../docs/BRAND.md) | Brand identity |
@@ -445,6 +455,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/design/039-privacy-extension-store.md`](../../docs/design/039-privacy-extension-store.md) | 039 — Bedrock Privacy Extensions (store, analysis, recommendations) |
 | [`docs/design/040-knowledge-center.md`](../../docs/design/040-knowledge-center.md) | 040 — Privacy Knowledge Center |
 | [`docs/design/041-open-source.md`](../../docs/design/041-open-source.md) | 041 — Telemetry policy, updates, open source, reproducibility |
+| [`docs/design/042-first-run.md`](../../docs/design/042-first-run.md) | 042 — First run, search disclosure, honest onboarding |
 | [`docs/performance/BUDGETS.md`](../../docs/performance/BUDGETS.md) | Performance budgets |
 | [`docs/privacy/FEATURES.md`](../../docs/privacy/FEATURES.md) | Privacy features, in full |
 | [`docs/privacy/FILTER_LISTS.md`](../../docs/privacy/FILTER_LISTS.md) | Filter lists — licences, one per list |

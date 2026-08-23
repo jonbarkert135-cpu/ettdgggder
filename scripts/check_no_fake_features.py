@@ -34,6 +34,7 @@ ENFORCEMENT = REPO / "build" / "ENFORCEMENT.md"
 # words, and flagging their fixtures would punish the check for working.
 UI_SOURCES = [
     REPO / "src_overrides" / "bedrock" / "ui",
+    REPO / "src_overrides" / "bedrock" / "onboarding",
     REPO / "src_overrides" / "bedrock" / "settings",
     REPO / "src_overrides" / "bedrock" / "devtools",
     REPO / "src_overrides" / "bedrock" / "privacy" / "stats",

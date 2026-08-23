@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
+**As of:** roadmap 90–101 audited (`docs/ACCEPTANCE.md`) and first run / search disclosure landed; phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
 
 ## Position on the roadmap
 
@@ -61,7 +61,13 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 | 86 ADRs (14 records, indexed and mapped) | done |
 | 87–88 Research-first process, timeboxed | done — `docs/PROCESS.md` |
 | 89 Implementation order | `docs/PHASES.md`: **phases 0–2 done** (builds 1 and 2 in `build/ENFORCEMENT.md`), phases 3–15 still `policy-landed` and must be re-verified against the running shell |
-| 90+ | **not yet specified — waiting on the project owner** |
+| 90–92 Quality rule, source integration, trademarks | done — already enforced by `check_no_fake_features`, `check_provenance`, `LICENSING.md` §4 |
+| 93 Search privacy disclosure | done — `onboarding/first_run` builds it from the engine facts, no search proxy |
+| 94–95 No hidden cloud, optional remote features off by default | done — no compiled-in hostname, `updater` provider-abstract |
+| 96–97 Product identity, own UI | done as policy — no WebUI exists to judge yet |
+| 98–99 First-run flow, honest onboarding | logic done + tested; **no UI renders it** |
+| 100–101 Continuous verification, acceptance criteria | `docs/ACCEPTANCE.md`: **11 of 31 criteria met**, rest stock/policy-only |
+| 102+ | **not yet specified — waiting on the project owner** |
 
 ## What is real vs. what is documented
 
