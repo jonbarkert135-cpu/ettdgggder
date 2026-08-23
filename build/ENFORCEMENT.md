@@ -33,11 +33,46 @@ call site arrives with phase 2 (minimal browser shell).
 **Therefore: no feature is listed below.** No feature is `kEnforced`, because enforcement means a
 running browser performs the protection, not that its policy object compiles.
 
+## Build 2 — 2026-08-23 (phase 2: the overlay runs)
+
+| | |
+| --- | --- |
+| Base | the Build 1 output directory, incrementally relinked — same revision, same GN args |
+| Change | `patches/bedrock/integration/0001-bedrock-startup-hook.patch`: two Chromium call sites into `bedrock::integration` |
+| Objects rebuilt | `browser_ui_prefs.o` (92 s), `renderer_preferences_util.o` (26 s), `chrome_browser_main.o` (60 s), `bedrock/startup.o` (1 s) |
+| Link | `chrome` relinked, exit 0 (cold link 21 m 39 s, warm links 13–15 s) |
+| Binary | `out/Release/chrome`, 194 170 656 bytes |
+| Symbols | `nm -C out/Release/chrome \| grep bedrock::` → **17 symbols** (Build 1: none) |
+| Run | `--headless=new --no-sandbox --user-data-dir=…` on a fresh profile, log `/work/build-logs/run2.log` |
+
+Observed on stderr of that run:
+
+```
+[bedrock] Balanced Privacy: 1 of 12 shipped defaults enforced by this build
+[bedrock] enforcing webrtc_privacy: webrtc.ip_handling_policy = default_public_interface_only
+[bedrock] effective webrtc.ip_handling_policy = default_public_interface_only (want default_public_interface_only: match)
+```
+
+### What this build proves
+
+The first two lines come from `RegisterBrowserUserPrefs`, where Bedrock now supplies the *default*
+of `webrtc.ip_handling_policy` instead of Chromium's `kWebRTCIPHandlingDefault`. The third comes
+from `UpdateFromSystemSettings`, i.e. the value a live profile really hands to the renderers — it
+is a measurement of the running browser, not an echo of the overlay's own constant. WebRTC in this
+build therefore does not expose local interface addresses by default, and the overlay decided that.
+
+It also proves the reverse of Build 1's finding: with a real call site, `--gc-sections` keeps the
+Bedrock objects and the code executes in the browser process.
+
+**Still not proven:** everything else. Eleven of the twelve shipped defaults are still not wired to
+Chromium (the startup plan prints each one with the reason it is blocked), no UI is built, and no
+privacy subsystem beyond this pref runs. Exactly one feature is `kEnforced`.
+
 ## Enforced features
 
 | Feature | Enforced since | Where the browser performs it | Evidence |
 | --- | --- | --- | --- |
-| _(none yet)_ | | | |
+| `webrtc_policy` (`webrtc_privacy` default) | Build 2, 2026-08-23 | `chrome/browser/ui/browser_ui_prefs.cc` registers the pref with the Bedrock default; `chrome/browser/renderer_preferences_util.cc` passes it to every renderer | `[bedrock] effective webrtc.ip_handling_policy = default_public_interface_only (want default_public_interface_only: match)` in `/work/build-logs/run2.log`; reproduce with `scripts/resume_build.sh` |
 
 ## Constraints this build discovered
 
@@ -53,3 +88,9 @@ Recorded here because they are properties of building *inside* Chromium, and the
 3. **Chromium compiles with C++20 modules for the standard library.** Every standard symbol needs
    its own header included in the file that uses it; libstdc++'s transitive includes hide the
    omission from `g++`. 103 overlay files were missing at least one include and now list them.
+4. **Objects can silently go stale** when the build is driven by hand around a siso stall. A
+   `startup.o` one day older than its source failed the link with `undefined symbol:
+   bedrock::integration::PrefDefaultOr`, and a stale `chrome_browser_main.o` kept executing a hook
+   that had already been reverted in the tree. Recompile the object of every file you touch before
+   linking; `build/LOCAL_BUILD_HANDOFF.md` §4.9 has the recipe.
+5. **`is_component_build=true` binaries need `LD_LIBRARY_PATH=out/Release`** to start at all.

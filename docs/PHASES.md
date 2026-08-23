@@ -24,7 +24,7 @@ can be before the overlay has ever been applied to a checkout.
 | --- | --- | --- | --- |
 | 0 | Repository, licensing, architecture | `done` | ADRs 0001–0014, `docs/LICENSING.md`, gates in CI |
 | 1 | **Chromium build** | `done` | Built 2026-08-22 at the pinned revision, overlay compiled in-tree — `build/ENFORCEMENT.md` |
-| 2 | Minimal browser shell | `not-started` | Blocked on phase 1 |
+| 2 | **Minimal browser shell** | `done` | First Chromium call site into `bedrock::` runs in the 2026-08-23 build — `patches/bedrock/integration/0001-bedrock-startup-hook.patch`, `build/ENFORCEMENT.md` "Build 2" |
 | 3 | Tabs, navigation, profiles | `policy-landed` | `ui/tab_model`, `session/`, `profiles/` + host tests |
 | 4 | Search engine abstraction | `policy-landed` | `search/engine_selector`, `omnibox/input_parser`, ADR 0009 |
 | 5 | Settings system | `policy-landed` | `settings/` — config surface, advanced settings, defaults, reset |
@@ -51,24 +51,26 @@ free:
   commit, plus documents and gates that keep the two in step. None of it is a mock. The design
   work — how blocking, fingerprinting, storage and settings fit together — is done and reviewable,
   and it is the part that is expensive to change later.
-* **What it costs.** Almost nothing has been proven against the engine yet. Phase 1 changed one
-  thing and it is worth being precise about which: all 106 overlay sources now compile under
-  Chromium's clang and reach the `chrome` link line, so the integration is real — but no Chromium
-  code calls into `bedrock::` yet, the linker drops the objects from the final binary, and
-  `Status::kEnforced` still appears nowhere in the feature registry. `build/ENFORCEMENT.md`
-  records exactly that distinction. The bill for building out of order came due immediately:
+* **What it costs.** Very little of it has been proven against the engine yet. Phase 1 showed that
+  all 106 overlay sources compile under Chromium's clang and reach the `chrome` link line; phase 2
+  added the first real call site, so the code now *runs* — but exactly one feature
+  (`webrtc_policy`) is `Status::kEnforced` and the other 29 are still policy that no build performs.
+  `build/ENFORCEMENT.md` records that distinction build by build. The bill for building out of order came due immediately:
   `-fno-exceptions`, the `raw_ptr` plugin and Chromium's strict standard-library includes each
   required real changes to code that had passed its host tests for weeks.
 
 ## What comes next, in order
 
-1. **Phase 2: the shell** — the first Chromium call site into `bedrock::`. Until one exists the
-   overlay compiles and is then discarded by `--gc-sections`, so phase 2 is what turns phase 1's
-   result into a browser that actually runs Bedrock code. It also unblocks the first
-   `Status::kEnforced` feature and the first row in `build/ENFORCEMENT.md`.
-2. **Re-verify phases 3–5 against that shell**, then the privacy phases behind them.
+1. **Re-verify phases 3–5 against the running shell.** Phase 2 landed on 2026-08-23: the browser
+   executes `bedrock::` code and the first feature (`webrtc_policy`) is `kEnforced`, proven by a
+   measurement taken inside `UpdateFromSystemSettings`. The pattern is now repeatable — supply a
+   default from `settings/defaults.h`, read back what the browser really uses, record the build.
+   Eleven of the twelve shipped defaults are still unwired; the startup plan prints the reason for
+   each one.
+2. **Then the privacy phases behind them**, in the order of item 89.
 3. **Phase 13 and 16**, the two remaining `not-started` product phases.
 
-Until step 1 happens, no phase between 3 and 15 may be described as done — in this document, in
-the README, or in a release note. `scripts/check_phases.py` enforces the vocabulary, and
-`scripts/check_no_fake_features.py` enforces the consequence.
+No phase between 3 and 15 may be described as done until its behaviour is observed in a running
+build the same way phase 2's was — in this document, in the README, or in a release note.
+`scripts/check_phases.py` enforces the vocabulary, and `scripts/check_no_fake_features.py` enforces
+the consequence.
