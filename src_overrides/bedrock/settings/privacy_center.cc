@@ -97,5 +97,22 @@ const char* PrivacyCenter::DataSourceNote() {
          "Bedrock has no server to send them to.";
 }
 
+std::string DashboardJson(const PrivacyCenter& center) {
+  const std::vector<DashboardRow> rows = center.Rows();
+  std::string out = "{\"level\":\"";
+  out += PrivacyCenter::LevelName(center.Level());
+  out += "\",\"note\":\"";
+  out += PrivacyCenter::DataSourceNote();
+  out += "\",\"rows\":[";
+  for (std::vector<DashboardRow>::size_type i = 0; i < rows.size(); ++i) {
+    if (i)
+      out += ",";
+    out += "{\"label\":\"" + rows[i].label + "\",\"value\":" +
+           std::to_string(rows[i].value) + ",\"formatted\":\"" +
+           rows[i].formatted + "\"}";
+  }
+  return out + "]}";
+}
+
 }  // namespace stats
 }  // namespace bedrock

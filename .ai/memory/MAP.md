@@ -300,12 +300,16 @@ Settings surfaces: the Privacy Center dashboard and the privacy configuration (p
 | `portability_test.cc` | An importer is a parser for hostile input that arrives wearing the user's trust. |
 | `privacy_center.cc` | implementation |
 | `privacy_center.h` | Privacy Center (roadmap item 37). |
+| `privacy_center_test.cc` | Host test, no Chromium. |
 | `privacy_posture.cc` | implementation |
 | `privacy_posture.h` | Privacy configuration view (brief item 19). |
 | `privacy_posture_test.cc` | Host test, no Chromium. |
 | `reset_controls.cc` | implementation |
 | `reset_controls.h` | Reset and recovery (roadmap item 58). |
 | `reset_controls_test.cc` | — |
+| `settings_page.cc` | implementation |
+| `settings_page.h` | The settings page (design items 21, 22, 25). |
+| `settings_page_test.cc` | Host test, no Chromium. |
 
 ### `src_overrides/bedrock/settings/knowledge/`
 Privacy Knowledge Center: native offline articles (layer A) kept separate from externally licensed material (layer B) for licensing reasons.
@@ -343,8 +347,12 @@ Browser UI surfaces: tab model with two layouts, optional sidebar, per-site priv
 | `new_tab.html` | — |
 | `new_tab.js` | — |
 | `new_tab_test.cc` | Host test, no Chromium. |
+| `privacy_center.html` | — |
+| `privacy_center.js` | — |
 | `privacy_panel.html` | — |
 | `privacy_panel.js` | — |
+| `settings.html` | — |
+| `settings.js` | — |
 | `sidebar.cc` | implementation |
 | `sidebar.h` | Sidebar (roadmap item 31). |
 | `sidebar_test.cc` | Host test, no Chromium. |
@@ -471,6 +479,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/design/042-first-run.md`](../../docs/design/042-first-run.md) | 042 — First run, search disclosure, honest onboarding |
 | [`docs/design/043-new-tab-and-chrome.md`](../../docs/design/043-new-tab-and-chrome.md) | 043 — New tab, search field and browser chrome |
 | [`docs/design/044-tabs-and-panel.md`](../../docs/design/044-tabs-and-panel.md) | 044 — Privacy indicator, tabs, sidebar, type |
+| [`docs/design/045-settings-and-privacy-center.md`](../../docs/design/045-settings-and-privacy-center.md) | 045 — Settings, Privacy Center, extensions |
 | [`docs/performance/BUDGETS.md`](../../docs/performance/BUDGETS.md) | Performance budgets |
 | [`docs/privacy/FEATURES.md`](../../docs/privacy/FEATURES.md) | Privacy features, in full |
 | [`docs/privacy/FILTER_LISTS.md`](../../docs/privacy/FILTER_LISTS.md) | Filter lists — licences, one per list |

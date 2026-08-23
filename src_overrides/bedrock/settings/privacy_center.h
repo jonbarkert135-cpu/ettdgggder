@@ -76,6 +76,11 @@ class PrivacyCenter {
   const privacy::ProtectionController* controls_;
 };
 
+// The dashboard as JSON for the page that draws it (design item 23). Rows keep
+// their raw value as well as the formatted one, and a row that was never
+// measured is marked so the page can say "not measured" instead of "0".
+std::string DashboardJson(const PrivacyCenter& center);
+
 }  // namespace stats
 }  // namespace bedrock
 

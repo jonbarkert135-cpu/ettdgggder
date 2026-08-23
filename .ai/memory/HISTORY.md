@@ -4,6 +4,17 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #33 — settings, Privacy Center, extensions
+
+- `settings/settings_page.{h,cc}`: the settings page as a view over
+  `ConfigSurface`. Every key belongs to exactly one of nine sections (asserted),
+  unknown keys stay visible in Advanced, rows carry origin and policy lock.
+  Extension cards travel only with the Extensions section.
+- `DashboardJson()` added to `PrivacyCenter`, plus the missing
+  `privacy_center_test.cc`: an empty log yields zeros, never invented numbers.
+- Pages: `ui/settings.{html,js}` (left rail, segmented controls, extension
+  cards) and `ui/privacy_center.{html,js}` (large type, four glass metrics).
+
 ## PR #32 — indicator, tabs, sidebar, type
 
 - `ui/privacy_panel.{html,js}` + `PanelJson()` in `site_privacy_panel`: counts,

@@ -125,6 +125,8 @@ source_set("bedrock") {
     "settings/privacy_posture.h",
     "settings/reset_controls.cc",
     "settings/reset_controls.h",
+    "settings/settings_page.cc",
+    "settings/settings_page.h",
     "themes/theme_engine.cc",
     "themes/theme_engine.h",
     "ui/accessibility.cc",
