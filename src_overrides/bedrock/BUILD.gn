@@ -59,6 +59,8 @@ source_set("bedrock") {
     "integration/startup.h",
     "omnibox/input_parser.cc",
     "omnibox/input_parser.h",
+    "onboarding/first_run.cc",
+    "onboarding/first_run.h",
     "passwords/password_store.cc",
     "passwords/password_store.h",
     "perf/perf_budgets.cc",
