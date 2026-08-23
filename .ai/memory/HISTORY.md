@@ -4,6 +4,11 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #27 — First downloadable build
+Packaged the phase-2 component build as `bedrock-0.0.1-dev-linux-x64.tar.zst` (313 MB) with
+`run-bedrock.sh`, README, LICENSE and THIRD_PARTY_NOTICES; published as GitHub pre-release
+`v0.0.1-dev`. Repo side: `docs/releases/0.0.1-dev.md` and a download section in `README.md`.
+
 ## PR #26 — Phase 2: the overlay runs inside the browser
 First Chromium call sites into `bedrock::` (`patches/bedrock/integration/0001-bedrock-startup-hook.patch`):
 `RegisterBrowserUserPrefs` takes the default of `webrtc.ip_handling_policy` from the overlay and logs the

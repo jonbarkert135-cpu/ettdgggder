@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26).
+**As of:** phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
 
 ## Position on the roadmap
 
@@ -72,6 +72,9 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 - **The overlay runs inside Chromium** (phase 2): `nm -C out/Release/chrome | grep bedrock::` finds
   17 symbols and the browser prints `[bedrock]` lines at startup. Phase 1 had proven compilation
   only; with no call site the linker had discarded every overlay object.
+- **A downloadable artifact exists:** GitHub pre-release `v0.0.1-dev`, `bedrock-0.0.1-dev-linux-x64.tar.zst`
+  (313 MB, sha256 `54be5449…`), notes in `docs/releases/0.0.1-dev.md`. Component build, Linux only,
+  unbranded, one enforced protection — never call it a product release. [github, 2026-08-23]
 - **The local build is not in git** (8.7 GB). `build/LOCAL_BUILD_HANDOFF.md` is the handoff: what
   exists on disk, what must never be rebuilt, the 11 errors hit so far, and
   `scripts/resume_build.sh` which syncs, builds and verifies in one command.
