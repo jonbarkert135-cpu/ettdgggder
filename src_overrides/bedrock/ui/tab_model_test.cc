@@ -44,7 +44,23 @@ int main() {
     tabs.set_layout(TabLayout::kVertical);
     Check(tabs.size() == horizontal && tabs.layout() == TabLayout::kVertical,
           "switching to vertical tabs changes nothing but the layout");
+    tabs.set_layout(TabLayout::kCompact);
+    Check(tabs.size() == horizontal && tabs.layout() == TabLayout::kCompact,
+          "and so does compact: a layout is a rendering choice, not a list");
     tabs.set_layout(TabLayout::kHorizontal);
+
+    // Metrics: the three layouts differ, and every one stays clickable.
+    const TabStripMetrics h = MetricsFor(TabLayout::kHorizontal);
+    const TabStripMetrics v = MetricsFor(TabLayout::kVertical);
+    const TabStripMetrics c = MetricsFor(TabLayout::kCompact);
+    Check(v.vertical && !h.vertical && !c.vertical, "only one layout is vertical");
+    Check(h.shows_title && v.shows_title && !c.shows_title,
+          "compact drops the title, the others keep it");
+    Check(c.min_tab_width < h.min_tab_width, "compact is narrower");
+    Check(v.strip_extent > h.strip_extent,
+          "the vertical strip is wide enough for a title");
+    Check(h.tab_extent >= 28 && v.tab_extent >= 28 && c.tab_extent >= 28,
+          "a tab stays big enough to hit");
   }
 
   // Pinned tabs come first, and the model maintains that itself.

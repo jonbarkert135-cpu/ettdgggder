@@ -150,3 +150,16 @@ is nothing to pin); the checker enforces this.
   `official_source` and `attribution` fields — enforced by `scripts/check_catalog.py`.
 - **Verified:** 2026-08-21 against https://privacytools.io/license and
   https://www.privacytools.io/privacy-browser-addons.
+
+## Fonts
+
+| Font | Version | Licence | Where |
+| --- | --- | --- | --- |
+| Inter | Google Fonts release, 2026-08 | SIL Open Font License 1.1 (`branding/fonts/OFL-Inter.txt`) | UI text |
+| Poppins | Google Fonts release, 2026-08 | SIL Open Font License 1.1 (`branding/fonts/OFL-Poppins.txt`) | headings and the wordmark |
+
+Both are vendored as woff2 in `branding/fonts/` and referenced by
+`src_overrides/bedrock/ui/tokens.css`, which the generator asserts contains no
+`https://` URL. A UI font loaded from a CDN would be a request to a third party
+on every window the browser opens, which is exactly the behaviour this project
+exists to avoid.

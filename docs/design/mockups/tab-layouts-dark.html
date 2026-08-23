@@ -1,0 +1,164 @@
+<!doctype html>
+<!-- Bedrock: the three tab layouts and the optional sidebar (design items
+     18-20). Self-contained, no network. Values match
+     branding/design-tokens.json; see docs/design/044-tabs-and-panel.md. -->
+<html lang="en"><head><meta charset="utf-8"><title>Bedrock — tab layouts</title>
+<style>
+  :root{
+    --surface:#0B0C0D; --raised:#141517; --sunken:#08090A;
+    --border:#232527; --border-strong:#34373A;
+    --text:#F2F3F4; --muted:#9B9EA2;
+    --accent:#E08A4C; --accent-quiet:#241C15; --positive:#6FBF95;
+    --r-sm:6px; --r-md:10px; --r-lg:14px;
+    --ui:Inter,'SF Pro Text','Segoe UI Variable',system-ui,sans-serif;
+    --display:Poppins,Inter,'SF Pro Display',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--sunken);font-family:var(--ui);color:var(--text);
+       -webkit-font-smoothing:antialiased;padding:36px;display:flex;
+       flex-direction:column;align-items:center;gap:26px}
+  h2{font-family:var(--display);font-size:13px;font-weight:600;color:var(--muted);
+     letter-spacing:.12em;text-transform:uppercase;align-self:flex-start;
+     margin-left:calc(50% - 540px)}
+  .window{width:1080px;background:var(--surface);border:1px solid var(--border);
+          border-radius:var(--r-lg);overflow:hidden;
+          box-shadow:0 20px 48px rgba(0,0,0,.5)}
+  button{font:inherit;color:inherit;background:none;border:0;padding:0;
+         text-align:inherit;cursor:pointer;-webkit-appearance:none}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+  /* ---- horizontal (default) ---- */
+  .strip{display:flex;align-items:center;gap:4px;padding:6px 8px;
+         background:var(--sunken);border-bottom:1px solid var(--border)}
+  .tab{display:flex;align-items:center;gap:8px;height:34px;padding:0 12px;
+       min-width:132px;max-width:200px;border-radius:var(--r-sm);
+       font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden}
+  .tab .fav{width:14px;height:14px;border-radius:4px;flex:none;
+            background:var(--raised);border:1px solid var(--border)}
+  /* Item 19: the active tab is one step brighter with a hairline top
+     highlight — not a white slab cut out of the strip. */
+  .tab.on{background:var(--raised);color:var(--text);
+          box-shadow:inset 0 1px 0 rgba(255,255,255,.06),
+                     0 0 0 1px var(--border)}
+  .strip .plus{width:30px;height:30px;display:grid;place-items:center;
+               color:var(--muted);border-radius:var(--r-sm)}
+  .toolbar{height:46px;display:flex;align-items:center;gap:10px;padding:0 12px}
+  .icon{width:30px;height:30px;border-radius:var(--r-sm);display:grid;
+        place-items:center;color:var(--muted);font-size:14px}
+  .omni{flex:1;height:34px;background:var(--raised);border:1px solid var(--border);
+        border-radius:var(--r-md);display:flex;align-items:center;gap:10px;
+        padding:0 8px 0 12px;font-size:13px}
+  .omni .path{color:var(--muted)}
+  /* Item 17: our own indicator — a ring with a core, not a padlock. */
+  .ind{margin-left:auto;display:flex;align-items:center;gap:7px;height:24px;
+       padding:0 10px;border-radius:999px;background:var(--accent-quiet);
+       border:1px solid #33261C;color:var(--accent);font-size:11.5px;
+       font-variant-numeric:tabular-nums}
+  .ring{width:11px;height:11px;border-radius:999px;border:1.5px solid var(--accent);
+        position:relative}
+  .ring::after{content:"";position:absolute;inset:2.5px;border-radius:999px;
+        background:var(--accent)}
+  .body{height:190px;background:var(--surface);border-top:1px solid var(--border);
+        display:flex}
+
+  /* ---- compact ---- */
+  .strip.compact .tab{min-width:0;width:34px;height:28px;padding:0;
+       justify-content:center}
+  .strip.compact .tab span{display:none}
+
+  /* ---- vertical + sidebar ---- */
+  .split{display:flex;height:280px}
+  .rail{width:48px;background:var(--sunken);border-right:1px solid var(--border);
+        display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0}
+  .rail .i{width:32px;height:32px;border-radius:var(--r-sm);display:grid;
+           place-items:center;color:var(--muted);font-size:14px}
+  .rail .i.on{background:var(--accent-quiet);color:var(--accent)}
+  .rail .sp{flex:1}
+  .vtabs{width:232px;background:var(--sunken);border-right:1px solid var(--border);
+         padding:8px 6px;display:flex;flex-direction:column;gap:2px}
+  .vtabs .h{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+            color:var(--muted);padding:6px 8px 8px}
+  .vrow{display:flex;align-items:center;gap:9px;height:32px;padding:0 9px;
+        border-radius:var(--r-sm);font-size:12.5px;color:var(--muted);
+        white-space:nowrap;overflow:hidden}
+  .vrow .fav{width:14px;height:14px;border-radius:4px;flex:none;
+             background:var(--raised);border:1px solid var(--border)}
+  .vrow.on{background:var(--raised);color:var(--text);
+           box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+  .pane{flex:1;padding:20px 22px}
+  .pane h3{font-family:var(--display);font-size:15px;font-weight:600;margin-bottom:6px}
+  .pane p{color:var(--muted);font-size:12.5px;line-height:1.6;max-width:420px}
+  .cap{width:1080px;display:flex;justify-content:space-between;font-size:11.5px;
+       color:#6E7276}
+  @media (prefers-reduced-motion: reduce){*{transition-duration:0ms !important}}
+</style></head><body>
+
+<h2>Default — horizontal</h2>
+<div class="window">
+  <div class="strip">
+    <button class="tab on" type="button"><i class="fav" aria-hidden="true"></i><span>Bedrock — Privacy</span></button>
+    <button class="tab" type="button"><i class="fav" aria-hidden="true"></i><span>Threat model</span></button>
+    <button class="tab" type="button"><i class="fav" aria-hidden="true"></i><span>Release notes</span></button>
+    <button class="plus" type="button" aria-label="New tab">+</button>
+  </div>
+  <div class="toolbar">
+    <button class="icon" type="button" aria-label="Back">&#8592;</button>
+    <button class="icon" type="button" aria-label="Forward">&#8594;</button>
+    <button class="icon" type="button" aria-label="Reload">&#10227;</button>
+    <div class="omni"><span>example.test<span class="path">/privacy</span></span>
+      <button class="ind" type="button" aria-label="Privacy protection: 12 trackers blocked">
+        <i class="ring" aria-hidden="true"></i>12 blocked</button>
+    </div>
+    <button class="icon" type="button" aria-label="Extensions">&#9099;</button>
+    <button class="icon" type="button" aria-label="Downloads">&#8964;</button>
+    <button class="icon" type="button" aria-label="Profile">&#9678;</button>
+    <button class="icon" type="button" aria-label="Main menu">&#9776;</button>
+  </div>
+  <div class="body"></div>
+</div>
+
+<h2>Compact — favicons only</h2>
+<div class="window">
+  <div class="strip compact">
+    <button class="tab on" type="button" aria-label="Bedrock — Privacy"><i class="fav" aria-hidden="true"></i><span>Bedrock</span></button>
+    <button class="tab" type="button" aria-label="Threat model"><i class="fav" aria-hidden="true"></i><span>Threat model</span></button>
+    <button class="tab" type="button" aria-label="Release notes"><i class="fav" aria-hidden="true"></i><span>Release notes</span></button>
+    <button class="tab" type="button" aria-label="Chromium docs"><i class="fav" aria-hidden="true"></i><span>Chromium docs</span></button>
+    <button class="tab" type="button" aria-label="Roadmap"><i class="fav" aria-hidden="true"></i><span>Roadmap</span></button>
+    <button class="plus" type="button" aria-label="New tab">+</button>
+  </div>
+  <div class="body"></div>
+</div>
+
+<h2>Alternative — vertical tabs, sidebar shown</h2>
+<div class="window">
+  <div class="split">
+    <nav class="rail" aria-label="Sidebar">
+      <button class="i on" type="button" aria-label="Tabs">&#9707;</button>
+      <button class="i" type="button" aria-label="Bookmarks">&#9734;</button>
+      <button class="i" type="button" aria-label="History">&#8631;</button>
+      <button class="i" type="button" aria-label="Downloads">&#8595;</button>
+      <button class="i" type="button" aria-label="Reading list">&#9776;</button>
+      <span class="sp"></span>
+      <button class="i" type="button" aria-label="Hide sidebar">&#8676;</button>
+    </nav>
+    <div class="vtabs">
+      <div class="h">Tabs</div>
+      <button class="vrow on" type="button"><i class="fav" aria-hidden="true"></i>Bedrock — Privacy</button>
+      <button class="vrow" type="button"><i class="fav" aria-hidden="true"></i>Threat model</button>
+      <button class="vrow" type="button"><i class="fav" aria-hidden="true"></i>Release notes</button>
+      <button class="vrow" type="button"><i class="fav" aria-hidden="true"></i>Chromium docs</button>
+    </div>
+    <div class="pane">
+      <h3>One model, three layouts</h3>
+      <p>Horizontal, compact and vertical render the same ordered tab list, so a
+         tab cannot exist in one layout and not in another. The sidebar is off
+         until asked for, and every panel in it is also reachable from the menu
+         and from a keyboard shortcut.</p>
+    </div>
+  </div>
+</div>
+
+<div class="cap"><span>Bedrock · graphite surfaces, one copper accent, quiet motion</span>
+<span>Original visual language — no third-party brand assets</span></div>
+</body></html>

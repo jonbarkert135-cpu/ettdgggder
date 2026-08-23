@@ -144,5 +144,64 @@ std::vector<std::string> SitePrivacyPanel::BlockedParties(
   return log_->BlockedPartiesFor(site);
 }
 
+
+
+namespace {
+
+std::string JsonQuote(const std::string& text) {
+  std::string out = "\"";
+  for (char ch : text) {
+    switch (ch) {
+      case '"': out += "\\\""; break;
+      case '\\': out += "\\\\"; break;
+      case '\n': out += "\\n"; break;
+      case '\r': out += "\\r"; break;
+      case '\t': out += "\\t"; break;
+      default:
+        if (static_cast<unsigned char>(ch) < 0x20) {
+          static const char* kHex = "0123456789abcdef";
+          out += "\\u00";
+          out += kHex[(ch >> 4) & 0xF];
+          out += kHex[ch & 0xF];
+        } else {
+          out += ch;
+        }
+    }
+  }
+  return out + "\"";
+}
+
+const char* KindName(RowKind kind) {
+  switch (kind) {
+    case RowKind::kCount: return "count";
+    case RowKind::kState: return "state";
+    case RowKind::kConnection: return "connection";
+  }
+  return "state";
+}
+
+}  // namespace
+
+std::string PanelJson(const std::string& host,
+                      const std::vector<PanelRow>& rows,
+                      const std::vector<std::string>& blocked_parties) {
+  std::string out = "{\"host\":" + JsonQuote(host) + ",\"rows\":[";
+  for (std::vector<PanelRow>::size_type i = 0; i < rows.size(); ++i) {
+    if (i)
+      out += ",";
+    out += "{\"label\":" + JsonQuote(rows[i].label) +
+           ",\"value\":" + JsonQuote(rows[i].value) +
+           ",\"kind\":" + JsonQuote(KindName(rows[i].kind)) +
+           ",\"measured\":" + (rows[i].measured ? "true" : "false") + "}";
+  }
+  out += "],\"blockedParties\":[";
+  for (std::vector<std::string>::size_type i = 0; i < blocked_parties.size(); ++i) {
+    if (i)
+      out += ",";
+    out += JsonQuote(blocked_parties[i]);
+  }
+  return out + "]}";
+}
+
 }  // namespace ui
 }  // namespace bedrock

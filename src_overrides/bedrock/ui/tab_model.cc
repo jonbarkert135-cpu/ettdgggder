@@ -14,6 +14,25 @@
 
 namespace bedrock {
 namespace ui {
+
+TabStripMetrics MetricsFor(TabLayout layout) {
+  switch (layout) {
+    case TabLayout::kVertical:
+      // A row is as tall as a comfortable hit target and the strip is wide
+      // enough for a readable title, which is the entire point of going
+      // vertical.
+      return {32, 0, 232, true, true};
+    case TabLayout::kCompact:
+      // Favicon only. The title lives in the tooltip and in tab search, so
+      // nothing becomes unreachable — it stops being visible, which is what
+      // the user asked for by choosing compact.
+      return {28, 34, 34, false, false};
+    case TabLayout::kHorizontal:
+      break;
+  }
+  return {34, 132, 42, true, false};
+}
+
 namespace {
 
 const std::string kEmpty;

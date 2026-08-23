@@ -76,6 +76,14 @@ class SitePrivacyPanel {
   const privacy::ProtectionController* controls_;
 };
 
+// The panel as JSON for the popup that draws it (design item 17). Rows keep
+// their kind so the page can tell a measured count from a policy state, and
+// `measured` is passed through rather than flattened to a zero: "Not measured"
+// and "0 blocked" are different claims.
+std::string PanelJson(const std::string& host,
+                      const std::vector<PanelRow>& rows,
+                      const std::vector<std::string>& blocked_parties);
+
 }  // namespace ui
 }  // namespace bedrock
 

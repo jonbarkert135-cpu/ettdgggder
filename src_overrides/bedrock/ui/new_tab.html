@@ -39,7 +39,8 @@
 
   main{position:relative;width:100%;max-width:720px;margin:0 auto;
        padding:18vh var(--space-24) var(--space-48);text-align:center}
-  h1{font-size:34px;font-weight:var(--weight-semibold);letter-spacing:.16em;
+  h1{font-family:var(--font-display);font-size:36px;
+     font-weight:var(--weight-semibold);letter-spacing:.14em;
      margin-bottom:var(--space-32)}
 
   /* Item 13: the one glass surface on this page. */
@@ -58,6 +59,13 @@
   .search .glyph{color:var(--text-muted);font-size:var(--text-md);flex:none}
 
   /* Item 14: part of the system, not a widget bolted on. */
+  /* A provider gets a mark of our own, not its logo: shipping another
+     company's brand asset in our chrome is a trademark problem (item 92), and
+     a monogram cannot go stale when they redesign. */
+  .emark{width:18px;height:18px;flex:none;border-radius:var(--radius-pill);
+      display:grid;place-items:center;font-size:10px;font-weight:var(--weight-semibold);
+      background:var(--accent-quiet);color:var(--accent);
+      border:1px solid var(--border)}
   .engine{display:flex;align-items:center;gap:var(--space-6);flex:none;
       height:36px;padding:0 var(--space-12);border-radius:var(--radius-md);
       background:none;border:1px solid var(--border);color:var(--text-muted);
@@ -70,12 +78,12 @@
       border-radius:var(--radius-md);box-shadow:var(--elevation-overlay);
       position:absolute;right:0;min-width:180px;text-align:left;z-index:2}
   .menu[hidden]{display:none}
-  .menu button{display:flex;width:100%;justify-content:space-between;
+  .menu button{display:flex;width:100%;align-items:center;justify-content:flex-start;
       gap:var(--space-12);background:none;border:0;color:var(--text);font:inherit;
       font-size:var(--text-sm);padding:var(--space-8) var(--space-12);
       border-radius:var(--radius-sm);cursor:pointer;min-height:var(--hit-target-min)}
   .menu button:hover{background:var(--surface-sunken)}
-  .menu .tick{color:var(--accent)}
+  .menu .tick{color:var(--accent);margin-left:auto}
   .searchwrap{position:relative}
 
   /* Item 11: the fast row under the search, the part Chrome gets right. */
@@ -111,6 +119,7 @@
              placeholder="Search the web or enter address">
       <button class="engine" id="engine" type="button" aria-haspopup="true"
               aria-expanded="false" aria-controls="menu">
+        <span class="emark" id="engineMark" aria-hidden="true"></span>
         <span id="engineLabel">Search</span>
         <span aria-hidden="true">&#8964;</span>
       </button>
