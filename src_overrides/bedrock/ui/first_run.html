@@ -13,14 +13,11 @@
 <link rel="stylesheet" href="tokens.css">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--surface);color:var(--text);font-family:var(--font-ui);
+  body{background:var(--background-primary);color:var(--text-primary);font-family:var(--font-ui);
        font-size:var(--text-base);line-height:var(--line-height);
        display:flex;justify-content:center;padding:64px 24px;min-height:100vh;
        -webkit-font-smoothing:antialiased}
-  /* One soft light source, high and slightly left: depth without decoration. */
-  body::before{content:"";position:fixed;inset:0;pointer-events:none;
-       background:radial-gradient(900px 520px at 38% -8%,
-                  rgba(255,255,255,.055), rgba(255,255,255,0) 70%)}
+  /* Background composition comes from .bedrock-canvas in tokens.css. */
   main{width:640px;position:relative}
   .rail{display:flex;gap:6px;margin-bottom:32px}
   .rail span{height:2px;flex:1;background:var(--border);border-radius:var(--radius-pill)}
@@ -63,7 +60,7 @@
      primary action is the brightest neutral rather than a splash of colour. */
   button.act.primary{background:var(--text);border-color:var(--text);
                      color:var(--surface);font-weight:var(--weight-medium)}
-  button.act.primary:hover{background:#FFFFFF}
+  button.act.primary:hover{background:var(--text-primary);filter:brightness(1.06)}
   input[type="checkbox"]{accent-color:var(--accent);width:15px;height:15px}
   label.toggle{display:flex;gap:10px;align-items:center;margin-top:16px;
                color:var(--text-muted);min-height:var(--hit-target-min)}
@@ -71,7 +68,7 @@
   @media (prefers-reduced-motion: reduce){*{transition:none !important}}
 </style>
 </head>
-<body>
+<body class="bedrock-canvas">
 <main>
   <div class="rail" id="rail" aria-hidden="true"></div>
   <h1 id="title"></h1>

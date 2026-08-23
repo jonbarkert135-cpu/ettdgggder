@@ -489,6 +489,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/design/044-tabs-and-panel.md`](../../docs/design/044-tabs-and-panel.md) | 044 — Privacy indicator, tabs, sidebar, type |
 | [`docs/design/045-settings-and-privacy-center.md`](../../docs/design/045-settings-and-privacy-center.md) | 045 — Settings, Privacy Center, extensions |
 | [`docs/design/046-profiles-modes-customisation.md`](../../docs/design/046-profiles-modes-customisation.md) | 046 — Profiles, window modes, customisation |
+| [`docs/design/047-token-system-and-surface.md`](../../docs/design/047-token-system-and-surface.md) | 047 — Semantic tokens, motion, grain, background |
 | [`docs/performance/BUDGETS.md`](../../docs/performance/BUDGETS.md) | Performance budgets |
 | [`docs/privacy/FEATURES.md`](../../docs/privacy/FEATURES.md) | Privacy features, in full |
 | [`docs/privacy/FILTER_LISTS.md`](../../docs/privacy/FILTER_LISTS.md) | Filter lists — licences, one per list |
@@ -553,6 +554,7 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | `scripts/check_security_testing.py` | Fail if the security testing setup has decayed. Run: |
 | `scripts/check_strings.py` | Localization gate (roadmap item 61). |
 | `scripts/check_test_matrix.py` | Gate: the roadmap-74 test matrix stays complete, honest and executable. |
+| `scripts/check_tokens.py` | Design items 31 and 32, as a gate. |
 | `scripts/check_transparency.py` | Gate: every privacy feature explains itself, including its limits. |
 | `scripts/check_ui_style.py` | Roadmap item 27's taste rules, as a gate. |
 | `scripts/check_upstream.py` | Upstream sync and patch gate (roadmap items 66, 67, 69). |

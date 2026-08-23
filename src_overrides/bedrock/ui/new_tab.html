@@ -13,14 +13,11 @@
 <link rel="stylesheet" href="tokens.css">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--surface);color:var(--text);font-family:var(--font-ui);
+  body{background:var(--background-primary);color:var(--text-primary);font-family:var(--font-ui);
        font-size:var(--text-base);line-height:var(--line-height);
        min-height:100vh;-webkit-font-smoothing:antialiased}
-  /* One light source, high and slightly left, plus a graphite floor. Calm
-     enough to read over; no imagery, nothing moving. */
-  body::before{content:"";position:fixed;inset:0;pointer-events:none;
-       background:radial-gradient(1100px 640px at 42% -12%,
-                  rgba(255,255,255,.05), rgba(255,255,255,0) 68%)}
+  /* Background composition (items 34, 35) comes from .bedrock-canvas in
+     tokens.css: base colour, one soft light source, a few percent of grain. */
 
   /* The bookmark bar sits where a bookmark bar belongs: under the chrome,
      one row, quiet until pointed at. */
@@ -48,11 +45,11 @@
       background:var(--surface-glass);backdrop-filter:blur(10px);
       border:1px solid var(--border);border-radius:var(--radius-lg);
       padding:0 var(--space-8) 0 var(--space-16);height:52px;
-      box-shadow:var(--elevation-raised),inset 0 1px 0 rgba(255,255,255,.04);
+      box-shadow:var(--elevation-raised),inset 0 1px 0 var(--highlight-hairline);
       transition:border-color var(--motion-standard),
                  box-shadow var(--motion-standard)}
   .search:focus-within{border-color:var(--border-strong);
-      box-shadow:var(--elevation-overlay),inset 0 1px 0 rgba(255,255,255,.07)}
+      box-shadow:var(--elevation-overlay),inset 0 1px 0 var(--highlight-hairline)}
   .search input{flex:1;background:none;border:0;color:var(--text);font:inherit;
       font-size:var(--text-md);outline:none;min-width:0}
   .search input::placeholder{color:var(--text-muted)}
@@ -107,7 +104,7 @@
   @media (prefers-reduced-motion: reduce){*{transition:none !important}}
 </style>
 </head>
-<body>
+<body class="bedrock-canvas">
 <nav class="bookmarks" id="bookmarks" aria-label="Bookmarks"></nav>
 <main>
   <h1>BEDROCK</h1>

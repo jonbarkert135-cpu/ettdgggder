@@ -50,12 +50,65 @@ FACES = """/* Vendored under the SIL Open Font License; see branding/fonts/ and
 """
 
 
+# Items 34 and 35: the background is composed, not painted. Base colour, one
+# soft light source, and a grain layer generated as an inline SVG so it costs no
+# request and no image file. The grain sits under the content and above nothing,
+# at a few percent — a surface quality, not an effect. Both layers are
+# pointer-events:none, so nothing here can eat a click.
+CANVAS = """.bedrock-canvas {
+  position: relative;
+  background: var(--background-primary);
+}
+.bedrock-canvas::before,
+.bedrock-canvas::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+.bedrock-canvas::before {
+  background: radial-gradient(var(--light-source-size) at var(--light-source-position),
+              var(--light-source), transparent 70%);
+}
+.bedrock-canvas::after {
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: var(--grain-size);
+}
+
+"""
+
+
 def block(values: dict[str, str], indent: str = "  ") -> str:
     return "".join(f"{indent}--{name}: {value};\n" for name, value in values.items())
 
 
+# Item 31's vocabulary. The palette above holds the values once; these names are
+# how the interface asks for them, so a page never says "#141517" and never has
+# to know which shade "raised" is today.
+SEMANTIC = {
+    "background-primary": "surface",
+    "background-secondary": "surface-sunken",
+    "surface-default": "surface-raised",
+    "surface-elevated": "surface-raised",
+    "surface-glass": "surface-glass",
+    "text-primary": "text",
+    "text-secondary": "text-muted",
+    "text-muted": "text-quiet",
+    "border-subtle": "border",
+    "border-default": "border-strong",
+    "border-focus": "accent",
+    "accent-primary": "accent",
+}
+
+
 def colors(theme: dict[str, str]) -> dict[str, str]:
-    return {name: value for name, value in theme.items()}
+    out = {name: value for name, value in theme.items()}
+    for semantic, source in SEMANTIC.items():
+        if semantic in theme:
+            continue  # the palette defines it directly
+        out[semantic] = theme[source]
+    return out
 
 
 def render(tokens: dict) -> str:
@@ -77,9 +130,19 @@ def render(tokens: dict) -> str:
         flat[f"radius-{name}"] = f"{px}px"
     for name, shadow in tokens["elevation"].items():
         flat[f"elevation-{name}"] = shadow
+    flat["shadow-soft"] = tokens["elevation"]["raised"]
+    flat["shadow-elevated"] = tokens["elevation"]["overlay"]
     for name, motion in tokens["motion"].items():
-        if name != "reduced-motion":
+        if name not in ("reduced-motion", "easing"):
             flat[f"motion-{name}"] = motion
+    flat["easing"] = tokens["motion"].get("easing", "linear")
+    effects = tokens["effects"]
+    flat["blur-subtle"] = f"{effects['blur-subtle']}px"
+    flat["blur-strong"] = f"{effects['blur-strong']}px"
+    flat["grain-opacity"] = str(effects["grain-opacity"])
+    flat["grain-size"] = f"{effects['grain-size']}px"
+    flat["light-source-size"] = effects["light-source-size"]
+    flat["light-source-position"] = effects["light-source-position"]
     for name, px in tokens["density"].items():
         flat[name] = f"{px}px"
 
@@ -107,12 +170,13 @@ def render(tokens: dict) -> str:
         + '[data-theme="dark"] {\n'
         + block(dark)
         + "}\n\n"
+        + CANVAS
         + "@media (prefers-reduced-motion: reduce) {\n"
         + "  :root {\n"
         + "".join(
             f"    --motion-{name}: 0ms;\n"
             for name in tokens["motion"]
-            if name != "reduced-motion"
+            if name not in ("reduced-motion", "easing")
         )
         + "  }\n}\n"
     )
@@ -126,6 +190,7 @@ def main() -> int:
         assert "--surface: " in css and "--accent: " in css, "colours missing"
         assert css.count("[data-theme=") == 4, "light, dark and system selectors expected"
         assert "prefers-reduced-motion" in css, "reduced motion missing"
+        assert ".bedrock-canvas" in css, "background composition missing"
         assert "@font-face" in css and "fonts/Poppins-600.woff2" in css, "fonts missing"
         assert "https://" not in css, "a UI font must never be fetched at runtime"
         broken = dict(tokens)

@@ -29,6 +29,20 @@
   --positive: #6FBF95;
   --warning: #D9A441;
   --danger: #E07070;
+  --text-quiet: #7B7F83;
+  --highlight-hairline: rgba(255,255,255,.06);
+  --light-source: rgba(255,255,255,.05);
+  --grain-ink: rgba(255,255,255,.5);
+  --background-primary: #0B0C0D;
+  --background-secondary: #08090A;
+  --surface-default: #141517;
+  --surface-elevated: #141517;
+  --text-primary: #F2F3F4;
+  --text-secondary: #9B9EA2;
+  --border-subtle: #232527;
+  --border-default: #34373A;
+  --border-focus: #E08A4C;
+  --accent-primary: #E08A4C;
 
   --font-ui: Inter, 'SF Pro Text', 'Segoe UI Variable', system-ui, sans-serif;
   --font-display: Poppins, Inter, 'SF Pro Display', system-ui, sans-serif;
@@ -60,8 +74,17 @@
   --elevation-flat: none;
   --elevation-raised: 0 1px 2px rgba(0,0,0,.28), 0 0 0 1px var(--border);
   --elevation-overlay: 0 16px 40px rgba(0,0,0,.46), 0 0 0 1px var(--border);
+  --shadow-soft: 0 1px 2px rgba(0,0,0,.28), 0 0 0 1px var(--border);
+  --shadow-elevated: 0 16px 40px rgba(0,0,0,.46), 0 0 0 1px var(--border);
   --motion-instant: 90ms cubic-bezier(.2,.7,.3,1);
   --motion-standard: 160ms cubic-bezier(.2,.7,.3,1);
+  --easing: cubic-bezier(.2,0,0,1);
+  --blur-subtle: 6px;
+  --blur-strong: 12px;
+  --grain-opacity: 0.035;
+  --grain-size: 160px;
+  --light-source-size: 900px 520px;
+  --light-source-position: 38% -8%;
   --toolbar-height: 44px;
   --tab-height: 34px;
   --hit-target-min: 32px;
@@ -81,6 +104,20 @@
   --positive: #6FBF95;
   --warning: #D9A441;
   --danger: #E07070;
+  --text-quiet: #7B7F83;
+  --highlight-hairline: rgba(255,255,255,.06);
+  --light-source: rgba(255,255,255,.05);
+  --grain-ink: rgba(255,255,255,.5);
+  --background-primary: #0B0C0D;
+  --background-secondary: #08090A;
+  --surface-default: #141517;
+  --surface-elevated: #141517;
+  --text-primary: #F2F3F4;
+  --text-secondary: #9B9EA2;
+  --border-subtle: #232527;
+  --border-default: #34373A;
+  --border-focus: #E08A4C;
+  --accent-primary: #E08A4C;
 }
 
 @media (prefers-color-scheme: light) {
@@ -98,6 +135,20 @@
     --warning: #8A5B12;
     --danger: #9A2F2F;
     --surface-glass: rgba(255,255,255,.72);
+    --text-quiet: #8A857C;
+    --highlight-hairline: rgba(0,0,0,.05);
+    --light-source: rgba(255,255,255,.7);
+    --grain-ink: rgba(0,0,0,.35);
+    --background-primary: #F7F6F4;
+    --background-secondary: #EDEBE7;
+    --surface-default: #FFFFFF;
+    --surface-elevated: #FFFFFF;
+    --text-primary: #1B1A18;
+    --text-secondary: #6B655D;
+    --border-subtle: #DCD8D2;
+    --border-default: #C3BDB4;
+    --border-focus: #B4622A;
+    --accent-primary: #B4622A;
   }
 }
 
@@ -115,6 +166,20 @@
   --warning: #8A5B12;
   --danger: #9A2F2F;
   --surface-glass: rgba(255,255,255,.72);
+  --text-quiet: #8A857C;
+  --highlight-hairline: rgba(0,0,0,.05);
+  --light-source: rgba(255,255,255,.7);
+  --grain-ink: rgba(0,0,0,.35);
+  --background-primary: #F7F6F4;
+  --background-secondary: #EDEBE7;
+  --surface-default: #FFFFFF;
+  --surface-elevated: #FFFFFF;
+  --text-primary: #1B1A18;
+  --text-secondary: #6B655D;
+  --border-subtle: #DCD8D2;
+  --border-default: #C3BDB4;
+  --border-focus: #B4622A;
+  --accent-primary: #B4622A;
 }
 
 [data-theme="dark"] {
@@ -131,6 +196,41 @@
   --positive: #6FBF95;
   --warning: #D9A441;
   --danger: #E07070;
+  --text-quiet: #7B7F83;
+  --highlight-hairline: rgba(255,255,255,.06);
+  --light-source: rgba(255,255,255,.05);
+  --grain-ink: rgba(255,255,255,.5);
+  --background-primary: #0B0C0D;
+  --background-secondary: #08090A;
+  --surface-default: #141517;
+  --surface-elevated: #141517;
+  --text-primary: #F2F3F4;
+  --text-secondary: #9B9EA2;
+  --border-subtle: #232527;
+  --border-default: #34373A;
+  --border-focus: #E08A4C;
+  --accent-primary: #E08A4C;
+}
+
+.bedrock-canvas {
+  position: relative;
+  background: var(--background-primary);
+}
+.bedrock-canvas::before,
+.bedrock-canvas::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+.bedrock-canvas::before {
+  background: radial-gradient(var(--light-source-size) at var(--light-source-position),
+              var(--light-source), transparent 70%);
+}
+.bedrock-canvas::after {
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: var(--grain-size);
 }
 
 @media (prefers-reduced-motion: reduce) {
