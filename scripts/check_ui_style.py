@@ -65,7 +65,7 @@ def check_mockup(path: pathlib.Path, errors: list[str]) -> None:
     for value in re.findall(r"(\d+)ms", css):
         if int(value) > MAX_DURATION_MS:
             errors.append(f"{where}: {value}ms animation > {MAX_DURATION_MS}ms")
-    for value in re.findall(r"transition:[^;]*?([0-9.]+)s", css):
+    for value in re.findall(r"transition:[^;]*?(?<![\w.])([0-9]*\.?[0-9]+)s(?![\w-])", css):
         if float(value) * 1000 > MAX_DURATION_MS:
             errors.append(f"{where}: {value}s transition > {MAX_DURATION_MS}ms")
 

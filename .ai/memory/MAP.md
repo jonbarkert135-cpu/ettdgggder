@@ -338,6 +338,11 @@ Browser UI surfaces: tab model with two layouts, optional sidebar, per-site priv
 | `accessibility_test.cc` | An icon is not a name: names are words, so they contain a letter. |
 | `first_run.html` | — |
 | `first_run.js` | — |
+| `new_tab.cc` | implementation |
+| `new_tab.h` | The new tab page (design items 11-14). |
+| `new_tab.html` | — |
+| `new_tab.js` | — |
+| `new_tab_test.cc` | Host test, no Chromium. |
 | `sidebar.cc` | implementation |
 | `sidebar.h` | Sidebar (roadmap item 31). |
 | `sidebar_test.cc` | Host test, no Chromium. |
@@ -462,6 +467,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/design/040-knowledge-center.md`](../../docs/design/040-knowledge-center.md) | 040 — Privacy Knowledge Center |
 | [`docs/design/041-open-source.md`](../../docs/design/041-open-source.md) | 041 — Telemetry policy, updates, open source, reproducibility |
 | [`docs/design/042-first-run.md`](../../docs/design/042-first-run.md) | 042 — First run, search disclosure, honest onboarding |
+| [`docs/design/043-new-tab-and-chrome.md`](../../docs/design/043-new-tab-and-chrome.md) | 043 — New tab, search field and browser chrome |
 | [`docs/performance/BUDGETS.md`](../../docs/performance/BUDGETS.md) | Performance budgets |
 | [`docs/privacy/FEATURES.md`](../../docs/privacy/FEATURES.md) | Privacy features, in full |
 | [`docs/privacy/FILTER_LISTS.md`](../../docs/privacy/FILTER_LISTS.md) | Filter lists — licences, one per list |
