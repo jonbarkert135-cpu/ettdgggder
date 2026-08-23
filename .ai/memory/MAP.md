@@ -328,6 +328,9 @@ Theme engine: 5 modes, 14 live properties, contrast validation, and no 'restart 
 
 | File | What it is |
 | --- | --- |
+| `theme_css.cc` | implementation |
+| `theme_css.h` | The bridge from the theme engine to the pages (design items 26-30). |
+| `theme_css_test.cc` | Host test, no Chromium. |
 | `theme_engine.cc` | implementation |
 | `theme_engine.h` | Theme engine (roadmap items 27, 28 and 29). |
 | `theme_engine_test.cc` | Host test, no Chromium. |
@@ -351,6 +354,11 @@ Browser UI surfaces: tab model with two layouts, optional sidebar, per-site priv
 | `privacy_center.js` | — |
 | `privacy_panel.html` | — |
 | `privacy_panel.js` | — |
+| `profile_menu.cc` | implementation |
+| `profile_menu.h` | The profile selector (design item 26). |
+| `profile_menu.html` | — |
+| `profile_menu.js` | — |
+| `profile_menu_test.cc` | Host test, no Chromium. |
 | `settings.html` | — |
 | `settings.js` | — |
 | `sidebar.cc` | implementation |
@@ -480,6 +488,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/design/043-new-tab-and-chrome.md`](../../docs/design/043-new-tab-and-chrome.md) | 043 — New tab, search field and browser chrome |
 | [`docs/design/044-tabs-and-panel.md`](../../docs/design/044-tabs-and-panel.md) | 044 — Privacy indicator, tabs, sidebar, type |
 | [`docs/design/045-settings-and-privacy-center.md`](../../docs/design/045-settings-and-privacy-center.md) | 045 — Settings, Privacy Center, extensions |
+| [`docs/design/046-profiles-modes-customisation.md`](../../docs/design/046-profiles-modes-customisation.md) | 046 — Profiles, window modes, customisation |
 | [`docs/performance/BUDGETS.md`](../../docs/performance/BUDGETS.md) | Performance budgets |
 | [`docs/privacy/FEATURES.md`](../../docs/privacy/FEATURES.md) | Privacy features, in full |
 | [`docs/privacy/FILTER_LISTS.md`](../../docs/privacy/FILTER_LISTS.md) | Filter lists — licences, one per list |

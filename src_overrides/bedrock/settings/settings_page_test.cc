@@ -67,6 +67,12 @@ int main() {
   const std::string json = SettingsPageJson(Section::kPrivacy, resolved);
   Check(Has(json, "\"section\":\"privacy\""), "the active section is named");
   Check(Has(json, "\"key\":\"privacy.level\""), "its rows are present");
+  Check(Has(json, "\"label\":\"Global protection preset\""),
+        "the row title is short");
+  Check(Has(json, "\"label\":\"Global protection preset\",\"detail\":\"\""),
+        "a title that is the whole line is not repeated underneath");
+  Check(Has(json, "\"detail\":\"Cookie policy: allow all,"),
+        "a longer line is kept, under a short title");
   Check(Has(json, "\"value\":\"strict\""), "with the resolved value");
   Check(Has(json, "\"origin\":\"policy\",\"locked\":true"),
         "and why it cannot be changed");

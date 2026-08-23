@@ -21,7 +21,9 @@ namespace {
 
 bool IsColor(Property property) {
   return property == Property::kAccentColor ||
-         property == Property::kBackgroundColor;
+         property == Property::kBackgroundColor ||
+         property == Property::kSurfaceColor ||
+         property == Property::kTextColor;
 }
 
 // Chromium builds with -fno-exceptions, so std::stoi/std::stod are unusable
@@ -102,8 +104,14 @@ Range ThemeEngine::RangeFor(Property property) {
     case Property::kSpacing:        return {0.8, 1.4, 0.05, 1.0};
     case Property::kCompactMode:    return {0, 1, 1, 0};
     case Property::kImmersiveMode:  return {0, 1, 1, 0};
+    case Property::kGrain:          return {0, 1, 0.05, 0.02};
+    case Property::kShadowStrength: return {0, 1.5, 0.05, 1.0};
+    case Property::kGlow:           return {0, 1, 0.05, 0};
+    case Property::kTransitionMs:   return {0, kMaxAnimationMs, 10, 150};
     case Property::kAccentColor:
-    case Property::kBackgroundColor: return {0, 0, 0, 0};
+    case Property::kBackgroundColor:
+    case Property::kSurfaceColor:
+    case Property::kTextColor:      return {0, 0, 0, 0};
   }
   return {};
 }
@@ -113,6 +121,12 @@ ApplyKind ThemeEngine::ApplyKindFor(Property property) {
   switch (property) {
     case Property::kAccentColor:
     case Property::kBackgroundColor:
+    case Property::kSurfaceColor:
+    case Property::kTextColor:
+    case Property::kGrain:
+    case Property::kShadowStrength:
+    case Property::kGlow:
+    case Property::kTransitionMs:
     case Property::kTransparency:
     case Property::kBlur:
     case Property::kAnimations:
@@ -136,6 +150,12 @@ const char* ThemeEngine::PropertyName(Property property) {
   switch (property) {
     case Property::kAccentColor:     return "accent-color";
     case Property::kBackgroundColor: return "background-color";
+    case Property::kSurfaceColor:    return "surface-color";
+    case Property::kTextColor:       return "text-color";
+    case Property::kGrain:           return "grain";
+    case Property::kShadowStrength:  return "shadow-strength";
+    case Property::kGlow:            return "glow";
+    case Property::kTransitionMs:    return "transition-ms";
     case Property::kTabShape:        return "tab-shape";
     case Property::kToolbarDensity:  return "toolbar-density";
     case Property::kSidebarVisible:  return "sidebar-visible";
@@ -165,20 +185,30 @@ void ThemeEngine::ApplyModeBaseline() {
     case ThemeMode::kLight:
       baseline_colors_[Property::kAccentColor] = "#B4622A";
       baseline_colors_[Property::kBackgroundColor] = "#F7F6F4";
+      baseline_colors_[Property::kSurfaceColor] = "#FFFFFF";
+      baseline_colors_[Property::kTextColor] = "#1B1A18";
       break;
     case ThemeMode::kHighContrast:
       baseline_colors_[Property::kAccentColor] = "#FFD166";
       baseline_colors_[Property::kBackgroundColor] = "#000000";
-      // Legibility beats decoration: no translucency, no blur, no motion.
+      baseline_colors_[Property::kSurfaceColor] = "#000000";
+      baseline_colors_[Property::kTextColor] = "#FFFFFF";
+      // Legibility beats decoration: no translucency, no blur, no motion,
+      // no grain and no glow.
       baseline_[Property::kTransparency] = 1.0;
       baseline_[Property::kBlur] = 0;
       baseline_[Property::kAnimations] = 0;
+      baseline_[Property::kGrain] = 0;
+      baseline_[Property::kGlow] = 0;
+      baseline_[Property::kTransitionMs] = 0;
       break;
     case ThemeMode::kDark:
     case ThemeMode::kSystem:
     case ThemeMode::kCustom:
       baseline_colors_[Property::kAccentColor] = "#E08A4C";
-      baseline_colors_[Property::kBackgroundColor] = "#16181A";
+      baseline_colors_[Property::kBackgroundColor] = "#0B0C0D";
+      baseline_colors_[Property::kSurfaceColor] = "#141517";
+      baseline_colors_[Property::kTextColor] = "#F2F3F4";
       break;
   }
 }

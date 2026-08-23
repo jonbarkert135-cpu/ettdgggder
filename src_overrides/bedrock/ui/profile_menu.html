@@ -1,0 +1,79 @@
+<!doctype html>
+<!-- Bedrock profile menu (design items 26-28). Self-contained: no network, no
+     framework, no bundler (ADR 0006). Every line comes from
+     bedrock/ui/profile_menu.h. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+<title>Profile</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--surface-raised);color:var(--text);font-family:var(--font-ui);
+       font-size:var(--text-base);line-height:var(--line-height);width:320px;
+       -webkit-font-smoothing:antialiased}
+  header{padding:var(--space-16);border-bottom:1px solid var(--border);
+         display:flex;align-items:center;gap:var(--space-12)}
+  .disc{width:38px;height:38px;flex:none;border-radius:var(--radius-pill);
+        background:var(--surface-sunken);border:1px solid var(--border-strong);
+        display:grid;place-items:center;font-size:var(--text-md);
+        font-weight:var(--weight-medium)}
+  .who{min-width:0}
+  .name{font-size:var(--text-md);font-weight:var(--weight-medium);
+        white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sub{color:var(--text-muted);font-size:var(--text-sm);margin-top:var(--space-2)}
+
+  /* The window mode: one line, in the same palette. No neon, no mascot. */
+  .mode{padding:var(--space-12) var(--space-16);border-bottom:1px solid var(--border);
+        display:flex;gap:var(--space-8);align-items:flex-start}
+  .mode[hidden]{display:none}
+  .mode .ring{width:10px;height:10px;margin-top:5px;flex:none;
+        border-radius:var(--radius-pill);border:1.5px solid var(--accent)}
+  .mode .ring::after{content:"";display:block;margin:2px;width:3px;height:3px;
+        border-radius:var(--radius-pill);background:var(--accent)}
+  .mode .label{font-weight:var(--weight-medium)}
+  .mode .say{color:var(--text-muted);font-size:var(--text-sm);margin-top:var(--space-4)}
+
+  ul{list-style:none;padding:var(--space-8)}
+  li button{display:flex;align-items:center;gap:var(--space-12);width:100%;
+        background:none;border:0;color:var(--text);font:inherit;text-align:left;
+        padding:var(--space-8) var(--space-12);border-radius:var(--radius-md);
+        cursor:pointer;min-height:var(--hit-target-min);
+        transition:background var(--motion-standard)}
+  li button:hover{background:var(--surface-sunken)}
+  li .mini{width:26px;height:26px;flex:none;border-radius:var(--radius-pill);
+        background:var(--surface-sunken);border:1px solid var(--border);
+        display:grid;place-items:center;font-size:var(--text-sm)}
+  li .kind{margin-left:auto;color:var(--text-muted);font-size:var(--text-sm)}
+  footer{border-top:1px solid var(--border);padding:var(--space-8)}
+  footer button{display:block;width:100%;text-align:left;background:none;border:0;
+        color:var(--text-muted);font:inherit;padding:var(--space-8) var(--space-12);
+        border-radius:var(--radius-md);cursor:pointer;min-height:var(--hit-target-min);
+        transition:background var(--motion-standard),color var(--motion-standard)}
+  footer button:hover{background:var(--surface-sunken);color:var(--text)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="disc" id="initial" aria-hidden="true"></div>
+  <div class="who">
+    <div class="name" id="name"></div>
+    <div class="sub" id="sync"></div>
+  </div>
+</header>
+<div class="mode" id="mode" hidden>
+  <span class="ring" aria-hidden="true"></span>
+  <div><div class="label" id="modeLabel"></div><div class="say" id="modeSay"></div></div>
+</div>
+<ul id="others"></ul>
+<footer>
+  <button type="button" id="create">New profile</button>
+  <button type="button" id="manage">Manage profiles</button>
+</footer>
+<script src="profile_menu.js"></script>
+</body>
+</html>
