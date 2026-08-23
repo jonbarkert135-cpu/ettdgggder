@@ -1,0 +1,85 @@
+<!doctype html>
+<!-- Bedrock first run (roadmap items 93, 98, 99). Self-contained: no network,
+     no framework, no bundler (ADR 0006). Every string, option and disclosure
+     line arrives from bedrock/onboarding/first_run_page.h — this file decides
+     nothing. Colours follow branding/design-tokens.json. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+<title>Bedrock setup</title>
+<style>
+  :root{
+    --surface:#F7F6F4; --raised:#FFFFFF; --sunken:#EDEBE7;
+    --border:#DCD8D2; --border-strong:#C3BDB4;
+    --text:#1B1A18; --muted:#6B655D;
+    --accent:#B4622A; --accent-quiet:#F2E4DA;
+    --r-sm:6px; --r-md:10px; --r-lg:14px;
+    --ui:Inter,'SF Pro Text','Segoe UI Variable',system-ui,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --surface:#16181A; --raised:#1E2124; --sunken:#101214;
+      --border:#2C3033; --border-strong:#3D4347;
+      --text:#EDEEEF; --muted:#9AA1A6;
+      --accent:#E08A4C; --accent-quiet:#2A211B;
+    }
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--surface);color:var(--text);font-family:var(--ui);
+       font-size:13px;line-height:1.45;display:flex;justify-content:center;
+       padding:48px 24px}
+  main{width:640px}
+  .rail{display:flex;gap:6px;margin-bottom:24px}
+  .rail span{height:3px;flex:1;background:var(--border);border-radius:999px}
+  .rail span.at{background:var(--accent)}
+  h1{font-size:24px;font-weight:600;letter-spacing:-0.01em;margin-bottom:8px}
+  p.lead{color:var(--muted);margin-bottom:24px}
+  .card{background:var(--raised);border:1px solid var(--border);
+        border-radius:var(--r-lg);padding:8px}
+  .opt{display:block;width:100%;text-align:left;background:none;
+       border:1px solid transparent;border-radius:var(--r-md);
+       padding:12px 14px;min-height:32px;color:var(--text);font:inherit;
+       cursor:pointer;transition:background 160ms cubic-bezier(.2,.7,.3,1)}
+  .opt:hover{background:var(--sunken)}
+  .opt[aria-checked="true"]{background:var(--accent-quiet);
+                            border-color:var(--border-strong)}
+  .opt .name{font-weight:500;display:block}
+  .opt .detail{color:var(--muted);display:block;margin-top:2px}
+  .disclose{margin-top:16px;border:1px solid var(--border);
+            border-radius:var(--r-md);padding:14px 16px;background:var(--raised)}
+  .disclose dt{color:var(--muted);font-size:11px;text-transform:uppercase;
+               letter-spacing:.04em;margin-top:10px}
+  .disclose dt:first-child{margin-top:0}
+  #body > div > p{margin-top:20px;font-weight:500}
+  .notes{margin:8px 0 0 18px}
+  .notes li{margin-top:8px;color:var(--muted)}
+  .row{display:flex;gap:8px;margin-top:24px}
+  .row .grow{flex:1}
+  button.act{min-height:32px;padding:0 16px;border-radius:var(--r-sm);
+             border:1px solid var(--border-strong);background:var(--raised);
+             color:var(--text);font:inherit;cursor:pointer}
+  button.act.primary{background:var(--accent);border-color:var(--accent);
+                     color:#FFFFFF;font-weight:500}
+  label.toggle{display:flex;gap:10px;align-items:center;margin-top:14px;
+               color:var(--muted);min-height:32px}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<main>
+  <div class="rail" id="rail" aria-hidden="true"></div>
+  <h1 id="title"></h1>
+  <p class="lead" id="lead"></p>
+  <div id="body"></div>
+  <div class="row">
+    <button class="act" id="back" type="button">Back</button>
+    <span class="grow"></span>
+    <button class="act primary" id="next" type="button">Continue</button>
+  </div>
+</main>
+<script src="first_run.js"></script>
+</body>
+</html>

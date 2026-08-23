@@ -25,7 +25,10 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TOKENS = ROOT / "branding/design-tokens.json"
-MOCKUPS = sorted((ROOT / "docs/design/mockups").glob("*.html"))
+# Mockups are the specification; the shipped WebUI pages are held to the same
+# limits, or the rules stop applying exactly where users meet them.
+MOCKUPS = sorted((ROOT / "docs/design/mockups").glob("*.html")) + sorted(
+    (ROOT / "src_overrides/bedrock/ui").rglob("*.html"))
 
 MAX_RADIUS = 16
 MAX_BLUR = 12

@@ -102,6 +102,10 @@ class FirstRun {
 
   const Choices& choices() const { return choices_; }
 
+  // The providers this flow offers, in order — the page renders these rather
+  // than a list of its own.
+  const std::vector<EngineFacts>& offered() const { return offered_; }
+
   // Disclosure for the currently selected provider (item 93).
   SearchDisclosure Disclosure() const;
   static SearchDisclosure Disclose(const EngineFacts& engine, bool suggestions);

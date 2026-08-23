@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** roadmap 90–101 audited (`docs/ACCEPTANCE.md`) and first run / search disclosure landed; phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
+**As of:** the first-run page renders the flow (PR #29); roadmap 90–101 audited (`docs/ACCEPTANCE.md`) and first run / search disclosure landed; phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
 
 ## Position on the roadmap
 
@@ -65,7 +65,7 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 | 93 Search privacy disclosure | done — `onboarding/first_run` builds it from the engine facts, no search proxy |
 | 94–95 No hidden cloud, optional remote features off by default | done — no compiled-in hostname, `updater` provider-abstract |
 | 96–97 Product identity, own UI | done as policy — no WebUI exists to judge yet |
-| 98–99 First-run flow, honest onboarding | logic done + tested; **no UI renders it** |
+| 98–99 First-run flow, honest onboarding | logic + WebUI page (`ui/first_run.html`, `.js`) done and tested; the WebUI host that registers the page needs the Chromium build |
 | 100–101 Continuous verification, acceptance criteria | `docs/ACCEPTANCE.md`: **11 of 31 criteria met**, rest stock/policy-only |
 | 102+ | **not yet specified — waiting on the project owner** |
 

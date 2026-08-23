@@ -67,3 +67,40 @@ by a test at exactly five, each phrased so it cannot be read as a promise:
 The test also refuses the words this project does not use about itself
 ("anonymous", "untraceable"), the same vocabulary `check_no_fake_features.py`
 bans in the UI sources — that gate now covers `onboarding/` too.
+
+## The page
+
+The flow now has a surface: `src_overrides/bedrock/ui/first_run.html` plus
+`first_run.js`, a plain WebUI document — no framework, no bundler, nothing
+loaded off this machine (ADR 0006, invariant 63).
+
+The split is deliberate and mechanical:
+
+- **`onboarding/first_run_page.h` produces the whole state as JSON.** Option
+  lists, labels, the step heading, the four disclosure lines and the five
+  privacy notes all come from the logic above. The privacy level text is read
+  from `SecurityLevels::Info()`, so the page shows the preset table's own words
+  rather than a second copy of them (invariant 6).
+- **The page renders it and sends back one pair.** `chrome.send('bedrockFirstRun',
+  [field, value])`, where field is `privacy`, `engine`, `suggestions`, `theme`,
+  `import` or `step`. `ApplyPageChoice()` refuses anything that is not on offer
+  and changes nothing (invariant 35), so a broken or hostile page cannot unset a
+  setting — it can only fail to change one.
+- **No privacy decision is made in JavaScript** (invariant 28). If the page ever
+  needs a rule of its own, that rule belongs in C++.
+
+Provider names and every other string are escaped on the C++ side; a name
+containing quotes, backslashes or newlines is escaped rather than injected, and
+`first_run_page_test.cc` asserts that the model still parses.
+
+The page is held to the item 27 style limits and the item 60 accessibility
+rules: `scripts/check_ui_style.py` now scans `src_overrides/bedrock/ui/*.html`
+as well as the mockups. Options are real `<button role="radio">` controls in a
+labelled radiogroup, the focus ring is visible, and every transition drops to
+zero under `prefers-reduced-motion`.
+
+**What is not proven yet:** the page has been rendered in a browser against the
+real model, but the WebUI host that would register `chrome://bedrock-setup` and
+route `chrome.send` needs the Chromium build (phase 3). Until
+`build/ENFORCEMENT.md` records that, this is a working page and a tested bridge,
+not a shipped screen.
