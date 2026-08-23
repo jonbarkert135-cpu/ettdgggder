@@ -4,6 +4,20 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #30 — dark surface system
+
+- Dark is the default theme, in the engine (`ThemeEngine::mode_`), in setup
+  (`FirstRun::Choices::theme`) and in CSS. `[data-theme="system"]` is the only
+  selector that follows `prefers-color-scheme`.
+- New neutrals in `branding/design-tokens.json`: near-black `#0B0C0D`, graphite
+  `#141517`, one glass level, borders at `#232527`/`#34373A`.
+- `scripts/gen_theme_css.py` generates `src_overrides/bedrock/ui/tokens.css`
+  from the tokens and fails the build when the file is stale — one palette, no
+  hand-written hex in a WebUI page. Wired into `run_host_tests.sh`.
+- Accent stays scarce: copper marks protection, focus and progress; the primary
+  button is the brightest neutral. Surface levels and their rules are in
+  `docs/design/026-visual-language.md`.
+
 ## PR #29 — the first-run page
 
 - `onboarding/first_run_page.{h,cc}`: the whole flow state as JSON, and one

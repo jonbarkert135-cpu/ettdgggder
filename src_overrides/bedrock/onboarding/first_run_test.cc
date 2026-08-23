@@ -69,7 +69,7 @@ void PressingThroughLandsOnTheShippedDefaults() {
   FirstRun run(Offered());
   while (!run.done()) run.Next();
   Check(run.choices().privacy == PrivacyChoice::kBalanced, "balanced privacy");
-  Check(run.choices().theme == ThemeMode::kSystem, "system theme");
+  Check(run.choices().theme == ThemeMode::kDark, "dark by default");
   Check(run.choices().import_source == ImportSource::kSkip, "nothing imported");
   Check(!run.choices().search_suggestions, "suggestions off by default");
   Check(run.choices().engine_id == "duckduckgo", "the first offered engine");
@@ -80,7 +80,7 @@ void AnUnofferedChoiceIsRefusedAndChangesNothing() {
   Check(!run.ChooseEngine("yandex"), "an engine that is not offered is refused");
   Check(run.choices().engine_id == "duckduckgo", "the selection is unchanged");
   Check(!run.ChooseTheme(ThemeMode::kCustom), "custom theme is not a first-run option");
-  Check(run.choices().theme == ThemeMode::kSystem, "the theme is unchanged");
+  Check(run.choices().theme == ThemeMode::kDark, "the theme is unchanged");
   Check(run.ChooseEngine("google"), "an offered engine is accepted");
   Check(run.choices().engine_id == "google", "and applied");
 }

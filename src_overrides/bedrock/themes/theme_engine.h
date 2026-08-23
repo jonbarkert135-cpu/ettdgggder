@@ -129,7 +129,9 @@ class ThemeEngine {
  private:
   void ApplyModeBaseline();
 
-  ThemeMode mode_ = ThemeMode::kSystem;
+  // Dark is the shipped default (docs/design/026-visual-language.md); "System"
+  // is a choice the user makes in setup, not one made for them.
+  ThemeMode mode_ = ThemeMode::kDark;
   std::map<Property, double> values_;
   std::map<Property, std::string> colors_;
   std::map<Property, double> baseline_;
