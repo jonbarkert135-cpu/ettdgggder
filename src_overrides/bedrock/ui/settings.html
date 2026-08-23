@@ -1,0 +1,105 @@
+<!doctype html>
+<!-- Bedrock settings (design items 21, 22, 25). Self-contained: no network, no
+     framework, no bundler (ADR 0006). Sections, rows, values, origins and the
+     extension cards all arrive from bedrock/settings/settings_page.h — this
+     file holds no setting list of its own. Colours and type come from
+     tokens.css. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+<title>Settings</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--surface);color:var(--text);font-family:var(--font-ui);
+       font-size:var(--text-base);line-height:var(--line-height);
+       min-height:100vh;display:flex;-webkit-font-smoothing:antialiased}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;
+       background:radial-gradient(900px 520px at 22% -10%,
+                  rgba(255,255,255,.045), rgba(255,255,255,0) 70%)}
+
+  /* left: navigation */
+  nav{position:relative;width:264px;flex:none;padding:var(--space-48) var(--space-16);
+      border-right:1px solid var(--border)}
+  nav h1{font-family:var(--font-display);font-size:var(--text-lg);
+     font-weight:var(--weight-semibold);letter-spacing:var(--tracking-tight);
+     padding:0 var(--space-12);margin-bottom:var(--space-24)}
+  nav button{display:block;width:100%;text-align:left;background:none;border:0;
+     color:var(--text-muted);font:inherit;padding:var(--space-8) var(--space-12);
+     border-radius:var(--radius-md);cursor:pointer;min-height:var(--hit-target-min);
+     transition:background var(--motion-standard),color var(--motion-standard)}
+  nav button:hover{background:var(--surface-raised);color:var(--text)}
+  nav button[aria-current="page"]{background:var(--surface-raised);color:var(--text);
+     box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+
+  /* right: content */
+  main{position:relative;flex:1;padding:var(--space-48);max-width:780px}
+  h2{font-family:var(--font-display);font-size:var(--text-xl);
+     font-weight:var(--weight-semibold);letter-spacing:var(--tracking-tight)}
+  .lead{color:var(--text-muted);margin:var(--space-8) 0 var(--space-32)}
+
+  .row{display:flex;align-items:flex-start;justify-content:space-between;
+       gap:var(--space-24);padding:var(--space-16) 0;
+       border-bottom:1px solid var(--border)}
+  .row:last-of-type{border-bottom:0}
+  .row .k{font-size:var(--text-base)}
+  .row .meta{color:var(--text-muted);font-size:var(--text-sm);margin-top:var(--space-4)}
+  .row .managed{color:var(--warning)}
+
+  /* A segmented control, because a value out of three named options is not a
+     dropdown and not a slider. */
+  .seg{display:flex;gap:var(--space-2);background:var(--surface-sunken);
+       border:1px solid var(--border);border-radius:var(--radius-md);
+       padding:var(--space-2);flex:none}
+  .seg button{background:none;border:0;color:var(--text-muted);font:inherit;
+       font-size:var(--text-sm);padding:var(--space-6) var(--space-12);
+       border-radius:var(--radius-sm);cursor:pointer;white-space:nowrap;
+       transition:background var(--motion-standard),color var(--motion-standard)}
+  .seg button[aria-pressed="true"]{background:var(--surface-raised);color:var(--text);
+       box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+  .seg button:disabled{opacity:.55;cursor:not-allowed}
+  input[type="text"]{background:var(--surface-sunken);border:1px solid var(--border);
+       border-radius:var(--radius-md);color:var(--text);font:inherit;
+       padding:var(--space-8) var(--space-12);min-width:220px}
+
+  /* extensions: cards, not a list of toggles */
+  .cards{display:grid;gap:var(--space-12);margin-top:var(--space-8)}
+  .card{background:var(--surface-raised);border:1px solid var(--border);
+        border-radius:var(--radius-lg);padding:var(--space-16);
+        display:flex;gap:var(--space-16);align-items:flex-start}
+  .card .glyph{width:34px;height:34px;flex:none;border-radius:var(--radius-md);
+        background:var(--surface-sunken);border:1px solid var(--border);
+        display:grid;place-items:center;font-weight:var(--weight-medium)}
+  .card .body{flex:1;min-width:0}
+  .card .name{font-weight:var(--weight-medium)}
+  .card .facts{color:var(--text-muted);font-size:var(--text-sm);margin-top:var(--space-4)}
+  .risk{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.08em;
+        padding:var(--space-2) var(--space-8);border-radius:var(--radius-pill);
+        border:1px solid var(--border);color:var(--text-muted)}
+  .risk.high{color:var(--danger);border-color:#3A2224}
+  .risk.medium{color:var(--warning);border-color:#3A3020}
+
+  .toggle{background:none;border:1px solid var(--border-strong);color:var(--text-muted);
+        font:inherit;font-size:var(--text-sm);padding:var(--space-6) var(--space-12);
+        border-radius:var(--radius-md);cursor:pointer;min-height:var(--hit-target-min);
+        transition:background var(--motion-standard),color var(--motion-standard)}
+  .toggle[aria-pressed="true"]{background:var(--surface-sunken);color:var(--text)}
+  .note{margin-top:var(--space-32);color:var(--text-muted);font-size:var(--text-sm)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<nav aria-label="Settings sections"><h1>Settings</h1><div id="nav"></div></nav>
+<main>
+  <h2 id="title"></h2>
+  <p class="lead" id="summary"></p>
+  <div id="rows"></div>
+  <div class="cards" id="cards"></div>
+  <p class="note" id="note"></p>
+</main>
+<script src="settings.js"></script>
+</body>
+</html>
