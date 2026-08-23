@@ -77,15 +77,24 @@ function closeMenu() {
   document.getElementById('engine').setAttribute('aria-expanded', 'false');
 }
 
+// The mark for a provider: its own first letter, drawn in our style. No
+// third-party logos ship in this browser (item 92).
+function markFor(label) {
+  return (label || '?').trim().charAt(0).toUpperCase();
+}
+
 function renderEngine() {
   document.getElementById('engineLabel').textContent =
       model.engineLabel || 'Search';
+  document.getElementById('engineMark').textContent = markFor(model.engineLabel);
   const menu = document.getElementById('menu');
   menu.textContent = '';
   model.engines.forEach((engine) => {
     const item = document.createElement('li');
-    const button = el('button', null, engine.label);
+    const button = el('button');
     button.type = 'button';
+    button.appendChild(el('span', 'emark', markFor(engine.label)));
+    button.appendChild(el('span', null, engine.label));
     if (engine.selected) button.appendChild(el('span', 'tick', '\u2713'));
     button.addEventListener('click', () => {
       closeMenu();

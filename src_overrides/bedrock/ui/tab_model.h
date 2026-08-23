@@ -27,7 +27,22 @@
 namespace bedrock {
 namespace ui {
 
-enum class TabLayout { kHorizontal, kVertical };
+// Three layouts, one model (design item 18). Compact is the horizontal strip
+// stripped to favicons: the same tabs, less chrome, for people who keep forty
+// of them open.
+enum class TabLayout { kHorizontal, kVertical, kCompact };
+
+// What a layout means in pixels, so the strip is not re-invented per platform
+// and "compact" cannot quietly become a different tab list.
+struct TabStripMetrics {
+  int tab_extent = 0;    // height of a horizontal tab, or of a vertical row
+  int min_tab_width = 0; // horizontal only; 0 when the layout is vertical
+  int strip_extent = 0;  // strip height, or sidebar width when vertical
+  bool shows_title = true;
+  bool vertical = false;
+};
+
+TabStripMetrics MetricsFor(TabLayout layout);
 
 struct Tab {
   int id = 0;

@@ -343,6 +343,8 @@ Browser UI surfaces: tab model with two layouts, optional sidebar, per-site priv
 | `new_tab.html` | — |
 | `new_tab.js` | — |
 | `new_tab_test.cc` | Host test, no Chromium. |
+| `privacy_panel.html` | — |
+| `privacy_panel.js` | — |
 | `sidebar.cc` | implementation |
 | `sidebar.h` | Sidebar (roadmap item 31). |
 | `sidebar_test.cc` | Host test, no Chromium. |
@@ -468,6 +470,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/design/041-open-source.md`](../../docs/design/041-open-source.md) | 041 — Telemetry policy, updates, open source, reproducibility |
 | [`docs/design/042-first-run.md`](../../docs/design/042-first-run.md) | 042 — First run, search disclosure, honest onboarding |
 | [`docs/design/043-new-tab-and-chrome.md`](../../docs/design/043-new-tab-and-chrome.md) | 043 — New tab, search field and browser chrome |
+| [`docs/design/044-tabs-and-panel.md`](../../docs/design/044-tabs-and-panel.md) | 044 — Privacy indicator, tabs, sidebar, type |
 | [`docs/performance/BUDGETS.md`](../../docs/performance/BUDGETS.md) | Performance budgets |
 | [`docs/privacy/FEATURES.md`](../../docs/privacy/FEATURES.md) | Privacy features, in full |
 | [`docs/privacy/FILTER_LISTS.md`](../../docs/privacy/FILTER_LISTS.md) | Filter lists — licences, one per list |

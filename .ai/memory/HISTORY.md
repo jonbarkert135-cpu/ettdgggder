@@ -4,6 +4,18 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #32 — indicator, tabs, sidebar, type
+
+- `ui/privacy_panel.{html,js}` + `PanelJson()` in `site_privacy_panel`: counts,
+  states and "Not measured" stay distinguishable in the JSON and on screen.
+- `TabModel` gained `TabLayout::kCompact` and `MetricsFor()`; one ordered list
+  renders in all three layouts. Mockup `docs/design/mockups/tab-layouts-dark.html`.
+- Type: Poppins for headings and the wordmark, Inter for UI text, both vendored
+  as woff2 in `branding/fonts/` under OFL and emitted as `@font-face` by
+  `gen_theme_css.py`, which now asserts the CSS contains no `https://` URL.
+- Search shows a provider mark, a monogram of ours — never a third-party logo
+  (item 92).
+
 ## PR #31 — new tab, search field, chrome
 
 - `bedrock/ui/new_tab.{h,cc}`: the new tab state. Shortcut row = pinned first,

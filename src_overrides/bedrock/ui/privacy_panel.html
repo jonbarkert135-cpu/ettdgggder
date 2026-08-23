@@ -1,0 +1,69 @@
+<!doctype html>
+<!-- Bedrock privacy panel (design item 17), the popup behind the indicator in
+     the address bar. Self-contained: no network, no framework, no bundler
+     (ADR 0006). Every row arrives from bedrock/ui/site_privacy_panel.h; this
+     file decides nothing and computes nothing. Colours and type come from
+     tokens.css, generated from branding/design-tokens.json. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'">
+<title>Privacy protection</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--surface-raised);color:var(--text);
+       font-family:var(--font-ui);font-size:var(--text-base);
+       line-height:var(--line-height);width:340px;
+       -webkit-font-smoothing:antialiased}
+  header{padding:var(--space-16) var(--space-16) var(--space-12);
+         border-bottom:1px solid var(--border)}
+  .title{display:flex;align-items:center;gap:var(--space-8);
+         font-size:var(--text-md);font-weight:var(--weight-semibold);
+         letter-spacing:var(--tracking-tight)}
+  /* The indicator glyph: a ring with a filled core. Not a padlock, not a
+     shield — it reports what was applied, it does not promise safety. */
+  .mark{width:14px;height:14px;border-radius:var(--radius-pill);flex:none;
+        border:1.5px solid var(--accent);position:relative}
+  .mark::after{content:"";position:absolute;inset:3px;border-radius:var(--radius-pill);
+        background:var(--accent)}
+  .host{color:var(--text-muted);font-size:var(--text-sm);margin-top:var(--space-4)}
+
+  ul{list-style:none}
+  li{display:flex;align-items:baseline;justify-content:space-between;
+     gap:var(--space-16);padding:var(--space-12) var(--space-16);
+     border-bottom:1px solid var(--border)}
+  li:last-child{border-bottom:0}
+  .label{color:var(--text-muted);font-size:var(--text-sm)}
+  .value{font-variant-numeric:tabular-nums;text-align:right}
+  /* A measured count and a policy state are different claims, so they do not
+     look identical: the count carries the accent, the state does not. */
+  .count .value{color:var(--accent)}
+  .unmeasured .value{color:var(--text-muted);font-style:italic}
+
+  footer{padding:var(--space-12) var(--space-16);color:var(--text-muted);
+         font-size:var(--text-xs);border-top:1px solid var(--border)}
+  details summary{cursor:pointer;color:var(--text-muted);font-size:var(--text-sm);
+         padding:var(--space-12) var(--space-16);min-height:var(--hit-target-min)}
+  details ol{list-style:none;padding:0 var(--space-16) var(--space-12);
+         color:var(--text-muted);font-size:var(--text-sm);
+         font-family:var(--font-mono);word-break:break-all}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="title"><span class="mark" aria-hidden="true"></span>Privacy protection</div>
+  <div class="host" id="host"></div>
+</header>
+<ul id="rows"></ul>
+<details id="parties" hidden>
+  <summary id="partiesSummary">Blocked third parties</summary>
+  <ol id="partyList"></ol>
+</details>
+<footer>Counts are what this page load actually triggered on this device.</footer>
+<script src="privacy_panel.js"></script>
+</body>
+</html>

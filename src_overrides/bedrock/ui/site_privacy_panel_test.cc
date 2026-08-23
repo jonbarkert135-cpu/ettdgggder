@@ -161,6 +161,27 @@ int main() {
     }
   }
 
+  // The JSON the popup reads keeps the distinction the panel exists for.
+  {
+    const std::vector<PanelRow> rows = {
+        {"Trackers", "12 blocked", RowKind::kCount, true},
+        {"Ads", "not measured", RowKind::kCount, false},
+        {"Connection", "Secure", RowKind::kConnection, true},
+        {"Site \"quoted\"", "Blocked", RowKind::kState, true},
+    };
+    const std::string json = PanelJson("example.test", rows, {"ads.example"});
+    Check(json.find("\"host\":\"example.test\"") != std::string::npos,
+          "the panel names the site");
+    Check(json.find("\"kind\":\"count\",\"measured\":true") != std::string::npos,
+          "a measured count says so");
+    Check(json.find("\"measured\":false") != std::string::npos,
+          "an unmeasured row is not flattened into a zero");
+    Check(json.find("\"label\":\"Site \\\"quoted\\\"\"") != std::string::npos,
+          "strings are escaped");
+    Check(json.find("\"blockedParties\":[\"ads.example\"]") != std::string::npos,
+          "the expanded list is carried too");
+  }
+
   if (failures == 0)
     std::cout << "site_privacy_panel_test: all assertions passed\n";
   return failures == 0 ? 0 : 1;
