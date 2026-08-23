@@ -11,6 +11,22 @@
 
 ---
 
+## Download and run it
+
+**[bedrock-0.0.1-dev-linux-x64.tar.zst](https://github.com/jonbarkert135-cpu/ettdgggder/releases/tag/v0.0.1-dev)** — the first runnable build (Linux x64, 313 MB, developer preview).
+
+```bash
+tar -xf bedrock-0.0.1-dev-linux-x64.tar.zst
+cd bedrock-0.0.1-dev-linux-x64
+./run-bedrock.sh
+```
+
+It is a Chromium 151 build with the Bedrock overlay compiled in and **one** protection actually
+enforced (WebRTC does not expose local network addresses); the browser prints `[bedrock]` lines on
+stderr to prove it. There is no Bedrock branding, no Bedrock UI, no installer, and no Windows
+build. Read [the release notes](docs/releases/0.0.1-dev.md) before assuming anything else works —
+the project's rule is that a protection is only real once a running build performs it.
+
 ## What this is
 
 Bedrock is a **Chromium-derived browser**, not an Electron app, not a WebView wrapper, not a

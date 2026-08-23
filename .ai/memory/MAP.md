@@ -471,6 +471,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/privacy/fingerprinting/user-agent.md`](../../docs/privacy/fingerprinting/user-agent.md) | User-Agent |
 | [`docs/privacy/fingerprinting/webgl.md`](../../docs/privacy/fingerprinting/webgl.md) | WebGL |
 | [`docs/privacy/fingerprinting/webrtc.md`](../../docs/privacy/fingerprinting/webrtc.md) | WebRTC |
+| [`docs/releases/0.0.1-dev.md`](../../docs/releases/0.0.1-dev.md) | Bedrock 0.0.1-dev |
 | [`docs/releases/TEMPLATE.md`](../../docs/releases/TEMPLATE.md) | Bedrock <version> |
 | [`docs/research/BRAVE.md`](../../docs/research/BRAVE.md) | Brave research (brave-core) |
 | [`docs/research/FIREFOX.md`](../../docs/research/FIREFOX.md) | Firefox research |
