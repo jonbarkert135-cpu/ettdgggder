@@ -28,6 +28,9 @@
     "history": {
       "summary": "History store whose hard requirement is deletion: removing an entry removes the derived ranking data too. Item 35."
     },
+    "integration": {
+      "summary": "The seam between Bedrock policy and Chromium: computes the startup plan (which shipped defaults this build actually applies to a profile, which it does not, and why) that patches/bedrock/integration hands to chrome/browser/ui/browser_ui_prefs.cc and chrome/browser/renderer_preferences_util.cc. Phase 2: this is the code that actually runs inside the built browser."
+    },
     "omnibox": {
       "summary": "Omnibox input classification only — Chromium's own providers still rank bookmarks, history and tabs. Item 7."
     },

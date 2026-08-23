@@ -107,6 +107,15 @@ History store whose hard requirement is deletion: removing an entry removes the 
 | `history_store.h` | History (roadmap item 35). |
 | `history_store_test.cc` | Host test, no Chromium. |
 
+### `src_overrides/bedrock/integration/`
+The seam between Bedrock policy and Chromium: computes the startup plan (which shipped defaults this build actually applies to a profile, which it does not, and why) that patches/bedrock/integration hands to chrome/browser/ui/browser_ui_prefs.cc and chrome/browser/renderer_preferences_util.cc. Phase 2: this is the code that actually runs inside the built browser.
+
+| File | What it is |
+| --- | --- |
+| `startup.cc` | implementation |
+| `startup.h` | The seam between Chromium and Bedrock (phase 2). |
+| `startup_test.cc` | Host test, no Chromium. |
+
 ### `src_overrides/bedrock/omnibox/`
 Omnibox input classification only — Chromium's own providers still rank bookmarks, history and tabs. Item 7.
 

@@ -4,6 +4,15 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #26 — Phase 2: the overlay runs inside the browser
+First Chromium call sites into `bedrock::` (`patches/bedrock/integration/0001-bedrock-startup-hook.patch`):
+`RegisterBrowserUserPrefs` takes the default of `webrtc.ip_handling_policy` from the overlay and logs the
+startup plan; `UpdateFromSystemSettings` logs the value the live profile hands to renderers. Rebuilt and
+relinked: 17 `bedrock::` symbols in `chrome`, `[bedrock] … match` observed on a real run. `webrtc_policy`
+became the **first `Status::kEnforced` feature**; `build/ENFORCEMENT.md` gained "Build 2"; `docs/PHASES.md`
+phase 2 → `done`. Added `build/LOCAL_BUILD_HANDOFF.md` (11 recorded build errors + do-not-rebuild rules),
+`scripts/resume_build.sh`, `scripts/manual_compile.py`, `scripts/manual_link.py`.
+
 ## PR #25 — Phase 1: Chromium built, overlay compiled in-tree
 - Stock Chromium 151.0.7922.173 built from the pin: 56 105 steps, **12 h 16 m**, 194 MB binary,
   headless screenshot smoke test passed. Numbers and caveats: `build/ENFORCEMENT.md`.

@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** phase 1 done — Chromium built, overlay compiled in-tree (PR #25).
+**As of:** phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26).
 
 ## Position on the roadmap
 
@@ -60,17 +60,21 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 | 85 Privacy-vs-usability scoring table | done |
 | 86 ADRs (14 records, indexed and mapped) | done |
 | 87–88 Research-first process, timeboxed | done — `docs/PROCESS.md` |
-| 89 Implementation order | `docs/PHASES.md`: **phase 1 done** (build recorded in `build/ENFORCEMENT.md`), phases 3–15 still `policy-landed`, phase 2 is next |
+| 89 Implementation order | `docs/PHASES.md`: **phases 0–2 done** (builds 1 and 2 in `build/ENFORCEMENT.md`), phases 3–15 still `policy-landed` and must be re-verified against the running shell |
 | 90+ | **not yet specified — waiting on the project owner** |
 
 ## What is real vs. what is documented
 
-- **Nothing is `Status::kEnforced`** in the feature registry, so the settings UI
-  renders no protection switches yet. The Chromium build now exists, but enforcement means a
-  running browser performs the protection — and no Chromium code calls `bedrock::` yet, so the
-  linker discards the overlay objects from the final binary. First call site = phase 2.
-- **The overlay compiles inside Chromium** (2026-08-22, 53 objects, `chrome` links, exit 0). That
-  is build-system integration, not behaviour. `build/ENFORCEMENT.md` states the difference.
+- **Exactly one feature is `Status::kEnforced`:** `webrtc_policy`. The 2026-08-23 build registers
+  `webrtc.ip_handling_policy` from `settings/defaults.h` and a running browser hands
+  `default_public_interface_only` to its renderers — measured inside `UpdateFromSystemSettings`,
+  recorded as "Build 2" in `build/ENFORCEMENT.md`. The other 29 features are policy only.
+- **The overlay runs inside Chromium** (phase 2): `nm -C out/Release/chrome | grep bedrock::` finds
+  17 symbols and the browser prints `[bedrock]` lines at startup. Phase 1 had proven compilation
+  only; with no call site the linker had discarded every overlay object.
+- **The local build is not in git** (8.7 GB). `build/LOCAL_BUILD_HANDOFF.md` is the handoff: what
+  exists on disk, what must never be rebuilt, the 11 errors hit so far, and
+  `scripts/resume_build.sh` which syncs, builds and verifies in one command.
 - **Runs in CI today:** 49 host test binaries, 9 fuzz smoke harnesses (~860
   inputs each), 6 measured performance metrics, 29 static gates.
 - **Runs against a real browser binary (not in CI):**
@@ -119,16 +123,19 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 - From item 49, three recorded follow-ups: letterboxing, one "forget about this
   site" action, and an ADR deciding whether extensions keep blocking `webRequest`.
   Parked as too large for now: RLBox-style library sandboxing, a Bedrock root store.
-- A Chromium build has been run **once, by hand, on Linux** — not in CI, and never on Windows.
+- Chromium has been built **by hand on Linux only** — not in CI, never on Windows. The build is
+  also driven around a siso scheduler stall, so objects can go stale; recompile the object of each
+  file you edit (`scripts/manual_compile.py`) before linking (`scripts/manual_link.py`).
   Sanitizer builds, libFuzzer campaigns and the 8 performance budgets still have no numbers;
   they stay marked pending in `docs/security/TESTING.md` and `docs/performance/BUDGETS.md`.
 - Fuzz corpora are seed-sized only; no long campaign has run yet.
 - No WebUI file exists yet (`settings/`, `ui/`, `devtools/` are C++ so far), so
   ADR 0006's framework ban is currently enforced against an empty set plus the
   test fixtures. It matters the day the first Settings page is written.
-- **The next real unblocker is phase 2: the minimal shell** — the first Chromium call site into
-  `bedrock::`. Twelve subsystems are still `policy-landed`: tested here, never run by an engine.
-  Do not describe them as done.
+- **The next real unblocker is wiring the remaining 11 shipped defaults**, one at a time, using
+  the phase-2 pattern: supply the default from `settings/defaults.h`, read back what the running
+  browser uses, record the build. The startup plan prints the blocker for each. Twelve subsystems
+  are still `policy-landed`: tested here, never run by an engine. Do not describe them as done.
 - Building in-tree is not free of surprises: `-fno-exceptions`, the `chromium-rawptr` plugin and
   C++20 std-module includes all reject code that `g++` accepts. New overlay code should include
   what it uses and avoid `std::stoi`/`stod` — see the table in `docs/BUILD.md`.

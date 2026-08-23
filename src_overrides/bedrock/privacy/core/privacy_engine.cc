@@ -120,7 +120,11 @@ const std::vector<FeatureInfo>& Registry() {
        Setting::kStandard, Setting::kStrict, false, Status::kPolicyLanded},
       {Feature::kWebrtcPolicy, Module::kFingerprint, "webrtc_policy",
        "IDS_BEDROCK_PRIVACY_WEBRTC_TITLE", "IDS_BEDROCK_PRIVACY_WEBRTC_EXPLANATION",
-       Setting::kStandard, Setting::kStrict, true, Status::kPolicyLanded},
+       // First enforced feature: the 2026-08-23 build registers
+       // webrtc.ip_handling_policy from settings/defaults.h and a running
+       // browser hands default_public_interface_only to its renderers.
+       // See build/ENFORCEMENT.md, "Build 2".
+       Setting::kStandard, Setting::kStrict, true, Status::kEnforced},
       {Feature::kTimerCoarsening, Module::kFingerprint, "timer_coarsening",
        "IDS_BEDROCK_PRIVACY_TIMERS_TITLE", "IDS_BEDROCK_PRIVACY_TIMERS_EXPLANATION",
        Setting::kStandard, Setting::kStrict, true, Status::kPolicyLanded},

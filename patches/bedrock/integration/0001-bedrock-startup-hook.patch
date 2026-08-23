@@ -1,0 +1,79 @@
+# Bedrock-Patch: 0001-bedrock-startup-hook
+# Area: integration
+# Upstream-Paths: chrome/browser/ui/browser_ui_prefs.cc,
+#   chrome/browser/renderer_preferences_util.cc
+# Reason: phase 2 (item 89) — phase 1 only proved the overlay compiles and links;
+#   with no Chromium call site the linker dropped every bedrock:: object. This is
+#   the first call site. RegisterBrowserUserPrefs asks bedrock::integration for
+#   the default of webrtc.ip_handling_policy (settings/defaults.h: webrtc_privacy)
+#   and logs the startup plan; UpdateFromSystemSettings logs the value a live
+#   profile actually hands to the renderers, which is the phase-2 evidence.
+#   The patch carries no policy of its own: every string and every decision comes
+#   from src_overrides/bedrock/integration/startup.* so the host tests can check it.
+# Owner: integration
+# Chromium-Version: 151.0.7922.173
+# Upstream-Bug: none
+# Drop-When: the settings system owns pref registration end to end (phase 5), or
+#   upstream renames webrtc.ip_handling_policy — the log line then reads MISMATCH
+#   and scripts/check_phases.py fails instead of the browser silently degrading.
+diff --git a/chrome/browser/renderer_preferences_util.cc b/chrome/browser/renderer_preferences_util.cc
+index eb964aed4f..1ec51680c1 100644
+--- a/chrome/browser/renderer_preferences_util.cc
++++ b/chrome/browser/renderer_preferences_util.cc
+@@ -12,6 +12,7 @@
+ #include "base/logging.h"
+ #include "base/strings/string_number_conversions.h"
+ #include "base/strings/string_util.h"
++#include "bedrock/integration/startup.h"
+ #include "build/build_config.h"
+ #include "chrome/browser/browser_process.h"
+ #include "chrome/browser/net/convert_explicitly_allowed_network_ports_pref.h"
+@@ -152,8 +153,13 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
+   prefs->enable_encrypted_media =
+       pref_service->GetBoolean(prefs::kEnableEncryptedMedia);
+ 
+-  prefs->webrtc_ip_handling_policy = blink::ToWebRTCIPHandlingPolicy(
+-      pref_service->GetString(prefs::kWebRTCIPHandlingPolicy));
++  // Bedrock: log the value a live profile actually hands to the renderers.
++  const std::string bedrock_webrtc_policy =
++      pref_service->GetString(prefs::kWebRTCIPHandlingPolicy);
++  LOG(WARNING) << bedrock::integration::EffectivePrefLine(
++      prefs::kWebRTCIPHandlingPolicy, bedrock_webrtc_policy);
++  prefs->webrtc_ip_handling_policy =
++      blink::ToWebRTCIPHandlingPolicy(bedrock_webrtc_policy);
+ 
+   for (const base::Value& entry :
+        pref_service->GetList(prefs::kWebRTCIPHandlingUrl)) {
+diff --git a/chrome/browser/ui/browser_ui_prefs.cc b/chrome/browser/ui/browser_ui_prefs.cc
+index aa327f72a8..1ca25d512f 100644
+--- a/chrome/browser/ui/browser_ui_prefs.cc
++++ b/chrome/browser/ui/browser_ui_prefs.cc
+@@ -7,7 +7,9 @@
+ #include <memory>
+ #include <string>
+ 
++#include "base/logging.h"
+ #include "base/numerics/safe_conversions.h"
++#include "bedrock/integration/startup.h"
+ #include "build/branding_buildflags.h"
+ #include "build/build_config.h"
+ #include "chrome/browser/profiles/profile.h"
+@@ -151,8 +153,16 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
+   registry->RegisterBooleanPref(prefs::kPrintPreviewUseSystemDefaultPrinter,
+                                 false);
+ #endif
+-  registry->RegisterStringPref(prefs::kWebRTCIPHandlingPolicy,
+-                               blink::kWebRTCIPHandlingDefault);
++  // Bedrock: the shipped privacy defaults live in src_overrides/bedrock and
++  // are logged here so a running browser can be checked against them.
++  for (const std::string& bedrock_line : bedrock::integration::StartupLogLines(
++           bedrock::integration::ComputeStartupPlan())) {
++    LOG(WARNING) << bedrock_line;
++  }
++  registry->RegisterStringPref(
++      prefs::kWebRTCIPHandlingPolicy,
++      bedrock::integration::PrefDefaultOr(prefs::kWebRTCIPHandlingPolicy,
++                                          blink::kWebRTCIPHandlingDefault));
+   registry->RegisterListPref(prefs::kWebRTCIPHandlingUrl, base::ListValue());
+   registry->RegisterBooleanPref(prefs::kWebRTCPostQuantumKeyAgreement, false);
+   registry->RegisterStringPref(prefs::kWebRTCUDPPortRange, std::string());
