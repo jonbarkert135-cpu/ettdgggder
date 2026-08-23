@@ -81,6 +81,7 @@ python3 scripts/check_config_surface.py --selftest || status=1
 python3 scripts/check_config_surface.py || status=1
 python3 scripts/check_open_source.py || status=1
 python3 scripts/generate_sbom.py --check || status=1
+python3 scripts/check_tokens.py || status=1
 python3 scripts/gen_theme_css.py --selftest || status=1
 python3 scripts/gen_theme_css.py || status=1
 python3 scripts/gen_build_gn.py --selftest || status=1

@@ -12,12 +12,9 @@
 <link rel="stylesheet" href="tokens.css">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--surface);color:var(--text);font-family:var(--font-ui);
+  body{background:var(--background-primary);color:var(--text-primary);font-family:var(--font-ui);
        font-size:var(--text-base);line-height:var(--line-height);
        min-height:100vh;-webkit-font-smoothing:antialiased}
-  body::before{content:"";position:fixed;inset:0;pointer-events:none;
-       background:radial-gradient(1000px 560px at 30% -12%,
-                  rgba(255,255,255,.05), rgba(255,255,255,0) 68%)}
   main{position:relative;max-width:920px;margin:0 auto;
        padding:12vh var(--space-32) var(--space-48)}
 
@@ -39,7 +36,7 @@
   .metric{background:var(--surface-glass);backdrop-filter:blur(10px);
         border:1px solid var(--border);border-radius:var(--radius-lg);
         padding:var(--space-32) var(--space-24);
-        box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+        box-shadow:inset 0 1px 0 var(--highlight-hairline)}
   .metric .n{font-family:var(--font-display);font-size:40px;
         font-weight:var(--weight-semibold);letter-spacing:-.02em;
         font-variant-numeric:tabular-nums}
@@ -61,7 +58,7 @@
   @media (max-width: 720px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
-<body>
+<body class="bedrock-canvas">
 <main>
   <div class="eyebrow">PRIVACY</div>
   <h1>What this browser has actually done for you</h1>

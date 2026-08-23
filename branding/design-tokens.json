@@ -14,7 +14,11 @@
       "positive": "#2F6B4F",
       "warning": "#8A5B12",
       "danger": "#9A2F2F",
-      "surface-glass": "rgba(255,255,255,.72)"
+      "surface-glass": "rgba(255,255,255,.72)",
+      "text-quiet": "#8A857C",
+      "highlight-hairline": "rgba(0,0,0,.05)",
+      "light-source": "rgba(255,255,255,.7)",
+      "grain-ink": "rgba(0,0,0,.35)"
     },
     "dark": {
       "surface": "#0B0C0D",
@@ -29,7 +33,11 @@
       "accent-quiet": "#241C15",
       "positive": "#6FBF95",
       "warning": "#D9A441",
-      "danger": "#E07070"
+      "danger": "#E07070",
+      "text-quiet": "#7B7F83",
+      "highlight-hairline": "rgba(255,255,255,.06)",
+      "light-source": "rgba(255,255,255,.05)",
+      "grain-ink": "rgba(255,255,255,.5)"
     }
   },
   "typography": {
@@ -80,12 +88,21 @@
   "motion": {
     "instant": "90ms cubic-bezier(.2,.7,.3,1)",
     "standard": "160ms cubic-bezier(.2,.7,.3,1)",
-    "reduced-motion": "respect prefers-reduced-motion: all transitions become 0ms"
+    "reduced-motion": "respect prefers-reduced-motion: all transitions become 0ms",
+    "easing": "cubic-bezier(.2,0,0,1)"
   },
   "density": {
     "toolbar-height": 44,
     "tab-height": 34,
     "hit-target-min": 32
   },
-  "default-theme": "dark"
+  "default-theme": "dark",
+  "effects": {
+    "blur-subtle": 6,
+    "blur-strong": 12,
+    "grain-opacity": 0.035,
+    "grain-size": 160,
+    "light-source-size": "900px 520px",
+    "light-source-position": "38% -8%"
+  }
 }

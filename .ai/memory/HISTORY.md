@@ -4,6 +4,17 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #35 — semantic tokens, grain, background composition
+
+- `tokens.css` gained the item 31 vocabulary (background/surface/text/border/
+  accent/shadow/blur/radius), derived from the existing palette so there is one
+  set of values and two names for them.
+- New gate `scripts/check_tokens.py`: no hex/rgb/rgba/hsl literal in any shipped
+  page, and every required semantic token must exist. Wired into run_host_tests.
+- `.bedrock-canvas` is generated into tokens.css: base colour + one radial light
+  source + 3.5% inline-SVG grain, both layers fixed and pointer-events:none.
+- Pages moved off inline rgba() to `--highlight-hairline` and onto the canvas.
+
 ## PR #34 — settings redesign, profiles, window modes, customisation
 
 - Settings redesign after review: type scale up one step product-wide (base 14),
