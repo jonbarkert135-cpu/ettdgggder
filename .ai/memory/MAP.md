@@ -132,6 +132,9 @@ First-run flow (welcome, privacy level, search engine, theme, import, finish), t
 | --- | --- |
 | `first_run.cc` | implementation |
 | `first_run.h` | First run (item 98) and what it must tell the truth about (items 93 and 99). |
+| `first_run_page.cc` | implementation |
+| `first_run_page.h` | The bridge between the first-run logic and the page that renders it. |
+| `first_run_page_test.cc` | What the first-run page is allowed to be: a renderer. |
 | `first_run_test.cc` | Host test, no Chromium. |
 
 ### `src_overrides/bedrock/passwords/`
@@ -333,6 +336,8 @@ Browser UI surfaces: tab model with two layouts, optional sidebar, per-site priv
 | `accessibility.cc` | implementation |
 | `accessibility.h` | Accessibility (roadmap item 60). |
 | `accessibility_test.cc` | An icon is not a name: names are words, so they contain a letter. |
+| `first_run.html` | — |
+| `first_run.js` | — |
 | `sidebar.cc` | implementation |
 | `sidebar.h` | Sidebar (roadmap item 31). |
 | `sidebar_test.cc` | Host test, no Chromium. |

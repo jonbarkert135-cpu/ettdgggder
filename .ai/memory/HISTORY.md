@@ -4,6 +4,19 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #29 — the first-run page
+
+- `onboarding/first_run_page.{h,cc}`: the whole flow state as JSON, and one
+  `ApplyPageChoice(field, value)` back. Unknown field or unoffered value changes
+  nothing. Strings are escaped, so a provider name cannot break the page.
+- `ui/first_run.html` + `first_run.js`: plain WebUI, no framework, no network.
+  It renders the model and decides nothing (invariant 28).
+- Privacy level copy is read from `SecurityLevels::Info()` — one definition of
+  "Balanced" (invariant 6).
+- `check_ui_style.py` now also scans `src_overrides/bedrock/ui/*.html`.
+- Verified by rendering the real model in a browser; the WebUI host and
+  `chrome.send` routing still need the Chromium build (phase 3).
+
 ## PR #28 — Roadmap 90–101
 First-run flow (`onboarding/first_run`, 6 steps, starts from the shipped
 defaults so pressing through changes nothing), the item 93 search disclosure
