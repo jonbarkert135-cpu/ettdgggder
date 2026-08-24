@@ -39,6 +39,8 @@ const char* BlockingPipeline::ReasonString(Reason reason) {
       return "first party";
     case Reason::kBehavioralTracker:
       return "detected as a tracker on this device";
+    case Reason::kCnameUncloaked:
+      return "first-party name aliased to a tracker";
     case Reason::kUserVerdict:
       return "your rule for this domain";
     case Reason::kScriptPolicy:
@@ -101,6 +103,24 @@ Decision BlockingPipeline::Evaluate(const Request& request) const {
     decision.reason = Reason::kAllowRule;
     decision.detail = match.rule;
     return decision;
+  }
+
+  // Stage 1b — CNAME uncloaking. A name that looks first party may be a DNS
+  // alias for a tracker. If a cached alias points at another site, the request
+  // is re-matched under that name. Cache-only: no lookup happens here, and an
+  // alias may only turn an allow into a block, never the other way round.
+  if (uncloaker_ != nullptr) {
+    const UncloakResult alias = uncloaker_->Canonical(request);
+    if (alias.uncloaked()) {
+      const MatchResult alias_match =
+          filters_->Match(CnameUncloaker::ApplyAlias(request, alias));
+      if (alias_match.blocked) {
+        decision.action = Action::kBlock;
+        decision.reason = Reason::kCnameUncloaked;
+        decision.detail = alias.canonical_host + " (" + alias_match.rule + ")";
+        return decision;
+      }
+    }
   }
 
   // Stage 2 — party analysis. First-party requests are the site the user asked

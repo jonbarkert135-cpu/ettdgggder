@@ -97,6 +97,8 @@ source_set("bedrock") {
     "privacy/storage/storage_isolation.h",
     "privacy/tracker_blocker/blocking_pipeline.cc",
     "privacy/tracker_blocker/blocking_pipeline.h",
+    "privacy/tracker_blocker/cname_uncloak.cc",
+    "privacy/tracker_blocker/cname_uncloak.h",
     "privacy/tracker_blocker/filter_engine.cc",
     "privacy/tracker_blocker/filter_engine.h",
     "privacy/tracker_blocker/tracker_heuristic.cc",

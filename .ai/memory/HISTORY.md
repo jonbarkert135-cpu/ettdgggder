@@ -4,6 +4,23 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #40 — CNAME uncloaking
+
+- `privacy/tracker_blocker/cname_uncloak`: a DNS alias on a first-party-looking
+  subdomain is re-matched against the filter lists, as stage 1b of the one
+  pipeline (after the lists, before the party check). New `Reason::kCnameUncloaked`.
+- **No DNS on the decision path.** `Canonical()` is cache-only; a miss queues the
+  name for the embedder to resolve with the *user's* resolver, so the first
+  request to an unseen aliased host still goes out. That cost is disclosed in
+  the feature text, not hidden. Measured 0.175 us against a new 5 us budget.
+- Uncloaking may only turn allow into block, never the reverse: a tracker cannot
+  CNAME itself into a whitelisted domain. `SetUnavailable()` degrades to no
+  uncloaking rather than leaking a lookup around a fail-closed DNS setting.
+- `ApplyAlias()` rewrites host, eTLD+1 *and* the host inside the URL together —
+  rewriting only `host` makes `||tracker^` rules silently match nothing.
+- TTL clamped 60 s…24 h (the tracker publishes it), cache 4096, queue 256.
+- `tracker_protection` disclosure rewritten: it used to say CNAME trackers are
+  not caught at all. `docs/design/049-cname-uncloaking.md`; 30 new assertions.
 ## PR #39 — Strict keeps you signed in, and forgets you on close
 
 - `security_levels`: Strict cookies `kBlock` → `kReduce` (third-party only), and
@@ -16,6 +33,7 @@ read, not skimmed. Anything longer belongs in a doc, linked from here.
   isolation level, so comparing it too would ask the same question twice.
 - Invariant 8a; 4 new assertions; Strict's summary/tradeoff now say you are
   signed out when a site closes.
+
 
 ## PR #38 — what the first full build costs, and where to rent it
 

@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "bedrock/privacy/tracker_blocker/cname_uncloak.h"
 #include "bedrock/privacy/tracker_blocker/filter_engine.h"
 #include "bedrock/privacy/tracker_blocker/tracker_heuristic.h"
 #include "bedrock/privacy/core/protection_controller.h"
@@ -25,8 +26,12 @@
 // Stage order (roadmap item 14's diagram, with the party check moved ahead of
 // the heuristic because the heuristic only ever applies to third parties):
 //
-//   request -> shields -> filter lists -> party analysis -> heuristic
-//           -> cookie/script policy -> Allow | Partition | Block
+//   request -> shields -> filter lists -> CNAME uncloaking -> party analysis
+//           -> heuristic -> cookie/script policy -> Allow | Partition | Block
+//
+// Uncloaking sits after the lists because a name the lists already catch needs
+// no alias, and before the party check because a cloaked tracker is exactly a
+// request the party check would wave through as first party.
 
 namespace bedrock {
 namespace blocking {
@@ -44,6 +49,7 @@ enum class Reason {
   kFilterList,
   kFirstParty,
   kBehavioralTracker,   // learned locally, item 14
+  kCnameUncloaked,      // first-party name, aliased to a listed tracker
   kUserVerdict,
   kScriptPolicy,
   kThirdPartyCookiePolicy,
@@ -83,6 +89,11 @@ class BlockingPipeline {
   // Returns the cleaned URL, unchanged if there was nothing to strip.
   static std::string CleanUrl(const std::string& url);
 
+  // Optional CNAME uncloaking stage. Absent (nullptr) means the browser has no
+  // resolver it is allowed to use, and requests are matched by name only —
+  // never a lookup this component decided to make on its own.
+  void set_uncloaker(CnameUncloaker* uncloaker) { uncloaker_ = uncloaker; }
+
   static const char* ReasonString(Reason reason);
 
  private:
@@ -91,6 +102,7 @@ class BlockingPipeline {
   FilterEngine* filters_;
   TrackerHeuristic* heuristic_;
   privacy::ProtectionController* controls_;
+  CnameUncloaker* uncloaker_ = nullptr;  // not owned; may be null
 };
 
 }  // namespace blocking

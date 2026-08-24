@@ -18,6 +18,7 @@
 #include <string>
 
 #include "bedrock/privacy/tracker_blocker/blocking_pipeline.h"
+#include "bedrock/privacy/tracker_blocker/cname_uncloak.h"
 #include "bedrock/privacy/tracker_blocker/filter_engine.h"
 #include "bedrock/privacy/tracker_blocker/tracker_heuristic.h"
 #include "bedrock/history/history_store.h"
@@ -105,6 +106,32 @@ int main() {
       pipeline.Evaluate(request);
     }
     Report("pipeline_decision", SecondsSince(start) / iterations * 1e6, "us");
+  }
+
+  // ---- CNAME alias lookup ----
+  {
+    bedrock::blocking::CnameUncloaker uncloaker;
+    uncloaker.SetNow(1000);
+    const int hosts = 4000;
+    for (int i = 0; i < hosts; ++i) {
+      uncloaker.Record("m" + std::to_string(i) + ".shop.example", "shop.example",
+                       "collect.tracker.example", "tracker.example", 600);
+    }
+
+    bedrock::blocking::Request request;
+    request.top_host = "www.shop.example";
+    request.top_etld1 = "shop.example";
+    request.etld1 = "shop.example";
+    request.type = bedrock::blocking::ResourceType::kScript;
+
+    const int iterations = 10000;
+    const auto start = Clock::now();
+    for (int i = 0; i < iterations; ++i) {
+      request.host = "m" + std::to_string(i % hosts) + ".shop.example";
+      request.url = "https://" + request.host + "/collect";
+      uncloaker.Canonical(request);
+    }
+    Report("cname_uncloak_lookup", SecondsSince(start) / iterations * 1e6, "us");
   }
 
   // ---- tab model with 200 tabs ----
