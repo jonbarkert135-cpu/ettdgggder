@@ -246,6 +246,9 @@ Content blocking: ABP/uBO-syntax filter engine (independently implemented, rares
 | `blocking_pipeline.cc` | implementation |
 | `blocking_pipeline.h` | The one blocking pipeline (roadmap item 13). |
 | `blocking_pipeline_test.cc` | Host test, no Chromium. |
+| `cname_uncloak.cc` | implementation |
+| `cname_uncloak.h` | CNAME uncloaking (part of feature `tracker_protection`). |
+| `cname_uncloak_test.cc` | Host test, no Chromium. |
 | `filter_engine.cc` | implementation |
 | `filter_engine.h` | Filter engine — Adblock Plus / uBlock Origin filter syntax (roadmap item 12). |
 | `filter_engine_test.cc` | Host test, no Chromium. |
@@ -498,6 +501,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/design/046-profiles-modes-customisation.md`](../../docs/design/046-profiles-modes-customisation.md) | 046 — Profiles, window modes, customisation |
 | [`docs/design/047-token-system-and-surface.md`](../../docs/design/047-token-system-and-surface.md) | 047 — Semantic tokens, motion, grain, background |
 | [`docs/design/048-link-cleaning-and-forgetting.md`](../../docs/design/048-link-cleaning-and-forgetting.md) | 048 — Link cleaning, redirect debouncing, and forgetting a site |
+| [`docs/design/049-cname-uncloaking.md`](../../docs/design/049-cname-uncloaking.md) | 049 — CNAME uncloaking |
 | [`docs/performance/BUDGETS.md`](../../docs/performance/BUDGETS.md) | Performance budgets |
 | [`docs/privacy/FEATURES.md`](../../docs/privacy/FEATURES.md) | Privacy features, in full |
 | [`docs/privacy/FILTER_LISTS.md`](../../docs/privacy/FILTER_LISTS.md) | Filter lists — licences, one per list |

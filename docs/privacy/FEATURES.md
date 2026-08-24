@@ -11,11 +11,11 @@ is the one worth reading.
 
 ## tracker_protection
 
-**How it works.** Requests are matched against loaded filter lists and a behavioural heuristic before they leave the browser; a match is never sent.
+**How it works.** Requests are matched against loaded filter lists and a behavioural heuristic before they leave the browser; a match is never sent. A subdomain of the site you are on is also checked for a DNS alias pointing at a tracker, so a tracker cannot hide behind the site's own name.
 
 **What it protects.** Third-party requests to known tracking endpoints, so those companies do not receive your IP address, referrer or cookies at all.
 
-**What it cannot protect.** Trackers served from the site's own domain, or through a CNAME that points at a tracker, are not on a list and are not blocked by this feature alone. First-party analytics running in the page still sees you.
+**What it cannot protect.** Trackers served from the site's own domain are not on a list and are not blocked by this feature alone. An alias is recognised only after it has been looked up, so the first request to a newly seen aliased name still goes out. First-party analytics running in the page still sees you.
 
 **Compatibility impact.** Some sites detect blocking and ask you to disable it; a few login flows that route through an ad network need an exception.
 

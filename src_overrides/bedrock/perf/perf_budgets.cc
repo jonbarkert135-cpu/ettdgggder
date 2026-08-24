@@ -25,6 +25,11 @@ const std::vector<Budget>& PerfBudgets::All() {
        "microseconds", Method::kMeasuredOnHost,
        "BlockingPipeline::Evaluate over a loaded engine, 10,000 requests, "
        "mean, in perf_budgets_test.cc."},
+      {"cname_uncloak_lookup", "CNAME alias lookup on the decision path", 5.0,
+       "microseconds", Method::kMeasuredOnHost,
+       "4,000 cached aliases, 10,000 eligible requests through "
+       "CnameUncloaker::Canonical in perf_budgets_test.cc; mean. Cache-only "
+       "by design: a DNS round trip would be four orders of magnitude more."},
       {"tab_model_op", "Tab model operation with 200 tabs", 200.0,
        "microseconds", Method::kMeasuredOnHost,
        "200 tabs; open/pin/group/sleep/close cycles timed in "

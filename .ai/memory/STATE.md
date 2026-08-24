@@ -87,8 +87,8 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 - **The local build is not in git** (8.7 GB). `build/LOCAL_BUILD_HANDOFF.md` is the handoff: what
   exists on disk, what must never be rebuilt, the 11 errors hit so far, and
   `scripts/resume_build.sh` which syncs, builds and verifies in one command.
-- **Runs in CI today:** 51 host test binaries, 9 fuzz smoke harnesses (~860
-  inputs each), 6 measured performance metrics, 29 static gates.
+- **Runs in CI today:** 52 host test binaries, 9 fuzz smoke harnesses (~860
+  inputs each), 7 measured performance metrics, 29 static gates.
 - **Runs against a real browser binary (not in CI):**
   `tests/browser/run.py` (5/5 pass on Chrome-for-Testing 151) and
   `tests/privacy/run.py` (13 scenarios; stock-Chromium baseline committed as
@@ -128,9 +128,9 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 - Roadmap items 90+ awaited from the project owner.
 - **Default filter lists are empty** until each list's licence is verified and dated in
   `docs/privacy/FILTER_LISTS.md` (item 52 rule). This is a deliberate blocker, not an oversight.
-- Research queue, highest value first: CNAME uncloaking · letterboxing ·
-  referrer/Client-Hints policy · dynamic filtering as a pipeline stage ·
-  the blocking-`webRequest` ADR. (Query stripping + debouncing and "forget about
+- Research queue, highest value first: letterboxing · referrer/Client-Hints policy ·
+  dynamic filtering as a pipeline stage · the blocking-`webRequest` ADR.
+  (CNAME uncloaking landed in PR #39 — logic only; the resolver plumbing is phase 3.) (Query stripping + debouncing and "forget about
   this site" are done — logic only, entry points need phase 3.)
 - No Rust module exists yet; first candidate is the filter-list parser (ADR 0004).
 - From item 49, two follow-ups remain: letterboxing and an ADR deciding whether

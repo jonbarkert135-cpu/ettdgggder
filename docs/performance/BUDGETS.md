@@ -17,7 +17,8 @@ number exceeds its budget. Typical values from a recent run are in brackets.
 | --- | --- | --- | --- |
 | Filter match per request | 20 µs | 0.22 µs | 50,000 rules, 10,000 URLs, mean (`filter_engine_test`) |
 | Filter list parse | 2 s / 100k rules | 0.18 s | 100,000 generated rules through `AddList` |
-| Full pipeline decision | 30 µs | 0.76 µs | `BlockingPipeline::Evaluate`, 20,000 rules, 10,000 requests |
+| Full pipeline decision | 30 µs | 0.54 µs | `BlockingPipeline::Evaluate`, 20,000 rules, 10,000 requests |
+| CNAME alias lookup on the decision path | 5 µs | 0.18 µs | 4,000 cached aliases, 10,000 eligible requests, mean |
 | Tab model operation (200 tabs) | 200 µs | 4.8 µs | open / pin / activate / sleep / duplicate-scan cycle |
 | Theme property change | 50 µs | 0.30 µs | set + validate, 10,000 iterations |
 | History search over 20,000 visits | 30 ms | 4.5 ms | substring query, mean of 20 |
