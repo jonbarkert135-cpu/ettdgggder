@@ -21,10 +21,11 @@ const std::vector<LevelInfo>& SecurityLevels::All() {
        "cookies and reduces fingerprinting. The recommended setting.",
        "A small number of sites need an exception for embedded logins."},
       {SecurityLevel::kStrict, "STRICT",
-       "Adds stronger fingerprint protection, stricter cookie handling and "
-       "HTTPS-only browsing.",
-       "Embedded content, single sign-on and some payment flows will need "
-       "exceptions."},
+       "Adds stronger fingerprint protection and HTTPS-only browsing. "
+       "Third-party cookies are blocked and the rest, including the sites you "
+       "sign in to, are erased when you close the site.",
+       "You are signed out when you close a site, and embedded content, single "
+       "sign-on and some payment flows will need exceptions."},
       {SecurityLevel::kMaximum, "MAXIMUM",
        "The strongest settings Bedrock has: maximum fingerprint protection, "
        "all third-party storage blocked, scripts blocked by default.",
@@ -76,7 +77,11 @@ Overrides SecurityLevels::Values(SecurityLevel level) {
       values[Control::kAds] = Value::kBlock;
       values[Control::kTrackers] = Value::kBlock;
       values[Control::kFingerprinting] = Value::kBlock;
-      values[Control::kCookies] = Value::kBlock;
+      // Third-party cookies only. Blocking first-party cookies too would mean
+      // no site can be signed in to, and a privacy level nobody can stay on
+      // protects nobody; Isolation() below makes the cookies that remain
+      // ephemeral instead.
+      values[Control::kCookies] = Value::kReduce;
       values[Control::kScripts] = Value::kAllow;
       values[Control::kHttps] = Value::kBlock;
       values[Control::kReferrer] = Value::kBlock;
@@ -96,12 +101,30 @@ Overrides SecurityLevels::Values(SecurityLevel level) {
   return values;
 }
 
+net::IsolationLevel SecurityLevels::Isolation(SecurityLevel level) {
+  switch (level) {
+    case SecurityLevel::kStandard:
+    case SecurityLevel::kBalanced:
+      // The shipped default, so it must equal StorageIsolation's own default.
+      return net::IsolationLevel::kStandard;
+    case SecurityLevel::kStrict:
+    case SecurityLevel::kMaximum:
+      return net::IsolationLevel::kEphemeralAll;
+    case SecurityLevel::kCustom:
+      return net::IsolationLevel::kStandard;
+  }
+  return net::IsolationLevel::kStandard;
+}
+
 void SecurityLevels::Apply(ProtectionController* controls,
+                           net::StorageIsolation* storage,
                            SecurityLevel level) {
   if (level == SecurityLevel::kCustom)
     return;
   for (const auto& entry : Values(level))
     controls->Set(Scope::kGlobal, "", entry.first, entry.second);
+  if (storage)
+    storage->set_level(Isolation(level));
 }
 
 SecurityLevel SecurityLevels::Detect(const ProtectionController& controls) {

@@ -4,6 +4,19 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #39 — Strict keeps you signed in, and forgets you on close
+
+- `security_levels`: Strict cookies `kBlock` → `kReduce` (third-party only), and
+  presets now own the storage lifetime — `Isolation()` maps Strict/Maximum to
+  `IsolationLevel::kEphemeralAll`, `Apply()` writes controls *and* isolation.
+- Why: blocking first-party cookies makes a preset nobody can sign in on, so the
+  user drops to Balanced and keeps everything persistently — strictly worse.
+  The machinery already existed (item 15); only the mapping was missing.
+- `Detect()` still compares controls only: `Apply()` is the single writer of the
+  isolation level, so comparing it too would ask the same question twice.
+- Invariant 8a; 4 new assertions; Strict's summary/tradeoff now say you are
+  signed out when a site closes.
+
 ## PR #38 — what the first full build costs, and where to rent it
 
 - `docs/BUILD_ON_YOUR_MACHINE.md`: hardware floor (16 dedicated cores, 32 GB,

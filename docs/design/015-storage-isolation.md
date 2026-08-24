@@ -34,6 +34,13 @@ tracking mechanism, so the floor is "partitioned and persistent", not "off".
 
 Session storage is per tab at every level, by definition.
 
+The level is not a separate setting the user has to find: `SecurityLevels::Isolation()` maps each
+preset onto it (Standard and Balanced → Standard, Strict and Maximum → Ephemeral all) and
+`SecurityLevels::Apply()` writes both halves. Strict therefore *keeps* first-party cookies —
+sites can be signed in to — and erases them when the site is closed, the behaviour Firefox and
+Brave settled on. Blocking first-party cookies outright, which Strict did until PR #39, only
+moves the user back down to Balanced, where nothing is ephemeral at all.
+
 ## Storage Access API grants are scoped
 
 When the user allows an embedded service (a federated login) to use its own storage, the grant

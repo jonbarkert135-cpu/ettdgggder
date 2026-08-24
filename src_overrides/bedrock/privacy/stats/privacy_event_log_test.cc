@@ -132,12 +132,12 @@ int main() {
         "changing one control immediately changes the badge");
   // The presets themselves live in privacy/security_levels (item 45); the
   // dashboard reads them rather than keeping a second table.
-  bedrock::privacy::SecurityLevels::Apply(&controls,
+  bedrock::privacy::SecurityLevels::Apply(&controls, nullptr,
                                           bedrock::privacy::SecurityLevel::kStrict);
   Check(center.Level() == ProtectionLevel::kStrict, "the strict preset is STRICT");
   Check(std::string(PrivacyCenter::LevelName(center.Level())) == "STRICT",
         "and renders in the roadmap's capitals");
-  bedrock::privacy::SecurityLevels::Apply(&controls,
+  bedrock::privacy::SecurityLevels::Apply(&controls, nullptr,
                                           bedrock::privacy::SecurityLevel::kMaximum);
   Check(std::string(PrivacyCenter::LevelName(center.Level())) == "MAXIMUM",
         "and the maximum preset is MAXIMUM");

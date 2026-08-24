@@ -16,6 +16,7 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 6 | Presets are the single source of truth; Privacy Center calls `Detect()` instead of keeping a copy | `privacy/security_levels` |
 | 7 | Shipped defaults equal the Balanced preset exactly | `privacy/security_levels_test` |
 | 8 | The level ladder is monotone per control; every level above Standard states its cost | `privacy/security_levels_test` |
+| 8a | From Strict up, first-party cookies keep working but storage is erased when the site closes — a preset sets the lifetime, not only the controls | `privacy/security_levels_test` |
 | 9 | Tor Mode is a transport mode, never a rung on the ladder, never called "anonymous" | `session/browsing_mode` |
 | 10 | Anti-fingerprinting: normalize first, never random per call, every surface documented | `privacy/fingerprint_policy`, `scripts/check_fp_docs.py` |
 | 11 | One StorageKey for every storage backend, cache, DNS and HSTS included | `net/storage_isolation` |

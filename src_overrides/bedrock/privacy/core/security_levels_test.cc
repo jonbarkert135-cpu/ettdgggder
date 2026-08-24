@@ -49,7 +49,10 @@ int main() {
     if (info.level == SecurityLevel::kCustom)
       continue;
     ProtectionController controls;
-    SecurityLevels::Apply(&controls, info.level);
+    bedrock::net::StorageIsolation storage;
+    SecurityLevels::Apply(&controls, &storage, info.level);
+    Check(storage.level() == SecurityLevels::Isolation(info.level),
+          std::string("apply sets the storage lifetime too for ") + info.name);
     Check(SecurityLevels::Detect(controls) == info.level,
           std::string("apply then detect round-trips for ") + info.name);
     Check(std::string(SecurityLevels::Name(info.level)) == info.name,
@@ -79,6 +82,24 @@ int main() {
     }
   }
 
+  // Item 15 + item 45: from Strict up, a signed-in session must not outlive the
+  // site being closed, and Strict must still be a level you can sign in on.
+  // Both halves are asserted here because either one alone is a broken promise:
+  // blocking first-party cookies makes Strict unusable, keeping them persistent
+  // makes "Strict" a weaker claim than the word implies.
+  Check(SecurityLevels::Values(SecurityLevel::kStrict).at(Control::kCookies) ==
+            Value::kReduce,
+        "Strict blocks third-party cookies but keeps first-party logins working");
+  for (SecurityLevel level : {SecurityLevel::kStrict, SecurityLevel::kMaximum}) {
+    Check(SecurityLevels::Isolation(level) ==
+              bedrock::net::IsolationLevel::kEphemeralAll,
+          std::string("storage is erased on close at ") +
+              SecurityLevels::Name(level));
+  }
+  Check(SecurityLevels::Isolation(SecurityLevel::kBalanced) ==
+            bedrock::net::StorageIsolation().level(),
+        "the shipped preset matches the shipped storage default");
+
   // Maximum really is the strongest, and Standard really is the loosest.
   const Overrides maximum = SecurityLevels::Values(SecurityLevel::kMaximum);
   Check(maximum.at(Control::kScripts) == Value::kBlock,
@@ -91,7 +112,7 @@ int main() {
   {
     ProtectionController controls;
     controls.Set(Scope::kSite, "bank.example", Control::kScripts, Value::kAllow);
-    SecurityLevels::Apply(&controls, SecurityLevel::kMaximum);
+    SecurityLevels::Apply(&controls, nullptr, SecurityLevel::kMaximum);
     Check(controls.Get(Control::kScripts, "bank.example", "bank.example") ==
               Value::kAllow,
           "a per-site exception survives a preset change");

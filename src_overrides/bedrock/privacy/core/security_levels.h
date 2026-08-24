@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "bedrock/privacy/core/protection_controller.h"
+#include "bedrock/privacy/storage/storage_isolation.h"
 
 // Global protection presets (roadmap item 45).
 //
@@ -58,10 +59,21 @@ class SecurityLevels {
   // never silently reverts a per-site exception the user made.
   static Overrides Values(SecurityLevel level);
 
-  // Applies the preset globally.
-  static void Apply(ProtectionController* controls, SecurityLevel level);
+  // How long storage survives at this preset. A preset is a promise about
+  // cookies *and* about how long they live: Strict blocks third parties and
+  // wipes what is left when the site is closed, which is what makes it usable
+  // to sign in to. Blocking first-party cookies outright, as this preset used
+  // to, only means the user drops to Balanced and keeps everything forever.
+  static net::IsolationLevel Isolation(SecurityLevel level);
 
-  // Which preset the current global settings correspond to.
+  // Applies the preset globally, to both halves.
+  static void Apply(ProtectionController* controls,
+                    net::StorageIsolation* storage,
+                    SecurityLevel level);
+
+  // Which preset the current global settings correspond to. Reads the controls
+  // only: Apply() is the single writer of the isolation level, so comparing it
+  // as well would just be asking the same question twice.
   static SecurityLevel Detect(const ProtectionController& controls);
 
   // Compatibility warning shown before switching, empty when there is none.
