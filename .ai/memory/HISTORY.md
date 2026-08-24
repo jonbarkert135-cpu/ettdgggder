@@ -4,6 +4,16 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #38 — what the first full build costs, and where to rent it
+
+- `docs/BUILD_ON_YOUR_MACHINE.md`: hardware floor (16 dedicated cores, 32 GB,
+  150 GB), the ~13 h build estimate derived from the 56 105-step reference run,
+  hourly prices checked on the providers' own pages 2026-08-24, and the exact
+  command sequence. Cheapest verified: Hetzner CCX43 at EUR 0.4423/h, so one
+  full build is about EUR 7.
+- Doc only; no code, no gate changes. Prices are dated in the file because they
+  will drift.
+
 ## PR #37 — link cleaning, redirect debouncing, forget about this site
 
 - `privacy/tracker_blocker/url_cleaner`: one table of 23 click identifiers plus
