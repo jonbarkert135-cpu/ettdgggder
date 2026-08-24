@@ -4,6 +4,20 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #37 — link cleaning, redirect debouncing, forget about this site
+
+- `privacy/tracker_blocker/url_cleaner`: one table of 23 click identifiers plus
+  a per-host redirector table. Unwraps first, then strips, ≤3 hops. Refuses
+  subresources, relative / `javascript:` / `data:` / self targets and unlisted
+  hosts — a generic "looks like a URL" rule would be an open-redirect engine.
+  A URL with nothing to strip comes back byte-identical.
+- `BlockingPipeline::CleanUrl()` now delegates; its own parameter table is gone
+  (one source of truth, not two that agree today).
+- `privacy/core/forget_site`: plan-then-run over 8 stores, deleters injected.
+  `not available in this build` ≠ `removed`, `nothing stored` ≠ `removed`, one
+  failure makes `complete()` false; passwords and bookmarks are opt-in.
+- `docs/design/048-link-cleaning-and-forgetting.md`; 44 new assertions.
+
 ## PR #35 — semantic tokens, grain, background composition
 
 - `tokens.css` gained the item 31 vocabulary (background/surface/text/border/

@@ -169,6 +169,9 @@ The Privacy Engine core: feature registry, the PrivacyPolicy resolver (single so
 
 | File | What it is |
 | --- | --- |
+| `forget_site.cc` | implementation |
+| `forget_site.h` | "Forget about this site" — one action that removes what one site left in this profile (follow-up recorded in item 49's Firefox research). |
+| `forget_site_test.cc` | Host test, no Chromium. |
 | `privacy_engine.cc` | implementation |
 | `privacy_engine.h` | The Bedrock Privacy Engine. |
 | `privacy_engine_test.cc` | Host test, no Chromium. |
@@ -249,6 +252,9 @@ Content blocking: ABP/uBO-syntax filter engine (independently implemented, rares
 | `tracker_heuristic.cc` | implementation |
 | `tracker_heuristic.h` | Behavioral tracker detection (roadmap item 14). |
 | `tracker_heuristic_test.cc` | Host test, no Chromium. |
+| `url_cleaner.cc` | implementation |
+| `url_cleaner.h` | Link cleaning and redirect debouncing (feature `query_param_stripping`). |
+| `url_cleaner_test.cc` | Host test, no Chromium. |
 
 ### `src_overrides/bedrock/profiles/`
 Profiles, which share nothing by default, and New Identity — the controlled session reset that also states what it does not erase. Items 21-22.
@@ -490,6 +496,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/design/045-settings-and-privacy-center.md`](../../docs/design/045-settings-and-privacy-center.md) | 045 — Settings, Privacy Center, extensions |
 | [`docs/design/046-profiles-modes-customisation.md`](../../docs/design/046-profiles-modes-customisation.md) | 046 — Profiles, window modes, customisation |
 | [`docs/design/047-token-system-and-surface.md`](../../docs/design/047-token-system-and-surface.md) | 047 — Semantic tokens, motion, grain, background |
+| [`docs/design/048-link-cleaning-and-forgetting.md`](../../docs/design/048-link-cleaning-and-forgetting.md) | 048 — Link cleaning, redirect debouncing, and forgetting a site |
 | [`docs/performance/BUDGETS.md`](../../docs/performance/BUDGETS.md) | Performance budgets |
 | [`docs/privacy/FEATURES.md`](../../docs/privacy/FEATURES.md) | Privacy features, in full |
 | [`docs/privacy/FILTER_LISTS.md`](../../docs/privacy/FILTER_LISTS.md) | Filter lists — licences, one per list |
