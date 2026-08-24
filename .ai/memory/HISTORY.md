@@ -4,20 +4,7 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
-## PR #39 — Strict keeps you signed in, and forgets you on close
-
-- `security_levels`: Strict cookies `kBlock` → `kReduce` (third-party only), and
-  presets now own the storage lifetime — `Isolation()` maps Strict/Maximum to
-  `IsolationLevel::kEphemeralAll`, `Apply()` writes controls *and* isolation.
-- Why: blocking first-party cookies makes a preset nobody can sign in on, so the
-  user drops to Balanced and keeps everything persistently — strictly worse.
-  The machinery already existed (item 15); only the mapping was missing.
-- `Detect()` still compares controls only: `Apply()` is the single writer of the
-  isolation level, so comparing it too would ask the same question twice.
-- Invariant 8a; 4 new assertions; Strict's summary/tradeoff now say you are
-  signed out when a site closes.
-
-## PR #39 — CNAME uncloaking
+## PR #40 — CNAME uncloaking
 
 - `privacy/tracker_blocker/cname_uncloak`: a DNS alias on a first-party-looking
   subdomain is re-matched against the filter lists, as stage 1b of the one
@@ -34,6 +21,19 @@ read, not skimmed. Anything longer belongs in a doc, linked from here.
 - TTL clamped 60 s…24 h (the tracker publishes it), cache 4096, queue 256.
 - `tracker_protection` disclosure rewritten: it used to say CNAME trackers are
   not caught at all. `docs/design/049-cname-uncloaking.md`; 30 new assertions.
+## PR #39 — Strict keeps you signed in, and forgets you on close
+
+- `security_levels`: Strict cookies `kBlock` → `kReduce` (third-party only), and
+  presets now own the storage lifetime — `Isolation()` maps Strict/Maximum to
+  `IsolationLevel::kEphemeralAll`, `Apply()` writes controls *and* isolation.
+- Why: blocking first-party cookies makes a preset nobody can sign in on, so the
+  user drops to Balanced and keeps everything persistently — strictly worse.
+  The machinery already existed (item 15); only the mapping was missing.
+- `Detect()` still compares controls only: `Apply()` is the single writer of the
+  isolation level, so comparing it too would ask the same question twice.
+- Invariant 8a; 4 new assertions; Strict's summary/tradeoff now say you are
+  signed out when a site closes.
+
 
 ## PR #38 — what the first full build costs, and where to rent it
 
