@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** the interface is written against a semantic token vocabulary, enforced by `scripts/check_tokens.py`, and the background composition (light source plus grain) is generated into tokens.css (PR #35); window modes, the profile menu and the theme-to-CSS bridge exist (PR #34); settings, the Privacy Center and the extensions panel have pages and tested models (PR #33); the privacy panel, three tab layouts and the vendored type system landed (PR #32); the new tab page, its state object and the chrome composition exist (PR #31); the dark surface system is the shipped default and tokens.css is generated from the tokens (PR #30); the first-run page renders the flow (PR #29); roadmap 90–101 audited (`docs/ACCEPTANCE.md`) and first run / search disclosure landed; phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
+**As of:** link cleaning + redirect debouncing (`privacy/tracker_blocker/url_cleaner`) and "forget about this site" (`privacy/core/forget_site`) landed as host-tested logic, two items off the research queue (PR #37); the interface is written against a semantic token vocabulary, enforced by `scripts/check_tokens.py`, and the background composition (light source plus grain) is generated into tokens.css (PR #35); window modes, the profile menu and the theme-to-CSS bridge exist (PR #34); settings, the Privacy Center and the extensions panel have pages and tested models (PR #33); the privacy panel, three tab layouts and the vendored type system landed (PR #32); the new tab page, its state object and the chrome composition exist (PR #31); the dark surface system is the shipped default and tokens.css is generated from the tokens (PR #30); the first-run page renders the flow (PR #29); roadmap 90–101 audited (`docs/ACCEPTANCE.md`) and first run / search disclosure landed; phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
 
 ## Position on the roadmap
 
@@ -67,7 +67,7 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 | 96–97 Product identity, own UI | done as policy — no WebUI exists to judge yet |
 | 98–99 First-run flow, honest onboarding | logic + WebUI page (`ui/first_run.html`, `.js`) done and tested; the WebUI host that registers the page needs the Chromium build |
 | 100–101 Continuous verification, acceptance criteria | `docs/ACCEPTANCE.md`: **11 of 31 criteria met**, rest stock/policy-only |
-| 102+ | **not yet specified — waiting on the project owner** |
+| 102+ | **not yet specified — waiting on the project owner**; meanwhile the research queue in "Open threads" is worked down, newest first |
 
 ## What is real vs. what is documented
 
@@ -84,7 +84,7 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 - **The local build is not in git** (8.7 GB). `build/LOCAL_BUILD_HANDOFF.md` is the handoff: what
   exists on disk, what must never be rebuilt, the 11 errors hit so far, and
   `scripts/resume_build.sh` which syncs, builds and verifies in one command.
-- **Runs in CI today:** 49 host test binaries, 9 fuzz smoke harnesses (~860
+- **Runs in CI today:** 51 host test binaries, 9 fuzz smoke harnesses (~860
   inputs each), 6 measured performance metrics, 29 static gates.
 - **Runs against a real browser binary (not in CI):**
   `tests/browser/run.py` (5/5 pass on Chrome-for-Testing 151) and
@@ -125,12 +125,13 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 - Roadmap items 90+ awaited from the project owner.
 - **Default filter lists are empty** until each list's licence is verified and dated in
   `docs/privacy/FILTER_LISTS.md` (item 52 rule). This is a deliberate blocker, not an oversight.
-- Research queue, highest value first: CNAME uncloaking · query stripping + debouncing ·
-  letterboxing · referrer/Client-Hints policy · dynamic filtering as a pipeline stage ·
-  "forget about this site" · the blocking-`webRequest` ADR.
+- Research queue, highest value first: CNAME uncloaking · letterboxing ·
+  referrer/Client-Hints policy · dynamic filtering as a pipeline stage ·
+  the blocking-`webRequest` ADR. (Query stripping + debouncing and "forget about
+  this site" are done — logic only, entry points need phase 3.)
 - No Rust module exists yet; first candidate is the filter-list parser (ADR 0004).
-- From item 49, three recorded follow-ups: letterboxing, one "forget about this
-  site" action, and an ADR deciding whether extensions keep blocking `webRequest`.
+- From item 49, two follow-ups remain: letterboxing and an ADR deciding whether
+  extensions keep blocking `webRequest` ("forget about this site" landed).
   Parked as too large for now: RLBox-style library sandboxing, a Bedrock root store.
 - Chromium has been built **by hand on Linux only** — not in CI, never on Windows. The build is
   also driven around a siso scheduler stall, so objects can go stale; recompile the object of each

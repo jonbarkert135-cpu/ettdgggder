@@ -5,8 +5,9 @@
 
 #include "bedrock/privacy/tracker_blocker/blocking_pipeline.h"
 
+#include "bedrock/privacy/tracker_blocker/url_cleaner.h"
+
 #include <cstddef>
-#include <set>
 #include <string>
 
 namespace bedrock {
@@ -15,22 +16,6 @@ namespace {
 
 using privacy::Control;
 using privacy::Value;
-
-// Parameters that exist only to carry an identifier across a click. Stripped
-// from navigations (item 14, "link cleaning"). Kept deliberately short and
-// conservative: removing a parameter a site needs breaks the click, and a
-// broken click is a worse privacy outcome because the user retries in another
-// browser.
-const std::set<std::string>& TrackingParams() {
-  static const std::set<std::string> kParams = {
-      "fbclid",  "gclid",     "gclsrc",  "dclid",    "msclkid",
-      "twclid",  "igshid",    "mc_eid",  "mkt_tok",  "yclid",
-      "ttclid",  "wickedid",  "oly_enc_id", "oly_anon_id", "vero_id",
-      "_openstat", "utm_source", "utm_medium", "utm_campaign", "utm_term",
-      "utm_content", "utm_id", "utm_source_platform",
-  };
-  return kParams;
-}
 
 }  // namespace
 
@@ -77,49 +62,9 @@ bool BlockingPipeline::SendPrivacySignals(const Request& request) const {
 
 // static
 std::string BlockingPipeline::CleanUrl(const std::string& url) {
-  size_t query_at = url.find('?');
-  if (query_at == std::string::npos) {
-    return url;
-  }
-  size_t fragment_at = url.find('#', query_at);
-  const std::string query =
-      url.substr(query_at + 1, fragment_at == std::string::npos
-                                   ? std::string::npos
-                                   : fragment_at - query_at - 1);
-  const std::string fragment =
-      fragment_at == std::string::npos ? "" : url.substr(fragment_at);
-
-  std::string kept;
-  size_t start = 0;
-  bool stripped = false;
-  while (start <= query.size()) {
-    size_t end = query.find('&', start);
-    const std::string pair = query.substr(
-        start, end == std::string::npos ? std::string::npos : end - start);
-    if (!pair.empty()) {
-      const std::string name = pair.substr(0, pair.find('='));
-      if (TrackingParams().count(name) != 0) {
-        stripped = true;
-      } else {
-        if (!kept.empty()) {
-          kept += '&';
-        }
-        kept += pair;
-      }
-    }
-    if (end == std::string::npos) {
-      break;
-    }
-    start = end + 1;
-  }
-  if (!stripped) {
-    return url;
-  }
-  std::string cleaned = url.substr(0, query_at);
-  if (!kept.empty()) {
-    cleaned += '?' + kept;
-  }
-  return cleaned + fragment;
+  // One implementation, in url_cleaner.{h,cc}. This entry point stays because
+  // callers think in terms of the pipeline, but it owns no table of its own.
+  return UrlCleaner::Clean(url, UrlUse::kTopLevelNavigation).url;
 }
 
 Decision BlockingPipeline::Evaluate(const Request& request) const {
