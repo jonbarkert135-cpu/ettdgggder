@@ -11,6 +11,7 @@ document is missing, or when a relative link in any Markdown file points at noth
 | [`../README.md`](../README.md) | what Bedrock is, and where to start reading |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | how it is put together, and where a change belongs |
 | [`BUILD.md`](BUILD.md) | how to build it on Linux and Windows, step by step |
+| [`BUILD_ON_YOUR_MACHINE.md`](BUILD_ON_YOUR_MACHINE.md) | what hardware the first full build needs, what renting it costs, and the exact commands |
 | [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | how to land a change and which gates must pass |
 | [`../SECURITY.md`](../SECURITY.md) | how to report a vulnerability |
 

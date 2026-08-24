@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** link cleaning + redirect debouncing (`privacy/tracker_blocker/url_cleaner`) and "forget about this site" (`privacy/core/forget_site`) landed as host-tested logic, two items off the research queue (PR #37); the interface is written against a semantic token vocabulary, enforced by `scripts/check_tokens.py`, and the background composition (light source plus grain) is generated into tokens.css (PR #35); window modes, the profile menu and the theme-to-CSS bridge exist (PR #34); settings, the Privacy Center and the extensions panel have pages and tested models (PR #33); the privacy panel, three tab layouts and the vendored type system landed (PR #32); the new tab page, its state object and the chrome composition exist (PR #31); the dark surface system is the shipped default and tokens.css is generated from the tokens (PR #30); the first-run page renders the flow (PR #29); roadmap 90–101 audited (`docs/ACCEPTANCE.md`) and first run / search disclosure landed; phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
+**As of:** `docs/BUILD_ON_YOUR_MACHINE.md` prices the one full build that phase 3 needs (PR #38); link cleaning + redirect debouncing (`privacy/tracker_blocker/url_cleaner`) and "forget about this site" (`privacy/core/forget_site`) landed as host-tested logic, two items off the research queue (PR #37); the interface is written against a semantic token vocabulary, enforced by `scripts/check_tokens.py`, and the background composition (light source plus grain) is generated into tokens.css (PR #35); window modes, the profile menu and the theme-to-CSS bridge exist (PR #34); settings, the Privacy Center and the extensions panel have pages and tested models (PR #33); the privacy panel, three tab layouts and the vendored type system landed (PR #32); the new tab page, its state object and the chrome composition exist (PR #31); the dark surface system is the shipped default and tokens.css is generated from the tokens (PR #30); the first-run page renders the flow (PR #29); roadmap 90–101 audited (`docs/ACCEPTANCE.md`) and first run / search disclosure landed; phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
 
 ## Position on the roadmap
 
@@ -81,6 +81,9 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 - **A downloadable artifact exists:** GitHub pre-release `v0.0.1-dev`, `bedrock-0.0.1-dev-linux-x64.tar.zst`
   (313 MB, sha256 `54be5449…`), notes in `docs/releases/0.0.1-dev.md`. Component build, Linux only,
   unbranded, one enforced protection — never call it a product release. [github, 2026-08-23]
+- **The local Chromium checkout and build no longer exist in any sandbox** (checked 2026-08-24),
+  and the current one has 1 core. Turning a `policy` feature into an enforced one is blocked on
+  hardware, not on code: see `docs/BUILD_ON_YOUR_MACHINE.md` for what to rent and what it costs.
 - **The local build is not in git** (8.7 GB). `build/LOCAL_BUILD_HANDOFF.md` is the handoff: what
   exists on disk, what must never be rebuilt, the 11 errors hit so far, and
   `scripts/resume_build.sh` which syncs, builds and verifies in one command.

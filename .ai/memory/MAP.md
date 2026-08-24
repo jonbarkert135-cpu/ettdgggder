@@ -419,6 +419,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md) | Architecture |
 | [`docs/BRAND.md`](../../docs/BRAND.md) | Brand identity |
 | [`docs/BUILD.md`](../../docs/BUILD.md) | Building Bedrock |
+| [`docs/BUILD_ON_YOUR_MACHINE.md`](../../docs/BUILD_ON_YOUR_MACHINE.md) | Renting a machine for the first build |
 | [`docs/CONFIGURATION.md`](../../docs/CONFIGURATION.md) | Configuration |
 | [`docs/DEFAULTS.md`](../../docs/DEFAULTS.md) | Defaults and the four axes of control |
 | [`docs/DEPENDENCIES.md`](../../docs/DEPENDENCIES.md) | Dependency policy |
