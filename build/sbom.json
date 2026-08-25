@@ -47,7 +47,7 @@
       "properties": [
         {
           "name": "bedrock:reuse_mode",
-          "value": "port"
+          "value": "reimplement"
         },
         {
           "name": "bedrock:notice",
@@ -75,7 +75,7 @@
       "properties": [
         {
           "name": "bedrock:reuse_mode",
-          "value": "vendored"
+          "value": "not-used"
         },
         {
           "name": "bedrock:notice",
@@ -103,7 +103,7 @@
       "properties": [
         {
           "name": "bedrock:reuse_mode",
-          "value": "port"
+          "value": "reimplement"
         },
         {
           "name": "bedrock:notice",

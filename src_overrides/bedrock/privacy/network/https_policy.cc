@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "bedrock/privacy/network/host_match.h"
+
 namespace bedrock {
 namespace net {
 namespace {
@@ -14,13 +16,10 @@ namespace {
 using privacy::Control;
 using privacy::Value;
 
-bool StartsWith(const std::string& text, const std::string& prefix) {
-  return text.compare(0, prefix.size(), prefix) == 0;
-}
-
-bool EndsWith(const std::string& text, const std::string& suffix) {
-  return text.size() >= suffix.size() &&
-         text.compare(text.size() - suffix.size(), suffix.size(), suffix) == 0;
+// Scheme check on a full URL. Host comparisons go through host_match.h; this
+// one is deliberately not one.
+bool HasScheme(const std::string& url, const std::string& scheme) {
+  return url.compare(0, scheme.size(), scheme) == 0;
 }
 
 }  // namespace
@@ -32,10 +31,10 @@ HttpsPolicy::~HttpsPolicy() = default;
 
 // static
 bool HttpsPolicy::IsLocalOrOnion(const std::string& host) {
-  return host == "localhost" || StartsWith(host, "127.") ||
-         StartsWith(host, "192.168.") || StartsWith(host, "10.") ||
-         EndsWith(host, ".local") || EndsWith(host, ".onion") ||
-         host == "[::1]";
+  const std::string name = NormalizeHost(host);
+  return name == "localhost" || HasFinalLabel(name, "localhost") ||
+         HasFinalLabel(name, "local") || HasFinalLabel(name, "onion") ||
+         HasFinalLabel(name, "internal") || IsPrivateAddress(name);
 }
 
 HttpsMode HttpsPolicy::ModeForHost(const std::string& host) const {
@@ -50,25 +49,33 @@ HttpsMode HttpsPolicy::ModeForHost(const std::string& host) const {
 
 UpgradeAction HttpsPolicy::ForNavigation(const std::string& url,
                                          const std::string& host) const {
-  if (StartsWith(url, "https://")) {
+  if (HasScheme(url, "https://")) {
     return UpgradeAction::kAlreadySecure;
   }
-  if (!StartsWith(url, "http://")) {
+  if (!HasScheme(url, "http://")) {
     return UpgradeAction::kAlreadySecure;  // non-web scheme, not ours to judge
-  }
-  if (controls_->Get(Control::kHttps, host, host) == Value::kAllow) {
-    return UpgradeAction::kAllowPlaintext;  // user turned upgrading off here
-  }
-  if (HasPlaintextException(host)) {
-    return UpgradeAction::kAllowPlaintext;
   }
   if (IsLocalOrOnion(host)) {
     // A printer on the LAN and a .onion address have no public certificate.
     // Warning here would teach the user that the warning means nothing.
     return UpgradeAction::kAllowPlaintext;
   }
+  if (HasPlaintextException(host)) {
+    // An explicit, per-host decision the user made at an interstitial. This is
+    // the only thing that outranks HTTPS-Only, and it is remembered per host,
+    // never globally.
+    return UpgradeAction::kAllowPlaintext;
+  }
+  // The mode is checked *before* the per-site shields value. `ModeForHost()`
+  // documents that a site can only make HTTPS stronger; reading the per-site
+  // Allow first made that false, so one shields toggle silently switched
+  // HTTPS-Only off for that host with no interstitial and no record.
+  // See docs/security/AUDIT-2026-08-25.md (F2).
   if (ModeForHost(host) == HttpsMode::kHttpsOnly) {
     return UpgradeAction::kInterstitial;
+  }
+  if (controls_->Get(Control::kHttps, host, host) == Value::kAllow) {
+    return UpgradeAction::kAllowPlaintext;  // user turned upgrading off here
   }
   return UpgradeAction::kUpgrade;
 }
@@ -145,31 +152,50 @@ const char* HttpsPolicy::ExplainCertError(CertError error) {
 }
 
 void HttpsPolicy::AllowPlaintextForHost(const std::string& host) {
-  plaintext_exceptions_[host] = true;
+  plaintext_exceptions_[NormalizeHost(host)] = true;
 }
 
 void HttpsPolicy::ClearPlaintextException(const std::string& host) {
-  plaintext_exceptions_.erase(host);
+  plaintext_exceptions_.erase(NormalizeHost(host));
 }
 
 bool HttpsPolicy::HasPlaintextException(const std::string& host) const {
-  return plaintext_exceptions_.count(host) != 0;
+  return plaintext_exceptions_.count(NormalizeHost(host)) != 0;
 }
 
-bool HttpsPolicy::AddCertException(const std::string& host, CertError error) {
+bool HttpsPolicy::AddCertException(const std::string& host,
+                                   CertError error,
+                                   int64_t now) {
   if (!Proceedable(error)) {
     return false;
   }
-  cert_exceptions_[host] = error;
+  cert_exceptions_[NormalizeHost(host)] = {error,
+                                          now + kCertExceptionTtlSeconds};
   return true;
 }
 
 bool HttpsPolicy::HasCertException(const std::string& host,
-                                   CertError error) const {
-  auto it = cert_exceptions_.find(host);
-  // The exception covers the exact error it was granted for. A site excepted
-  // for an expired certificate must still warn if the authority changes.
-  return it != cert_exceptions_.end() && it->second == error;
+                                   CertError error,
+                                   int64_t now) const {
+  auto it = cert_exceptions_.find(NormalizeHost(host));
+  // The exception covers the exact error it was granted for, and only until it
+  // expires. A site excepted for an expired certificate must still warn if the
+  // authority changes.
+  return it != cert_exceptions_.end() && it->second.error == error &&
+         now < it->second.expires_at;
+}
+
+int HttpsPolicy::PruneCertExceptions(int64_t now) {
+  int removed = 0;
+  for (auto it = cert_exceptions_.begin(); it != cert_exceptions_.end();) {
+    if (now >= it->second.expires_at) {
+      it = cert_exceptions_.erase(it);
+      ++removed;
+    } else {
+      ++it;
+    }
+  }
+  return removed;
 }
 
 void HttpsPolicy::ClearCertExceptions() {

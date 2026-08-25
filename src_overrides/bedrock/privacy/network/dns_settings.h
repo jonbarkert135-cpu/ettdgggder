@@ -53,6 +53,13 @@ struct DnsProvider {
   std::string policy_url;
   bool logs_queries = false;
   bool filters_content = false;  // blocks malware/ads at the resolver
+  // ISO date this entry was last checked against the operator's own
+  // documentation. A shipped resolver list is a perishable good: audit finding
+  // F6b was a preset (`dns0.eu`) whose service had shut down, pointing at the
+  // website instead of a DoH endpoint — with fallback enabled, that is a
+  // plaintext DNS query. `scripts/check_dns_presets.py` fails the build when an
+  // entry goes stale or stops looking like an endpoint.
+  std::string verified;
 };
 
 class DnsSettings {
@@ -69,7 +76,12 @@ class DnsSettings {
   // Accepts https:// (DoH) and tls:// (DoT) templates only: a plaintext
   // "custom resolver" is just a different party watching, so it is refused.
   bool UseCustom(const std::string& uri_template);
-  void SetStrict(bool strict);
+  // Returns false when strict mode cannot be applied — today that means the
+  // system resolver is selected, where Bedrock controls nothing and
+  // "fail closed" would be a promise it cannot keep. Refusing silently let the
+  // caller (and the settings UI) show strict mode as on while queries went to
+  // the OS resolver: docs/security/AUDIT-2026-08-25.md (F6).
+  bool SetStrict(bool strict);
 
   void set_fallback(FallbackPolicy policy) { fallback_ = policy; }
   FallbackPolicy fallback() const;

@@ -6,6 +6,7 @@
 #ifndef BEDROCK_PRIVACY_FINGERPRINTING_FINGERPRINT_POLICY_H_
 #define BEDROCK_PRIVACY_FINGERPRINTING_FINGERPRINT_POLICY_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <string>
 
@@ -19,7 +20,7 @@
 //      impossible without breaking the feature outright (canvas, WebGL, audio).
 //   2. NEVER RANDOM PER CALL. Per-call randomness is itself a fingerprint (a
 //      surface that never repeats identifies the browser, and repeated sampling
-//      averages the noise away). Every value comes from SurfaceSeed(), which is
+//      averages the noise away). Every value comes from a surface key, which is
 //      a pure function of (session secret, site, surface).
 
 namespace bedrock {
@@ -80,21 +81,42 @@ bool BreaksSites(Surface surface, FpLevel level);
 
 // --- Deterministic derivation -----------------------------------------------
 //
-// session_secret: 64 random bits generated once per browsing session per
-// profile (and once per tab-group in private windows), never persisted. Rotating
-// it per session is the ONLY variation in the system; it is what defeats
-// cross-session linking. Within a session the same site always sees the same
-// values, which is what defeats "your noise is your fingerprint" detection.
+// session_secret: kSessionSecretSize random BYTES from the platform CSPRNG,
+// generated once per browsing session per profile (and once per tab-group in
+// private windows), never persisted. Rotating it per session is the ONLY
+// variation in the system; it is what defeats cross-session linking. Within a
+// session the same site always sees the same values, which is what defeats
+// "your noise is your fingerprint" detection.
 //
 // etld_plus_one: the top-level site, so an embedded iframe cannot re-sample the
 // same surface under a different origin to average the perturbation away.
-uint64_t SurfaceSeed(uint64_t session_secret,
-                     const std::string& etld_plus_one,
-                     Surface surface);
+//
+// Derivation is KEYED AND ONE-WAY: HKDF-SHA256 per site, then HMAC-SHA256 per
+// surface (bedrock/crypto). It used to be an unkeyed invertible mixer over a
+// 64-bit secret, which meant a site that recovered its own seed from the noise
+// could invert it, obtain the session secret, and link the user across every
+// other site in the session — F4 in docs/security/AUDIT-2026-08-25.md. The
+// properties this construction has and that one did not:
+//
+//   * one-way: a recovered surface key reveals nothing about the secret;
+//   * per-site: two colluding sites cannot reach a shared value;
+//   * separated: streams for different surfaces or sites never overlap;
+//   * 256-bit: the secret is no longer brute-forceable at all.
+constexpr size_t kSessionSecretSize = 32;
 
-// Uniform double in [0,1) from a seed and a counter (pixel index, sample index).
-// Pure: the same (seed, index) always yields the same value.
-double SeededUnit(uint64_t seed, uint64_t index);
+// Opaque 32-byte key for one (session, site, surface). Never leaves the browser
+// and is never exposed to the page.
+std::string SurfaceKey(const std::string& session_secret,
+                       const std::string& etld_plus_one,
+                       Surface surface);
+
+// Uniform double in [0,1) from a surface key and a counter (pixel index, sample
+// index). Pure: the same (key, index) always yields the same value.
+double SeededUnit(const std::string& surface_key, uint64_t index);
+
+// A 64-bit view of a surface key, for shims whose upstream API needs an integer
+// (a hash bucket, a shuffle seed). Never use it as a key.
+uint64_t SeedValue(const std::string& surface_key);
 
 // --- Normalized values -------------------------------------------------------
 // Fixed values reported at kBalanced and above. Chosen to be the most common

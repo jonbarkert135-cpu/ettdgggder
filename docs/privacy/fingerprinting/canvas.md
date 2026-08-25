@@ -6,7 +6,7 @@
 `toDataURL()`, `getImageData()` and `measureText()` expose sub-pixel differences produced by the GPU, driver, font rasteriser and anti-aliasing stack. The resulting hash is stable and high-entropy — the classic canvas fingerprint, in commercial use since 2012.
 
 ## Mitigation
-At levels 1–2, readback is perturbed: for each read, at most a few least-significant bits per channel are altered, chosen by `SeededUnit(SurfaceSeed(session_secret, eTLD+1, kCanvas), pixel_index)`. Consequences of that construction:
+At levels 1–2, readback is perturbed: for each read, at most a few least-significant bits per channel are altered, chosen by `SeededUnit(SurfaceKey(session_secret, eTLD+1, kCanvas), pixel_index)`. Consequences of that construction:
 
 - the same site reading the same canvas twice gets **identical** bytes, so averaging over repeated reads does not recover the true value;
 - a different site gets a different perturbation, so the hash cannot link across sites;

@@ -195,9 +195,9 @@ is the one worth reading.
 
 **What it protects.** The exact window size, which is both distinguishing and stable across a session.
 
-**What it cannot protect.** Sites that measure layout indirectly, and the fact that letterboxing itself is visible to the page.
+**What it cannot protect.** Sites that measure layout indirectly, the fact that letterboxing itself is visible to the page, and windows too small to letterbox: below 200x100, or when rounding down would cost more than 40% of the pixels, the real window size is used.
 
-**Compatibility impact.** Visible margins around the page in some window sizes; responsive layouts may pick a different breakpoint than expected.
+**Compatibility impact.** Visible margins around the page in some window sizes, fullscreen included; responsive layouts may pick a different breakpoint than expected.
 
 ## hardware_info
 

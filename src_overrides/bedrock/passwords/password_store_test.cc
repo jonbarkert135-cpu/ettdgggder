@@ -26,7 +26,9 @@ void Check(bool condition, const std::string& what) {
 }
 
 // Stands in for the platform keystore. Reversible and obviously not secure —
-// the point is to test policy, not to invent a cipher.
+// the point is to test policy, not to invent a cipher. Note it is
+// deterministic, which is exactly what the old ciphertext-comparing verifier
+// silently depended on (F3): the real keystore is not.
 class FakeCipher : public Cipher {
  public:
   std::string Encrypt(const std::string& plaintext) override {
@@ -46,6 +48,33 @@ class FakeCipher : public Cipher {
   }
 };
 
+// A deterministic stand-in for the platform CSPRNG, so that failures are
+// reproducible. Production code gets the real one; there is no constructor
+// without a random source at all.
+class CountingRandom : public bedrock::crypto::RandomSource {
+ public:
+  std::string Bytes(size_t count) override {
+    std::string out;
+    for (size_t i = 0; i < count; ++i)
+      out.push_back(static_cast<char>((counter_ * 31 + i * 7 + 11) & 0xFF));
+    ++counter_;
+    return out;
+  }
+
+ private:
+  size_t counter_ = 1;
+};
+
+// Every store in this test uses cheap KDF parameters: the production default
+// (600k PBKDF2 iterations) is the point of the design, but paying it on every
+// unlock would make the suite slow. The default value itself is asserted below.
+std::unique_ptr<PasswordStore> MakeStore() {
+  auto store = std::make_unique<PasswordStore>(std::make_unique<FakeCipher>(),
+                                              std::make_unique<CountingRandom>());
+  store->SetKdfIterations(64);
+  return store;
+}
+
 FillContext Context(const std::string& origin) {
   FillContext context;
   context.page_origin = origin;
@@ -56,7 +85,11 @@ FillContext Context(const std::string& origin) {
 }  // namespace
 
 int main() {
-  PasswordStore store(std::make_unique<FakeCipher>());
+  Check(kDefaultKdfIterations >= 600000,
+        "the default KDF cost is at least the OWASP floor");
+
+  auto store_owner = MakeStore();
+  PasswordStore& store = *store_owner;
 
   // Locked by default; nothing goes in or out.
   Check(store.locked(), "the store starts locked");
@@ -83,22 +116,81 @@ int main() {
         "a locked store returns nothing");
   Check(password.empty(), "and leaves the output untouched");
 
-  // Master password protection.
-  store.SetMasterProtection(MasterProtection::kMasterPassword);
-  Check(store.locked(), "changing the protection relocks the store");
+  // --- Master password protection (audit F3) --------------------------------
+
+  // Requiring a password that does not exist yet would lock the user out of
+  // their own store, so the mode cannot be switched on before the password is
+  // set.
+  Check(!store.SetMasterProtection(MasterProtection::kMasterPassword),
+        "requiring a master password before setting one is refused");
+  Check(store.protection() == MasterProtection::kPlatformKeystoreOnly,
+        "and the mode did not change");
+
+  Check(store.Unlock(), "reopen with the keystore");
+  Check(store.SetMasterPassword("correct horse"), "the master password is set");
+  Check(store.has_master_password(), "and the store knows it has one");
+  Check(store.locked(),
+        "setting it relocks: the new password must prove itself first");
+  Check(!store.SetMasterPassword("second try"),
+        "a master password cannot be silently replaced");
+
   Check(!store.Unlock(), "the keystore alone is no longer enough");
-  Check(store.Unlock("correct horse"), "the master password unlocks it");
-  store.Lock();
+  Check(!store.Unlock(""), "an empty password is not a password");
   Check(!store.Unlock("wrong horse"), "a wrong master password is refused");
   Check(store.locked(), "and the store stays locked");
-  Check(store.Unlock("correct horse"), "the right one still works");
+  Check(store.Unlock("correct horse"), "the right one unlocks it");
+
+  // The entries written before the master password existed are still readable:
+  // the data key was re-wrapped, not replaced.
+  password.clear();
+  Check(store.Get("https://example.com", "ada", &password) &&
+            password == "hunter2",
+        "entries survive turning on the master password");
+
+  // Trust-on-first-use, the third defect in F3: a fresh store must not accept
+  // whatever password is offered first.
+  {
+    auto fresh = MakeStore();
+    Check(fresh->Unlock(), "a fresh store opens with the keystore");
+    Check(fresh->SetMasterProtection(MasterProtection::kPlatformKeystoreOnly),
+          "and can stay in keystore mode");
+    Check(!fresh->has_master_password(), "with no master password set");
+    fresh->Lock();
+    // Offering a password to a store that has none must not *create* one.
+    Check(fresh->Unlock("anything at all"),
+          "the keystore still opens it (the password is ignored, not stored)");
+    Check(!fresh->has_master_password(),
+          "and typing a password did not silently make it the master password");
+    Check(fresh->protection() == MasterProtection::kPlatformKeystoreOnly,
+          "the protection mode is unchanged");
+  }
+
+  // Changing the password re-wraps the same data key, so stored entries stay
+  // readable and the old password stops working.
+  Check(store.ChangeMasterPassword("correct horse", "staple battery"),
+        "the master password can be changed with the current one");
+  Check(!store.ChangeMasterPassword("correct horse", "third"),
+        "the old password no longer authorises a change");
+  Check(!store.Unlock("correct horse"), "and no longer unlocks");
+  Check(store.Unlock("staple battery"), "the new one does");
+  password.clear();
+  Check(store.Get("https://example.com", "ada", &password) &&
+            password == "hunter2",
+        "entries survive a password change");
+
+  // Locking must destroy key material, not just set a flag.
+  store.Lock();
+  Check(!store.Get("https://example.com", "ada", &password),
+        "a locked store cannot decrypt");
+
+  Check(store.Unlock("staple battery"), "unlock again for the rest of the test");
 
   // Auto-lock.
   store.SetAutoLockSeconds(300);
   Check(!store.OnIdle(299), "the store stays open inside the idle window");
   Check(store.OnIdle(300), "and locks itself when it passes");
   Check(store.locked(), "auto-lock really locks");
-  store.Unlock("correct horse");
+  store.Unlock("staple battery");
   store.SetAutoLockSeconds(0);
   Check(!store.OnIdle(100000), "0 means the user turned auto-lock off");
 
@@ -163,10 +255,10 @@ int main() {
         "the endpoint is third-party; Bedrock runs no breach server");
 
   // Known-answer test for the hash used above.
-  Check(Sha1Hex("password") ==
+  Check(PasswordHashHex("password") ==
             "5BAA61E4C9B93F3F0682250B6CF8331B7EE68FD8",
         "SHA-1 matches the published test vector");
-  Check(Sha1Hex("") == "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709",
+  Check(PasswordHashHex("") == "DA39A3EE5E6B4B0D3255BFEF95601890AFD80709",
         "SHA-1 of the empty string matches too");
 
   Check(store.RecordBreachResult("https://example.com", "ada", true),

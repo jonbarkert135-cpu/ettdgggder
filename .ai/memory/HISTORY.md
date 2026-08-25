@@ -4,19 +4,145 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
-## PR #44 — Windows / low-memory build path
+## PR #49 — items 94, 95: the hidden cloud, made impossible to add quietly
 
-- `build/sync.py`: overrides are **copied** when the OS refuses a symlink
-  (Windows without Developer Mode raises `WinError 1314`), a `--no-history` flag
-  drops Chromium's git history for a much smaller checkout, and the printed next
-  steps are PowerShell on Windows. Consequence of copying: `--overlay-only` must
-  be re-run after every overlay edit, because a copy does not track its source.
-- `build/args/bedrock-lowmem.gn`: overrides to **append after** the release args
-  (component build, no official build, no debug info) so an 8 GB laptop can link.
-  Alone it would drop the autonomy flags, so the file says so at the top.
-- `docs/BUILD.md` → "Building on 8 GB": job caps, 32 GB page file, Defender
-  exclusions, and an honest 35–50 h estimate extrapolated from the one measured
-  build (56 105 steps / 12 h 16 m / 17 cores). Nobody has run this config yet.
+- New `privacy/network/remote_features`: the seven remote interactions the
+  design permits (search query, suggestions, DoH, filter list subscriptions,
+  extension updates, Tor mode, update check), each with operator, default, how
+  to disable, what it can be replaced with, and a doc link.
+  `Operator::kBedrockOperated` exists only so the validator can reject it.
+- Every row is `Status::kPolicyOnly` because this overlay has no network stack
+  code at all — stated in the generated doc rather than glossed over (item 90).
+  Only `search_query` is on by default, and only because it is the user's own
+  request going where they sent it.
+- `scripts/check_remote_features.py`: a module using `SimpleURLLoader`,
+  `URLLoaderFactory`, `fetch(` or a socket without a row fails the build; any
+  `bedrock.*` hostname anywhere in the tree fails; `docs/privacy/REMOTE.md` is
+  generated from the table. Probed with a fake sync .cc and a fetching .js.
+- False positive fixed while building it: symbol names inside string literals
+  ("the URLLoaderFactory hook is phase 7") are prose, not calls, so literals are
+  stripped before the scan. Invariant 81.
+
+## PR #48 — items 92, 96, 97: the other half of the branding line
+
+- `check_branding.py` guarded *our* identity but never looked at the shipped UI
+  or at C++ string literals, where other vendors' names actually live
+  (`first_run_page.cc` lists Chrome/Firefox/Edge, the DoH presets name their
+  operators). A blanket ban would break item 98, which requires those labels.
+- New `scripts/check_trademarks.py` splits nominative use (allowed) from
+  identity and affiliation use (banned): a vendor name within 60 characters of
+  "official", "powered by", "certified", "in partnership" fails; a vendor name
+  in a string assigned to an app/product/title/brand/logo identifier fails; an
+  image file anywhere named after a vendor fails; `--moz-`, `--brave-`,
+  `.chrome-` CSS vocabulary in the UI fails (items 96, 97). Comments are exempt
+  on purpose — the reasoning should stay visible.
+- `docs/IDENTITY.md`: what the product is ("one product, not five browsers
+  wearing one skin"), the no-copied-UI rule, and a stance table saying what was
+  taken and refused from each research note. A note with no row fails the build.
+- All five rules probed live by injecting a violation of each. Invariants 79, 80.
+
+## PR #47 — items 90 and 91: provenance that is true in both directions
+
+- The inventory claimed reuse mode `port` for brave-core and ungoogled-chromium
+  and `vendored` for adblock-rust, and `THIRD_PARTY.md` described how ported
+  files keep their upstream header "with the exact upstream path and commit" — a
+  process with **zero instances**. Nothing was mis-licensed; the record described
+  an intention as the state of the tree, which is what item 90 bans in a feature
+  switch. Modes are now `reimplement`/`not-used`.
+- New `docs/PROVENANCE.md`: item 91's seven fields per third-party file. One row
+  today (the PrivacyTools.io catalog snapshot), and the file says why one row is
+  the honest answer for a 5 MB independently written overlay.
+- `check_provenance.py` rule 8 enforces it both ways: a `port`/`vendored` row
+  with no record fails, a record for a `reimplement` project fails, and a source
+  file declaring `Derived-from:` without a record fails. Verified by flipping
+  brave-core back to `port` and watching the build fail.
+- Items 93, 98, 99 audited against the owner's text and found genuinely
+  implemented — no code needed.
+
+## PR #46 — the rest of the audit debt (F6b–F9)
+
+- **F6b**: dns0.eu shut down in October 2025 — verified before touching the
+  code, not assumed. Preset replaced with DNS4EU (Whalebone s.r.o., Czechia).
+  `DnsProvider` gained a `verified` date and `scripts/check_dns_presets.py`
+  rejects a preset older than a year, or one without an operator and a policy URL.
+- **F7**: `QuantizeWindowSize()` returned a degenerate size for zero or negative
+  input; it now returns one step.
+- **F8** (partial, and labelled partial): the learned-tracker table gained time —
+  `SetNow()`, `last_seen`, `ForgetOlderThan()`, a 90-day default, user verdicts
+  exempt, timestamps in the export, pre-F8 files still load. Writing the table
+  to disk stays blocked on the Chromium profile layer and says so.
+- **F9**: certificate exceptions expire after 7 days; both exception maps are
+  keyed on `NormalizeHost`. Invariants 76, 77; audit addendum 2.
+
+## PR #45 — one place where host comparisons happen
+
+- New `privacy/network/host_match`: `NormalizeHost`, `IsOrSubdomainOf`,
+  `HasFinalLabel`, `ParseIPv4`, `IsPrivateAddress`. Three duplicate local
+  helpers (https_policy, filter_engine, url_cleaner) deleted and routed here —
+  F1 was a bug in one copy of logic that existed in four.
+- `scripts/check_host_matching.py` fails the build on prefix/suffix *decisions*
+  about host-shaped variables outside that file. First version also flagged
+  `substr`/`find` used for parsing (7 false positives) and was narrowed to
+  comparisons; the self-test contains the original F1 line.
+- **F10** found while writing it (medium, live): rules are lowercased at parse
+  time but the request host was compared in wire form, so `EVIL.com` and
+  `evil.com.` matched no domain-scoped rule at all. Both sides normalise now.
+- Scheme checks that legitimately look at a prefix renamed `HasScheme()`.
+  Invariant 75.
+
+## PR #43 — F3 and F4: real cryptography behind the password store
+
+- New `bedrock/crypto/`: `hash` (SHA-256, HMAC, HKDF, PBKDF2, SHA-1 for the
+  breach prefix, constant-time compare) and `aead` (`Seal`/`Open`, 32-byte key,
+  12-byte nonce, 16-byte tag). Every primitive is asserted against published
+  vectors — FIPS 180-4, RFC 4231, RFC 5869, RFC 8018 — because a hash that is
+  merely self-consistent is worthless. `BEDROCK_USE_BORINGSSL` is a hard
+  `#error`: the host build must never quietly become the shipping crypto.
+- **F3**: the master password is now a key, not a comparison.
+  PBKDF2(600k) then HKDF to a KEK, which wraps a random data key; the AEAD tag
+  is the verifier, so there is no ciphertext to compare. Entry AAD binds
+  (origin, username) so a record cannot be moved between sites. `Lock()` wipes
+  the key; `ChangeMasterPassword` rewraps without touching entries.
+- **F4**: `SurfaceSeed()` was unkeyed and invertible — one canvas read gave up
+  the session secret. Replaced by `SurfaceKey(secret, eTLD+1, surface)` =
+  HKDF then HMAC, with `SeededUnit()` for the per-index draw. Old helpers deleted.
+- Ponytail applied retroactively: the `Aead` interface, a stub platform random
+  source and a one-field `KdfParams` struct were removed as invented ceremony.
+## PR #42 — security audit of 2026-08-25
+
+- Full audit against the owner's Project-Zero-style brief. Governing finding
+  **F0**: only two patches exist (`build/0001-add-bedrock-to-chrome-browser`,
+  `integration/0001-bedrock-startup-hook`) and nothing touches Blink, V8,
+  //content or //net — so 20 of 21 fingerprinting surfaces and every blocking
+  and storage protection are policy, not enforcement. Report:
+  `docs/security/AUDIT-2026-08-25.md`.
+- Two goals in the brief were rejected with reasons, not implemented: a new
+  random fingerprint per launch (makes the user *more* identifiable across a
+  session than a stable, common one) and a fixed 1920x1080 screen (a lie the
+  first `window.resize` exposes).
+- Fixed here: **F1** (critical) `IsLocalOrOnion()` matched by prefix, so
+  `10.example.com` and `127.evil.test` were treated as local; **F2** (high)
+  `ForNavigation()` ordering; **F5** (high) `KeysToClearForSite()` cleared the
+  wrong direction of the relationship; **F6** (medium) `DnsSettings::SetStrict()`
+  swallowed failures by returning void.
+
+## PR #41 — Letterboxing
+
+- `privacy/fingerprinting/letterboxing`: `ComputeLetterbox()` turns the quantised
+  size from `QuantizeWindowSize()` into a real content box plus centred margins,
+  so the size a page is *told* is the size it *renders into*. Reporting one and
+  laying out the other is recoverable with one `getBoundingClientRect()`.
+- No fullscreen parameter exists, on purpose: `requestFullscreen()` would
+  otherwise be the cheap way to read the display size. No site parameter either.
+- Two guards stop it eating the window: 200x100 floor and "the page keeps >=60%
+  of the pixels". 320x240 at level 3 would drop to 200x200, so it is left alone
+  and `active()` is false — the panel must not claim an unapplied protection.
+- `ViewportChanges()` is the relayout test; without it a slow window drag streams
+  every intermediate size to the page and the quantisation buys nothing.
+- Cost table (1366x768: -3% / -13% / -31% by level) in
+  `docs/design/050-letterboxing.md`. `screen.md`'s old test case was wrong:
+  1366x768 and 1440x810 do *not* share a level-2 bucket (1300x700 vs 1400x800).
+- Logic only; the size constraint, margin paint and `screen.*` shims are phase 3.
 
 ## PR #40 — CNAME uncloaking
 
@@ -489,6 +615,13 @@ Anti-fingerprinting levels, deterministic derivation, Protection Controller.
 
 ## PR #1 — Roadmap 6–8
 Search system, omnibox classifier, Privacy Engine architecture.
+
+## Process note (2026-08-25)
+
+Six PRs in a row (#42–#49) shipped with no HISTORY.md entry: the edits were made
+with `str.replace()` on an anchor that did not exist, so the write was a no-op
+and nothing failed locally. CI caught it, as designed. When editing memory from
+a script, assert the replacement changed the file.
 
 ## Foundation
 Chromium overlay build system + licensing/provenance gate; CI.

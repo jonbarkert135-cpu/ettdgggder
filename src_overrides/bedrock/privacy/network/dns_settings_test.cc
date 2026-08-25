@@ -40,6 +40,8 @@ int main() {
 
   // No provider in the shipped list belongs to this project.
   Check(!DnsSettings::Providers().empty(), "providers are offered");
+  Check(DnsSettings::FindProvider("dns0.eu") == nullptr,
+        "the dns0.eu preset is gone: the service shut down in October 2025");
   for (const DnsProvider& provider : DnsSettings::Providers()) {
     Check(!provider.operator_.empty(),
           provider.name + " names its operator");
@@ -48,6 +50,15 @@ int main() {
           provider.name + " uses an encrypted endpoint");
     Check(!Contains(provider.doh_template, "bedrock"),
           "no Bedrock-operated resolver: " + provider.name);
+    // Audit F6b: the dns0.eu preset pointed at the operator's *website*. With
+    // fallback enabled that is a plaintext DNS query, so a preset must be an
+    // endpoint with a path, not a bare origin.
+    const size_t path = provider.doh_template.find('/', 8);
+    Check(path != std::string::npos &&
+              path + 1 < provider.doh_template.size(),
+          provider.name + " names an endpoint, not a website");
+    Check(provider.verified.size() == 10,
+          provider.name + " records when it was last checked");
   }
 
   // Presets name who sees the queries, including logging and filtering.
@@ -78,7 +89,7 @@ int main() {
   dns.set_fallback(FallbackPolicy::kSystemWithWarning);
   Check(dns.fallback() == FallbackPolicy::kSystemWithWarning,
         "fallback to the system resolver is configurable");
-  dns.SetStrict(true);
+  Check(dns.SetStrict(true), "strict mode can be applied to a secure resolver");
   Check(dns.mode() == DnsMode::kSecureStrict, "strict mode set");
   Check(dns.fallback() == FallbackPolicy::kFailClosed,
         "strict mode is fail-closed no matter what the fallback setting says");
@@ -91,7 +102,10 @@ int main() {
 
   // Strict is meaningless without a secure resolver, so it is not offered.
   dns.UseSystemResolver();
-  dns.SetStrict(true);
+  // Audit F6: refusing is fine, refusing *silently* is not — the caller showed
+  // strict mode as on while queries went to the OS resolver.
+  Check(!dns.SetStrict(true),
+        "strict is refused, and the refusal is reported to the caller");
   Check(dns.mode() == DnsMode::kSystem,
         "strict does nothing while using the system resolver");
 

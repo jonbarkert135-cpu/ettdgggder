@@ -27,6 +27,7 @@ StorageKey StorageIsolation::KeyFor(const std::string& origin,
                                     const std::string& top_level_site) const {
   StorageKey key;
   key.origin = origin;
+  key.origin_site = origin_site;
   key.top_level_site = top_level_site;
   key.cross_site = origin_site != top_level_site;
   if (key.cross_site && HasStorageAccess(origin, top_level_site)) {
@@ -68,7 +69,7 @@ std::vector<StorageKey> StorageIsolation::KeysToClearForSite(
     const std::string& site) const {
   std::vector<StorageKey> matches;
   for (const StorageKey& key : all_keys) {
-    if (key.top_level_site == site) {
+    if (key.top_level_site == site || key.origin_site == site) {
       matches.push_back(key);
     }
   }
