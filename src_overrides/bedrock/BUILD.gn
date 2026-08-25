@@ -89,6 +89,8 @@ source_set("bedrock") {
     "privacy/fingerprinting/fingerprint_policy.h",
     "privacy/network/dns_settings.cc",
     "privacy/network/dns_settings.h",
+    "privacy/network/host_match.cc",
+    "privacy/network/host_match.h",
     "privacy/network/https_policy.cc",
     "privacy/network/https_policy.h",
     "privacy/network/webrtc_policy.cc",

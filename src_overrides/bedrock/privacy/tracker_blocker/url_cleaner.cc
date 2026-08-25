@@ -5,6 +5,8 @@
 
 #include "bedrock/privacy/tracker_blocker/url_cleaner.h"
 
+#include "bedrock/privacy/network/host_match.h"
+
 #include <cctype>
 #include <set>
 #include <string>
@@ -76,15 +78,6 @@ std::string HostOf(const std::string& url) {
     host = host.substr(at + 1);
   }
   return host;
-}
-
-bool HostMatches(const std::string& host, const std::string& suffix) {
-  if (host == suffix) {
-    return true;
-  }
-  return host.size() > suffix.size() &&
-         host.compare(host.size() - suffix.size() - 1, suffix.size() + 1,
-                      "." + suffix) == 0;
 }
 
 std::string PercentDecode(const std::string& value) {
@@ -175,7 +168,7 @@ std::string Unwrap(const std::string& url) {
   }
   const Parsed parsed = Split(url);
   for (const Redirector& rule : Redirectors()) {
-    if (!HostMatches(host, rule.host_suffix)) {
+    if (!net::IsOrSubdomainOf(host, rule.host_suffix)) {
       continue;
     }
     // An empty parameter name means the target is the whole query string

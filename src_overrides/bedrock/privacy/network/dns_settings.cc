@@ -12,8 +12,10 @@ namespace bedrock {
 namespace net {
 namespace {
 
-bool StartsWith(const std::string& text, const std::string& prefix) {
-  return text.compare(0, prefix.size(), prefix) == 0;
+// Scheme check on a URI template. Not a host comparison: see host_match.h for
+// why nothing in this tree may decide anything about a *host* this way.
+bool HasScheme(const std::string& uri, const std::string& scheme) {
+  return uri.compare(0, scheme.size(), scheme) == 0;
 }
 
 }  // namespace
@@ -73,8 +75,8 @@ bool DnsSettings::UsePreset(const std::string& provider_name) {
 }
 
 bool DnsSettings::UseCustom(const std::string& uri_template) {
-  if (!StartsWith(uri_template, "https://") &&
-      !StartsWith(uri_template, "tls://")) {
+  if (!HasScheme(uri_template, "https://") &&
+      !HasScheme(uri_template, "tls://")) {
     return false;
   }
   mode_ = DnsMode::kSecureCustom;
