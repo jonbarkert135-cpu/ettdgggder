@@ -19,6 +19,18 @@ Bookmark store: folders and tags together, search over title, URL and tags. Item
 | `bookmark_store.h` | Bookmarks (roadmap item 35). |
 | `bookmark_store_test.cc` | Host test, no Chromium. |
 
+### `src_overrides/bedrock/crypto/`
+SHA-256/HMAC/HKDF/PBKDF2 plus Seal/Open, all verified against published test vectors; BoringSSL replaces it in the Chromium build. No cipher and no RNG live here. Added to fix audit findings F3 and F4.
+
+| File | What it is |
+| --- | --- |
+| `aead.cc` | implementation |
+| `aead.h` | Authenticated encryption with associated data, behind an interface. |
+| `aead_test.cc` | Host test, no Chromium. |
+| `hash.cc` | implementation |
+| `hash.h` | SHA-256 and the three standard constructions built on it: HMAC (RFC 2104), HKDF (RFC 5869) and PBKDF2 (RFC 8018). |
+| `hash_test.cc` | Host test, no Chromium. |
+
 ### `src_overrides/bedrock/devtools/`
 Added DevTools privacy panels. Rule zero: never break an upstream Chromium panel. Item 36.
 
@@ -502,6 +514,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/design/047-token-system-and-surface.md`](../../docs/design/047-token-system-and-surface.md) | 047 — Semantic tokens, motion, grain, background |
 | [`docs/design/048-link-cleaning-and-forgetting.md`](../../docs/design/048-link-cleaning-and-forgetting.md) | 048 — Link cleaning, redirect debouncing, and forgetting a site |
 | [`docs/design/049-cname-uncloaking.md`](../../docs/design/049-cname-uncloaking.md) | 049 — CNAME uncloaking |
+| [`docs/design/051-crypto-primitives.md`](../../docs/design/051-crypto-primitives.md) | 051 — Crypto primitives |
 | [`docs/performance/BUDGETS.md`](../../docs/performance/BUDGETS.md) | Performance budgets |
 | [`docs/privacy/FEATURES.md`](../../docs/privacy/FEATURES.md) | Privacy features, in full |
 | [`docs/privacy/FILTER_LISTS.md`](../../docs/privacy/FILTER_LISTS.md) | Filter lists — licences, one per list |

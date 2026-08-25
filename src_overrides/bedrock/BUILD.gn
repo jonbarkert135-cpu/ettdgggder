@@ -35,6 +35,10 @@ source_set("bedrock") {
   sources = [
     "bookmarks/bookmark_store.cc",
     "bookmarks/bookmark_store.h",
+    "crypto/aead.cc",
+    "crypto/aead.h",
+    "crypto/hash.cc",
+    "crypto/hash.h",
     "devtools/privacy_devtools.cc",
     "devtools/privacy_devtools.h",
     "diagnostics/crash_report.cc",
