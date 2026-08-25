@@ -19,7 +19,7 @@ Two honest warnings before the first command:
 | | Linux (reference) | Windows |
 | --- | --- | --- |
 | Disk | 100 GB free (checkout ~40 GB, one `out/` ~40 GB) | 130 GB — NTFS, and it is slower |
-| RAM | 16 GB minimum, 32 GB comfortable | same |
+| RAM | 16 GB minimum, 32 GB comfortable | same — 8 GB is possible, see [Building on 8 GB](#building-on-8-gb) |
 | CPU | 8 cores; first build 3–8 h, incremental minutes | same, plus Defender exclusions |
 | OS | Ubuntu 22.04+ / Debian 12+ x64 (others work, `install-build-deps.sh` targets these) | Windows 10 22H2 or Windows 11, x64 |
 | Python | 3.9+ (`python3`) | 3.9+, on `PATH` as `python3` |
@@ -37,12 +37,17 @@ python3 build/sync.py --workspace ~/bedrock-src
 ```
 
 `sync.py` clones depot_tools, fetches the pinned Chromium revision, runs `gclient sync`, applies
-`patches/` and copies `src_overrides/` into the tree. It prints the exact `gn`/`ninja` commands with
+`patches/` and links `src_overrides/` into the tree (symlinks, or copies where the OS refuses
+them — Windows without Developer Mode). It prints the exact `gn`/`ninja` commands with
 paths filled in when it finishes. After changing overlay files, re-run only the overlay step:
 
 ```bash
 python3 build/sync.py --workspace ~/bedrock-src --overlay-only
 ```
+
+On a disk with less than ~150 GB free, add `--no-history` to the first sync: it drops Chromium's
+git history for tens of GB less checkout. The tree still builds; `git log` and upstream bisecting
+in that tree do not work, which is what `scripts/upstream_sync.py` is for anyway.
 
 ## Linux
 
@@ -161,6 +166,60 @@ autoninja -C out\Bedrock mini_installer
 Code signing: the artifact is signed as part of release, not of build
 ([`SUPPLY_CHAIN.md`](SUPPLY_CHAIN.md)). Do not sign a local build with a release key.
 
+## Building on 8 GB
+
+An 8 GB laptop is under this document's own minimum, and the reason is the link step, not the
+compile. It still works — with a memory budget, a patience budget, and no illusions.
+
+**Arguments.** Append [`build/args/bedrock-lowmem.gn`](../build/args/bedrock-lowmem.gn) after the
+release args (never instead of them — that file carries the autonomy flags):
+
+```powershell
+# Windows, PowerShell, from the Chromium src directory
+$argsFile = (Get-Content ..\..\bedrock\build\args\bedrock-release.gn,
+                         ..\..\bedrock\build\args\bedrock-lowmem.gn |
+             Where-Object {$_ -notmatch '^#' -and $_ -notmatch '^\s*$'}) -join ' '
+gn gen out\Bedrock --args="$argsFile"
+```
+
+```bash
+# Linux
+gn gen out/Bedrock --args="$(grep -hv '^#' ~/bedrock/build/args/bedrock-{release,lowmem}.gn | tr '\n' ' ')"
+```
+
+The component build this turns on means the binary only runs from inside `out/Bedrock`.
+
+**Jobs.** `autoninja` sizes the job pool from cores, not free memory, so it over-commits here.
+Cap it explicitly — roughly one job per 1.5 GB of RAM:
+
+```bash
+ninja -C out/Bedrock -j 4 -l 6 chrome     # 8 GB / 6 cores
+```
+
+**Swap.** Give the machine 32 GB of page file or swap on the fastest disk. It is not there to be
+used all build long; it is there so the two or three peak link steps do not end 40 hours of work
+with an OOM kill.
+
+**Windows specifics that cost hours if skipped:** Defender exclusions for the checkout and `out/`,
+indexing off for the same folders, `git config --global core.longpaths true`,
+`DEPOT_TOOLS_WIN_TOOLCHAIN=0`, and short paths (`D:\src\bedrock`). A build on a spinning disk is
+dominated by the hundreds of thousands of small files, not by the CPU — use an SSD.
+
+**How long, honestly.** The only measured data point is the reference build: 56 105 steps in
+**12 h 16 m on 17 cores** ([`../build/ENFORCEMENT.md`](../build/ENFORCEMENT.md)). Scaling by usable
+parallelism, a 6-core laptop capped at `-j 4` is in the region of **35–50 hours** of wall clock —
+several nights, not one. The `lowmem` args (no official build, no debug info) take some of that
+back; thermal throttling gives it away again. Nobody has measured this configuration end to end,
+so treat the range as an estimate and the first successful run as the number worth recording.
+
+The gates are not affected by any of this: `scripts/run_host_tests.sh` is bash plus `g++` and
+needs neither Chromium nor much memory. On Windows it needs WSL or Git Bash with a compiler — or
+nothing at all, since CI runs it on every push.
+
+Incremental builds after the first one are minutes, and that is the whole point of paying the
+first cost once. Keep `out/Bedrock`, never run `gn clean`, and never re-run `gn gen` on it with
+different args.
+
 ## What Chromium's toolchain requires from overlay code
 
 The overlay is plain C++17 and its host tests build with `g++`, but inside the Chromium tree it is
@@ -217,7 +276,8 @@ are equal when those match; a mismatch with everything else equal is a bug worth
 | `gn gen` complains about a missing SDK | the SDK component or Debugging Tools were not installed (Windows step 1) |
 | a patch under `patches/` fails to apply | the pin moved without the patch being re-verified — `python3 scripts/upstream_sync.py --check-patches` |
 | the build succeeds but the binary is not Bedrock-branded | the overlay was not applied: re-run `sync.py --overlay-only` |
-| out of memory during link | link with fewer jobs: `ninja -C out/Bedrock -j2 chrome` after a full compile |
+| out of memory during link | link with fewer jobs: `ninja -C out/Bedrock -j2 chrome` after a full compile, and read [Building on 8 GB](#building-on-8-gb) |
+| `sync.py` fails with `WinError 1314` | fixed — overrides are copied when symlinks are refused; re-run `sync.py --overlay-only` after every overlay edit, because a copy does not track the source |
 
 Ask in an issue with the failing command, the OS version and the output of
 `python3 scripts/upstream_sync.py --status`.

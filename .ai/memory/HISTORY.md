@@ -4,6 +4,20 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #43 — Windows / low-memory build path
+
+- `build/sync.py`: overrides are **copied** when the OS refuses a symlink
+  (Windows without Developer Mode raises `WinError 1314`), a `--no-history` flag
+  drops Chromium's git history for a much smaller checkout, and the printed next
+  steps are PowerShell on Windows. Consequence of copying: `--overlay-only` must
+  be re-run after every overlay edit, because a copy does not track its source.
+- `build/args/bedrock-lowmem.gn`: overrides to **append after** the release args
+  (component build, no official build, no debug info) so an 8 GB laptop can link.
+  Alone it would drop the autonomy flags, so the file says so at the top.
+- `docs/BUILD.md` → "Building on 8 GB": job caps, 32 GB page file, Defender
+  exclusions, and an honest 35–50 h estimate extrapolated from the one measured
+  build (56 105 steps / 12 h 16 m / 17 cores). Nobody has run this config yet.
+
 ## PR #40 — CNAME uncloaking
 
 - `privacy/tracker_blocker/cname_uncloak`: a DNS alias on a first-party-looking
