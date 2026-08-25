@@ -6,7 +6,7 @@ overlapping goals — which makes the line between *reuse* and *clone* worth dra
 
 **Where the code is.** `brave/brave-core` holds the browser source and the Chromium patches;
 `brave/brave-browser` holds issues, releases and build tooling. Research reads brave-core.
-Pinned in the inventory at **v1.96.5, MPL-2.0, reuse mode `port`**
+Pinned in the inventory at **v1.96.5, MPL-2.0, reuse mode `reimplement`** — no brave-core file is in this tree ([`PROVENANCE.md`](../PROVENANCE.md))
 ([`docs/THIRD_PARTY.md`](../THIRD_PARTY.md)).
 
 **Sourcing, honestly.** Compiled from Brave's public documentation, published design notes

@@ -41,7 +41,7 @@ gate counts refreshed 2026-08-25.
 | 24 | No hidden telemetry | yes | `check_no_telemetry.py`: no reporting machinery, `enable_reporting=false`, `safe_browsing_mode=0`, `use_official_google_api_keys=false` |
 | 25 | Licensing documented | yes | `LICENSING.md` + `check_provenance.py` (9 dependencies, 9 notices, per-file records) |
 | 26 | Third-party components documented | yes | `THIRD_PARTY.md` (projects) + `PROVENANCE.md` (files, item 91), both machine-checked against each other |
-| 27 | Tests pass | yes, for what they cover | 63 host tests, 9 fuzz smoke harnesses, 29 gates in CI; sanitizers, libFuzzer campaigns and browser tests need a Chromium build and have no numbers |
+| 27 | Tests pass | yes, for what they cover | 63 host tests, 9 fuzz smoke harnesses, 30 gates in CI; sanitizers, libFuzzer campaigns and browser tests need a Chromium build and have no numbers |
 | 28 | Build instructions work | yes, on Linux | `BUILD.md` + `scripts/resume_build.sh` reproduce build 2; Windows instructions are untested |
 | 29 | Security documentation exists | yes | `SECURITY.md`, `docs/security/` |
 | 30 | Threat model exists | yes | `docs/THREAT_MODEL.md` |

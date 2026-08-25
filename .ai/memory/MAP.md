@@ -444,6 +444,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/DIAGNOSTICS.md`](../../docs/DIAGNOSTICS.md) | Diagnostics: debug logs and crash reports |
 | [`docs/ERRORS.md`](../../docs/ERRORS.md) | Errors: what the user sees when something fails |
 | [`docs/FORMATS.md`](../../docs/FORMATS.md) | Import and export formats |
+| [`docs/IDENTITY.md`](../../docs/IDENTITY.md) | What Bedrock is, and what it refuses to be |
 | [`docs/LICENSING.md`](../../docs/LICENSING.md) | Bedrock Browser — Licensing & Provenance Policy |
 | [`docs/LOCALIZATION.md`](../../docs/LOCALIZATION.md) | Localization |
 | [`docs/PATCHES.md`](../../docs/PATCHES.md) | Patch management |
@@ -587,6 +588,7 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | `scripts/check_strings.py` | Localization gate (roadmap item 61). |
 | `scripts/check_test_matrix.py` | Gate: the roadmap-74 test matrix stays complete, honest and executable. |
 | `scripts/check_tokens.py` | Design items 31 and 32, as a gate. |
+| `scripts/check_trademarks.py` | Other people's trademarks and other people's interfaces (items 92, 96, 97). |
 | `scripts/check_transparency.py` | Gate: every privacy feature explains itself, including its limits. |
 | `scripts/check_ui_style.py` | Roadmap item 27's taste rules, as a gate. |
 | `scripts/check_upstream.py` | Upstream sync and patch gate (roadmap items 66, 67, 69). |
