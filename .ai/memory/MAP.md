@@ -566,6 +566,7 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | `scripts/check_config_surface.py` | Fail if the configuration surface and its documentation disagree (item 56). |
 | `scripts/check_defaults.py` | Gate: the shipped defaults are the ones that were specified and documented. |
 | `scripts/check_diagnostics.py` | Gate: debug logs stay logs, crashes stay local, errors stay localized. |
+| `scripts/check_dns_presets.py` | Gate: every shipped DNS preset is an endpoint, and none has gone stale. |
 | `scripts/check_docs.py` | Documentation gate (roadmap item 72). |
 | `scripts/check_fp_docs.py` | Every anti-fingerprinting surface must have a documented rationale. |
 | `scripts/check_frameworks.py` | Gate: no JS framework where Chromium's own infrastructure is the answer. |

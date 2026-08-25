@@ -31,18 +31,21 @@ const std::vector<DnsProvider>& DnsSettings::Providers() {
   static const std::vector<DnsProvider> kProviders = {
       {"Quad9", "Quad9 Foundation (Switzerland)",
        "https://dns.quad9.net/dns-query", "https://quad9.net/privacy/policy/",
-       false, true},
+       false, true, "2026-08-25"},
       {"Cloudflare", "Cloudflare, Inc. (US)",
        "https://cloudflare-dns.com/dns-query",
        "https://developers.cloudflare.com/1.1.1.1/privacy/public-dns-resolver/",
-       false, false},
+       false, false, "2026-08-25"},
       {"Mullvad", "Mullvad VPN AB (Sweden)",
        "https://dns.mullvad.net/dns-query", "https://mullvad.net/en/help/dns-over-https-and-dns-over-tls",
-       false, false},
-      {"dns0.eu", "dns0.eu (non-profit, EU)", "https://dns0.eu/",
-       "https://www.dns0.eu/privacy", false, true},
+       false, false, "2026-08-25"},
+      // Replaces the dns0.eu preset, which shut down in October 2025 (F6b).
+      {"DNS4EU", "Whalebone s.r.o. for the EU DNS4EU project (Czechia)",
+       "https://unfiltered.joindns4.eu/dns-query",
+       "https://joindns4.eu/privacy-policy", false, false, "2026-08-25"},
       {"Google", "Google LLC (US)", "https://dns.google/dns-query",
-       "https://developers.google.com/speed/public-dns/privacy", true, false},
+       "https://developers.google.com/speed/public-dns/privacy", true, false,
+       "2026-08-25"},
   };
   return kProviders;
 }

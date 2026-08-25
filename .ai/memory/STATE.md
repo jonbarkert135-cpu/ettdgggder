@@ -130,10 +130,11 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
   by `scripts/check_host_matching.py` (audit rec. 4). Fixing F10 there — hosts
   were compared in wire form, so `EVIL.com` and `evil.com.` bypassed every
   domain-scoped filter rule.
-- **Audit debt left (`docs/security/AUDIT-2026-08-25.md`):** F6b the `dns0.eu`
-  preset is the website, not a DoH endpoint (a bad preset plus fallback = plaintext
-  DNS) · F7 degenerate window sizes · F8 learned trackers are in-memory only ·
-  F9 cert exceptions never expire. All small; none needs a build.
+- **Audit debt: closed.** F1–F10 are fixed except the part of F8 that needs the
+  profile layer (writing the learned table to disk — same blocker as wiring the
+  features in). dns0.eu shut down in October 2025 and we shipped its preset
+  anyway; presets now carry a `verified` date that expires the build after a
+  year (`scripts/check_dns_presets.py`).
 - `bedrock/crypto` is a *reference* implementation verified against published
   vectors. Wiring BoringSSL behind the same signatures (`BEDROCK_USE_BORINGSSL`)
   is a build-time task and is the one thing standing between this and shipping

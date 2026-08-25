@@ -40,6 +40,8 @@ int main() {
 
   // No provider in the shipped list belongs to this project.
   Check(!DnsSettings::Providers().empty(), "providers are offered");
+  Check(DnsSettings::FindProvider("dns0.eu") == nullptr,
+        "the dns0.eu preset is gone: the service shut down in October 2025");
   for (const DnsProvider& provider : DnsSettings::Providers()) {
     Check(!provider.operator_.empty(),
           provider.name + " names its operator");
@@ -48,6 +50,15 @@ int main() {
           provider.name + " uses an encrypted endpoint");
     Check(!Contains(provider.doh_template, "bedrock"),
           "no Bedrock-operated resolver: " + provider.name);
+    // Audit F6b: the dns0.eu preset pointed at the operator's *website*. With
+    // fallback enabled that is a plaintext DNS query, so a preset must be an
+    // endpoint with a path, not a bare origin.
+    const size_t path = provider.doh_template.find('/', 8);
+    Check(path != std::string::npos &&
+              path + 1 < provider.doh_template.size(),
+          provider.name + " names an endpoint, not a website");
+    Check(provider.verified.size() == 10,
+          provider.name + " records when it was last checked");
   }
 
   // Presets name who sees the queries, including logging and filtering.

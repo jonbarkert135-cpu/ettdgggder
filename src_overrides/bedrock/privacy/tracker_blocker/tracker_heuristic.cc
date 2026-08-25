@@ -53,6 +53,7 @@ Verdict TrackerHeuristic::Observe(const std::string& third_party,
     return Classify(third_party);
   }
   Entry& entry = entries_[third_party];
+  entry.last_seen = now_;
   if (entry.honours_signals || entry.user_verdict != Verdict::kUnknown) {
     return VerdictFor(entry);
   }
@@ -114,6 +115,20 @@ void TrackerHeuristic::Clear() {
   entries_.clear();
 }
 
+int TrackerHeuristic::ForgetOlderThan(int64_t max_age_seconds) {
+  int removed = 0;
+  for (auto it = entries_.begin(); it != entries_.end();) {
+    const bool is_decision = it->second.user_verdict != Verdict::kUnknown;
+    if (!is_decision && now_ - it->second.last_seen > max_age_seconds) {
+      it = entries_.erase(it);
+      ++removed;
+    } else {
+      ++it;
+    }
+  }
+  return removed;
+}
+
 std::string TrackerHeuristic::Export() const {
   std::string text;
   for (const auto& [domain, entry] : entries_) {
@@ -131,7 +146,8 @@ std::string TrackerHeuristic::Export() const {
     } else if (entry.user_verdict == Verdict::kBlock) {
       flags += 'B';
     }
-    text += domain + "\t" + std::to_string(entry.count) + "\t" + flags + "\n";
+    text += domain + "\t" + std::to_string(entry.count) + "\t" + flags + "\t" +
+            std::to_string(entry.last_seen) + "\n";
   }
   return text;
 }
@@ -155,8 +171,20 @@ bool TrackerHeuristic::Import(const std::string& text) {
         first_tab + 1, (second_tab == std::string::npos ? line.size()
                                                         : second_tab) -
                            first_tab - 1);
+    // The timestamp field was added with F8; a file without it loads with
+    // last_seen 0, which simply makes those entries the first to age out.
+    size_t third_tab = second_tab == std::string::npos
+                           ? std::string::npos
+                           : line.find('\t', second_tab + 1);
     const std::string flags =
-        second_tab == std::string::npos ? "" : line.substr(second_tab + 1);
+        second_tab == std::string::npos
+            ? ""
+            : line.substr(second_tab + 1,
+                          (third_tab == std::string::npos ? line.size()
+                                                          : third_tab) -
+                              second_tab - 1);
+    const std::string last_seen =
+        third_tab == std::string::npos ? "" : line.substr(third_tab + 1);
     Entry entry;
     // Chromium builds with -fno-exceptions, so std::stoi is unusable here: a
     // corrupt line has to be rejected by return value, not by a throw.
@@ -170,6 +198,17 @@ bool TrackerHeuristic::Import(const std::string& text) {
       continue;
     }
     entry.count = static_cast<int>(parsed);
+    if (!last_seen.empty()) {
+      errno = 0;
+      char* stamp_end = nullptr;
+      const long long stamp = std::strtoll(last_seen.c_str(), &stamp_end, 10);
+      if (errno != 0 || stamp_end != last_seen.c_str() + last_seen.size() ||
+          stamp < 0) {
+        ok = false;
+        continue;
+      }
+      entry.last_seen = static_cast<int64_t>(stamp);
+    }
     entry.partition_only = flags.find('p') != std::string::npos;
     entry.honours_signals = flags.find('s') != std::string::npos;
     if (flags.find('A') != std::string::npos) {
