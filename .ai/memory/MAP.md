@@ -464,7 +464,6 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/REPRODUCIBILITY.md`](../../docs/REPRODUCIBILITY.md) | Reproducible Builds |
 | [`docs/SUPPLY_CHAIN.md`](../../docs/SUPPLY_CHAIN.md) | Supply chain security |
 | [`docs/THIRD_PARTY.md`](../../docs/THIRD_PARTY.md) | Bedrock Browser — Third-Party Inventory |
-| [`docs/THREAT_MODEL.md`](../../docs/THREAT_MODEL.md) | Bedrock Threat Model |
 | [`docs/UPSTREAM_SYNC.md`](../../docs/UPSTREAM_SYNC.md) | Upstream sync |
 | [`docs/adr/0001-chromium-overlay.md`](../../docs/adr/0001-chromium-overlay.md) | ADR 0001 — Chromium base, overlay repository (not a fork) |
 | [`docs/adr/0002-filter-engine-backend.md`](../../docs/adr/0002-filter-engine-backend.md) | ADR 0002 — One matcher behind one interface: built-in C++ engine, adblock-rust as a swappable backend |
@@ -564,6 +563,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/research/UBLOCK_ORIGIN.md`](../../docs/research/UBLOCK_ORIGIN.md) | uBlock Origin research |
 | [`docs/security/AUDIT-2026-08-25.md`](../../docs/security/AUDIT-2026-08-25.md) | Security and privacy audit — 2026-08-25 |
 | [`docs/security/TESTING.md`](../../docs/security/TESTING.md) | Security testing |
+| [`docs/security/THREAT_MODEL.md`](../../docs/security/THREAT_MODEL.md) | Bedrock Threat Model |
 
 ## CI gates — `scripts/`
 A gate is a rule the repository enforces on itself. Do not weaken one to make a change land.

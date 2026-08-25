@@ -84,6 +84,50 @@ The path that defines the product, from typing to pixels:
 7. **Stats** records exactly the events that happened, and only real ones (item 55). The panel, the
    shield and DevTools all read that one log; there is no second counter for the UI.
 
+## The privacy architecture, in one picture
+
+Trust boundaries first: the question that decides every design argument here is *which side of a
+boundary a decision is made on*. A page may never decide its own protection, and the renderer that
+runs its script is not trusted to enforce one.
+
+```
+        ── untrusted ──────────────┊─── trusted (browser process) ──────────────────┊── outside ──
+                                   ┊                                                 ┊
+   ┌───────────────┐               ┊   ┌──────────────────────────────────────┐      ┊
+   │ page / script │               ┊   │ privacy engine  privacy/core         │      ┊
+   │  (site code)  │               ┊   │  · feature registry (30)             │      ┊
+   └───────┬───────┘               ┊   │  · per-site policy resolution        │      ┊
+           │ DOM / JS reads        ┊   │  · protection levels, honest flags   │      ┊
+   ┌───────▼───────┐  values per   ┊   └───────┬─────────────┬────────────────┘      ┊
+   │   renderer    │◄──origin──────┊───────────┘             │ decides for ↓         ┊
+   │ (sandboxed,   │  (never a     ┊                         │                       ┊
+   │  per site)    │   secret)     ┊   ┌─────────────────────▼───────────────┐       ┊
+   └───────┬───────┘               ┊   │ request path                        │       ┊
+           │ request               ┊   │  1 omnibox   classify, contact none │       ┊
+           └───────────────────────┊──►│  2 session   engine + transport     │       ┊
+                                   ┊   │  3 network   DNS, HTTPS, referrer   │──────►┊ resolver,
+                                   ┊   │  4 blocking  lists + heuristic      │       ┊ site, Tor
+                                   ┊   │  5 storage   one StorageKey         │       ┊
+                                   ┊   └─────────────────┬───────────────────┘       ┊
+                                   ┊                     │ only what happened        ┊
+                                   ┊   ┌─────────────────▼───────────────────┐       ┊
+                                   ┊   │ stats → shield, panel, Privacy Centre│      ┊
+                                   ┊   └──────────────────────────────────────┘      ┊
+                                   ┊                                                 ┊
+                                   ┊   local disk: profiles, encrypted passwords     ┊
+                                   ┊   (no cloud config, no sync, no telemetry)      ┊
+```
+
+Read it as five rules, each with the gate or test that keeps it true:
+
+| Rule | Why | Kept true by |
+| --- | --- | --- |
+| Policy is resolved in the browser process, never in a renderer | a compromised renderer must not be able to grant itself an exemption | `privacy/core` owns every decision; ADR 0007 |
+| The renderer receives *values*, never the session secret | a leaked secret would make every surface forgeable and cross-site linkable | keyed derivation per (secret, eTLD+1, surface), F4 fix, `crypto/hash` |
+| A request is decided before it leaves, not cleaned up afterwards | a blocked request that was already sent is not blocked | `BlockingPipeline` order; `docs/design/013` |
+| Everything the user is shown comes from the event log | a counter invented for the UI is how a browser starts lying about itself | `privacy/stats`, item 55, `check_no_fake_features.py` |
+| Nothing crosses the right-hand boundary that the user did not ask for | item 94: no hidden cloud | `remote_features.cc` + `check_remote_features.py`, `check_no_telemetry.py` |
+
 ## Languages
 
 C++ for engine integration and anything security- or performance-critical, Rust for new isolated
@@ -105,7 +149,11 @@ with its own boundary, not as a rewrite.
 
 ## What is not built yet
 
-Nothing in this repository has been compiled against a real Chromium tree: the host tests build the
-overlay's logic standalone. Every privacy feature is therefore `kDesigned` or `kImplemented`, never
-`kEnforced` — that status changes only after a real build verifies the behaviour
-([`.ai/memory/STATE.md`](../.ai/memory/STATE.md)).
+The overlay compiles inside a real Chromium tree (builds of 2026-08-22 and 2026-08-23) and exactly
+**one** feature is `kEnforced` — `webrtc_policy`, verified in the browser. Every other privacy
+feature is `kDesigned` or `kImplemented`: real, host-tested logic that no Chromium call site invokes
+yet. The status of each one is data, not prose — see [`ACCEPTANCE.md`](ACCEPTANCE.md) for the 31
+acceptance criteria and [`../build/ENFORCEMENT.md`](../build/ENFORCEMENT.md) for what a build has
+actually proven. Turning `kImplemented` into `kEnforced` is the whole of the remaining work, and it
+needs a full build per change, which is why phases 3–15 landed before phase 1
+([`PHASES.md`](PHASES.md) is blunt about that trade).

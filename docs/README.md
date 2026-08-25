@@ -23,7 +23,7 @@ where GitHub looks for them; `check_open_source.py` enforces their presence and 
 | Document | Answers |
 | --- | --- |
 | [`PRIVACY.md`](PRIVACY.md) | what is collected (nothing), what connects out, what is stored |
-| [`THREAT_MODEL.md`](THREAT_MODEL.md) | who Bedrock defends against — and, explicitly, who it does not |
+| [`security/THREAT_MODEL.md`](security/THREAT_MODEL.md) | who Bedrock defends against — and, explicitly, who it does not |
 | [`privacy/FILTER_LISTS.md`](privacy/FILTER_LISTS.md) | which filter lists, under which licences |
 | [`privacy/fingerprinting/README.md`](privacy/fingerprinting/README.md) | every fingerprinting surface and its mitigation |
 | [`privacy/FEATURES.md`](privacy/FEATURES.md) | every protection: how it works, what it protects, what it cannot, what it breaks |

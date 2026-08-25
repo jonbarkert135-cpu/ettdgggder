@@ -4,6 +4,27 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #51 — items 102, 103, 104: the workflow, audited rather than restarted
+
+- Item 102 asks for a 16-step build order starting at research. Checked each step
+  against the tree: steps 1–4 (research, licence audit, architecture, threat
+  model) and 6 (browser shell) were already real; 7–15 are policy; 13 and 16 have
+  no code. That map is now `docs/PHASES.md` § "The owner's 16-step workflow",
+  with evidence per row instead of a status word.
+- Genuine Phase 0 gap found and filled: there was no **privacy architecture
+  diagram**. `ARCHITECTURE.md` now draws the trust boundaries — page/renderer vs
+  browser process vs the outside — plus five rules (policy is decided in the
+  browser, the renderer never receives the session secret, a request is decided
+  before it leaves, the UI reads the event log, nothing crosses the outer
+  boundary unasked) each tied to the gate that keeps it true.
+- Threat model moved to `docs/security/THREAT_MODEL.md`, the path item 102 names;
+  seven references and three gate scripts updated with it.
+- Item 104's three principles and item 103's no-prototype rule written into
+  `PROCESS.md`, each tied to the mechanism that enforces it rather than left as
+  a slogan.
+- Also corrected a stale paragraph in `ARCHITECTURE.md` claiming nothing had ever
+  been compiled against a real Chromium tree — untrue since the 2026-08-22 build.
+
 ## PR #49 — items 94, 95: the hidden cloud, made impossible to add quietly
 
 - New `privacy/network/remote_features`: the seven remote interactions the
