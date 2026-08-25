@@ -27,6 +27,7 @@ where GitHub looks for them; `check_open_source.py` enforces their presence and 
 | [`privacy/FILTER_LISTS.md`](privacy/FILTER_LISTS.md) | which filter lists, under which licences |
 | [`privacy/fingerprinting/README.md`](privacy/fingerprinting/README.md) | every fingerprinting surface and its mitigation |
 | [`privacy/FEATURES.md`](privacy/FEATURES.md) | every protection: how it works, what it protects, what it cannot, what it breaks |
+| [`privacy/REMOTE.md`](privacy/REMOTE.md) | everything that can leave your machine, and how to switch it off (items 94, 95) |
 | [`privacy/TRADEOFFS.md`](privacy/TRADEOFFS.md) | the five-axis score behind every default, and the exceptions |
 | [`security/TESTING.md`](security/TESTING.md) | sanitizers, fuzzing, and what CI runs |
 | [`DIAGNOSTICS.md`](DIAGNOSTICS.md) | local debug logs and crash reports, and why neither is telemetry |
