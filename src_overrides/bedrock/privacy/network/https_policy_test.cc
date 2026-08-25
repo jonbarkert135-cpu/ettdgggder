@@ -103,33 +103,102 @@ int main() {
                              CertError::kWeakSignature};
   for (CertError error : bypassable) {
     Check(HttpsPolicy::Proceedable(error), "misconfiguration is proceedable");
-    Check(https.AddCertException("broken.test", error),
+    Check(https.AddCertException("broken.test", error, 1000),
           "an exception can be stored for it");
   }
   for (CertError error : never) {
     Check(!HttpsPolicy::Proceedable(error),
           "interception-grade error is not proceedable");
-    Check(!https.AddCertException("evil.test", error),
+    Check(!https.AddCertException("evil.test", error, 1000),
           "and no exception can be stored for it");
-    Check(!https.HasCertException("evil.test", error),
+    Check(!https.HasCertException("evil.test", error, 1000),
           "so no bypass exists");
   }
 
   // An exception covers the exact error it was granted for, nothing more.
   https.ClearCertExceptions();
-  https.AddCertException("broken.test", CertError::kExpired);
-  Check(https.HasCertException("broken.test", CertError::kExpired),
+  const int64_t granted = 1'000'000;
+  https.AddCertException("broken.test", CertError::kExpired, granted);
+  Check(https.HasCertException("broken.test", CertError::kExpired, granted),
         "exception applies to the error it was granted for");
-  Check(!https.HasCertException("broken.test", CertError::kAuthorityInvalid),
+  Check(!https.HasCertException("broken.test", CertError::kAuthorityInvalid,
+                                granted),
         "a new kind of problem on the same host still warns");
-  Check(!https.HasCertException("elsewhere.test", CertError::kExpired),
+  Check(!https.HasCertException("elsewhere.test", CertError::kExpired, granted),
         "exceptions never apply to another host");
+
+  // Audit F9: a certificate exception expires. Clicking through once is a
+  // decision about a moment, not a permanent downgrade of this host.
+  const int64_t ttl = HttpsPolicy::kCertExceptionTtlSeconds;
+  Check(https.HasCertException("broken.test", CertError::kExpired,
+                               granted + ttl - 1),
+        "the exception holds right up to its expiry");
+  Check(!https.HasCertException("broken.test", CertError::kExpired,
+                                granted + ttl),
+        "and not one second past it");
+  Check(https.PruneCertExceptions(granted + ttl) == 1,
+        "pruning removes the expired exception");
+  Check(https.PruneCertExceptions(granted + ttl) == 0,
+        "and there is nothing left to remove");
+  https.AddCertException("broken.test", CertError::kExpired, granted);
+  Check(https.PruneCertExceptions(granted + ttl - 1) == 0,
+        "pruning never drops an exception that is still in force");
+
+  // F10 sibling: an exception is about a host, not about a spelling of one.
+  https.ClearCertExceptions();
+  https.AddCertException("BROKEN.test.", CertError::kExpired, granted);
+  Check(https.HasCertException("broken.test", CertError::kExpired, granted),
+        "case and a trailing root dot do not create a second host");
+  https.AllowPlaintextForHost("Plain.TEST");
+  Check(https.HasPlaintextException("plain.test"),
+        "and the same holds for plaintext exceptions");
 
   // Every error is explained in words a person can act on.
   for (int i = 0; i <= static_cast<int>(CertError::kWeakSignature); ++i) {
     Check(std::string(HttpsPolicy::ExplainCertError(static_cast<CertError>(i)))
               .size() > 30,
           "cert error " + std::to_string(i) + " has a real explanation");
+  }
+
+  // Audit F1: local-network detection must parse addresses, not spell-check
+  // hostnames. Every name below is registrable by an attacker, and a prefix
+  // check handed each of them a silent HTTPS downgrade.
+  for (const char* attacker : {"10.example.com", "127.evil.test",
+                               "192.168.attacker.net", "10.0.0.1.evil.test",
+                               "notlocal.test", "myonion.test",
+                               "localhost.evil.test"}) {
+    Check(!HttpsPolicy::IsLocalOrOnion(attacker),
+          std::string("a registrable name is never local: ") + attacker);
+  }
+  for (const char* local : {"localhost", "127.0.0.1", "10.0.0.1",
+                            "192.168.1.10", "172.16.5.4", "169.254.1.1",
+                            "printer.local", "example.onion", "[::1]"}) {
+    Check(HttpsPolicy::IsLocalOrOnion(local),
+          std::string("a real local or onion address is local: ") + local);
+  }
+  Check(!HttpsPolicy::IsLocalOrOnion("172.32.5.4"),
+        "172.32/16 is public: the private range stops at 172.31");
+
+  // Audit F2: HTTPS-Only outranks the per-site value and a stored plaintext
+  // exception. Before the fix, one per-site Allow turned HTTPS-Only off for
+  // that host with no interstitial.
+  {
+    ProtectionController controls;
+    HttpsPolicy only(&controls);
+    only.set_mode(HttpsMode::kHttpsOnly);
+    controls.Set(Scope::kSite, "plain.test", Control::kHttps, Value::kAllow);
+    Check(only.ForNavigation("http://plain.test/", "plain.test") ==
+              UpgradeAction::kInterstitial,
+          "a per-site Allow cannot switch HTTPS-Only off");
+    // An explicit per-host exception (the user clicked through an
+    // interstitial) is a different thing and is still honoured.
+    only.AllowPlaintextForHost("plain.test");
+    Check(only.ForNavigation("http://plain.test/", "plain.test") ==
+              UpgradeAction::kAllowPlaintext,
+          "an explicit per-host exception is still honoured");
+    Check(only.ForNavigation("http://printer.local/", "printer.local") ==
+              UpgradeAction::kAllowPlaintext,
+          "a LAN name with no possible certificate is still reachable");
   }
 
   if (failures == 0) {

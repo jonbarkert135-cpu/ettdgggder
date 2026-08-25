@@ -7,6 +7,7 @@
 #define BEDROCK_PRIVACY_NETWORK_HTTPS_POLICY_H_
 
 #include <cstddef>
+#include <cstdint>
 #include <map>
 #include <string>
 
@@ -85,8 +86,21 @@ class HttpsPolicy {
 
   // Certificate exceptions are also per host, and only for errors that are
   // proceedable. Returns false if the error may not be excepted.
-  bool AddCertException(const std::string& host, CertError error);
-  bool HasCertException(const std::string& host, CertError error) const;
+  //
+  // They **expire** (audit finding F9). Clicking through a warning once is a
+  // decision about a moment — a broken certificate that is still broken next
+  // week deserves the question again, and a certificate replaced in the
+  // meantime should not be trusted on the strength of the broken one. `now` is
+  // injected in seconds, like everywhere else in this tree, so the policy is
+  // testable without a clock.
+  static constexpr int64_t kCertExceptionTtlSeconds = 7 * 24 * 60 * 60;
+  bool AddCertException(const std::string& host, CertError error, int64_t now);
+  bool HasCertException(const std::string& host,
+                        CertError error,
+                        int64_t now) const;
+  // Drops what has expired; returns how many went. The settings UI calls this
+  // so it never lists an exception that is no longer in force.
+  int PruneCertExceptions(int64_t now);
   void ClearCertExceptions();
 
   // Hosts that are unreachable over HTTPS by nature: a plaintext-only local
@@ -105,8 +119,13 @@ class HttpsPolicy {
 
   privacy::ProtectionController* controls_;
   HttpsMode mode_ = HttpsMode::kUpgrade;
+  struct CertException {
+    CertError error;
+    int64_t expires_at = 0;
+  };
+
   std::map<std::string, bool> plaintext_exceptions_;
-  std::map<std::string, CertError> cert_exceptions_;
+  std::map<std::string, CertException> cert_exceptions_;
 };
 
 }  // namespace net

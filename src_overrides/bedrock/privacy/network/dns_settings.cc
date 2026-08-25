@@ -12,8 +12,10 @@ namespace bedrock {
 namespace net {
 namespace {
 
-bool StartsWith(const std::string& text, const std::string& prefix) {
-  return text.compare(0, prefix.size(), prefix) == 0;
+// Scheme check on a URI template. Not a host comparison: see host_match.h for
+// why nothing in this tree may decide anything about a *host* this way.
+bool HasScheme(const std::string& uri, const std::string& scheme) {
+  return uri.compare(0, scheme.size(), scheme) == 0;
 }
 
 }  // namespace
@@ -29,18 +31,21 @@ const std::vector<DnsProvider>& DnsSettings::Providers() {
   static const std::vector<DnsProvider> kProviders = {
       {"Quad9", "Quad9 Foundation (Switzerland)",
        "https://dns.quad9.net/dns-query", "https://quad9.net/privacy/policy/",
-       false, true},
+       false, true, "2026-08-25"},
       {"Cloudflare", "Cloudflare, Inc. (US)",
        "https://cloudflare-dns.com/dns-query",
        "https://developers.cloudflare.com/1.1.1.1/privacy/public-dns-resolver/",
-       false, false},
+       false, false, "2026-08-25"},
       {"Mullvad", "Mullvad VPN AB (Sweden)",
        "https://dns.mullvad.net/dns-query", "https://mullvad.net/en/help/dns-over-https-and-dns-over-tls",
-       false, false},
-      {"dns0.eu", "dns0.eu (non-profit, EU)", "https://dns0.eu/",
-       "https://www.dns0.eu/privacy", false, true},
+       false, false, "2026-08-25"},
+      // Replaces the dns0.eu preset, which shut down in October 2025 (F6b).
+      {"DNS4EU", "Whalebone s.r.o. for the EU DNS4EU project (Czechia)",
+       "https://unfiltered.joindns4.eu/dns-query",
+       "https://joindns4.eu/privacy-policy", false, false, "2026-08-25"},
       {"Google", "Google LLC (US)", "https://dns.google/dns-query",
-       "https://developers.google.com/speed/public-dns/privacy", true, false},
+       "https://developers.google.com/speed/public-dns/privacy", true, false,
+       "2026-08-25"},
   };
   return kProviders;
 }
@@ -73,8 +78,8 @@ bool DnsSettings::UsePreset(const std::string& provider_name) {
 }
 
 bool DnsSettings::UseCustom(const std::string& uri_template) {
-  if (!StartsWith(uri_template, "https://") &&
-      !StartsWith(uri_template, "tls://")) {
+  if (!HasScheme(uri_template, "https://") &&
+      !HasScheme(uri_template, "tls://")) {
     return false;
   }
   mode_ = DnsMode::kSecureCustom;
@@ -83,16 +88,21 @@ bool DnsSettings::UseCustom(const std::string& uri_template) {
   return true;
 }
 
-void DnsSettings::SetStrict(bool strict) {
+bool DnsSettings::SetStrict(bool strict) {
   if (strict) {
     if (mode_ == DnsMode::kSystem) {
-      return;  // nothing to be strict about; the OS resolver is the OS's
+      // Nothing to be strict about: the OS resolver is the OS's. Say so
+      // instead of pretending the switch took effect.
+      return false;
     }
     mode_ = DnsMode::kSecureStrict;
-  } else if (mode_ == DnsMode::kSecureStrict) {
+    return true;
+  }
+  if (mode_ == DnsMode::kSecureStrict) {
     mode_ = provider_name_.empty() ? DnsMode::kSecureCustom
                                    : DnsMode::kSecurePreset;
   }
+  return true;
 }
 
 FallbackPolicy DnsSettings::fallback() const {

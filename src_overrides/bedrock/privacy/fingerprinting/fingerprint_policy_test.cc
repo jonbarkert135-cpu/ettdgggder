@@ -70,36 +70,67 @@ int main() {
 
   // --- Determinism (roadmap item 10) ----------------------------------------
 
-  const uint64_t secret = 0x0123456789abcdefULL;
-  const uint64_t other_secret = 0xfedcba9876543210ULL;
+  // A session secret is 32 random bytes, not an integer (audit F4).
+  const std::string secret(kSessionSecretSize, '\x5a');
+  std::string other_secret(kSessionSecretSize, '\x5a');
+  other_secret[31] = '\x5b';  // one bit of difference is enough
 
   // Same session + same site + same surface => identical, every single call.
-  const uint64_t a = SurfaceSeed(secret, "example.com", Surface::kCanvas);
-  const uint64_t b = SurfaceSeed(secret, "example.com", Surface::kCanvas);
+  const std::string a = SurfaceKey(secret, "example.com", Surface::kCanvas);
+  const std::string b = SurfaceKey(secret, "example.com", Surface::kCanvas);
   Check(a == b, "seed must be stable within a session");
+  Check(a.size() == 32, "a surface key is 256 bits");
   for (uint64_t i = 0; i < 32; ++i) {
     Check(SeededUnit(a, i) == SeededUnit(b, i), "noise must be reproducible");
     const double v = SeededUnit(a, i);
     Check(v >= 0.0 && v < 1.0, "noise must be in [0,1)");
   }
 
-  // Different site => different seed (no cross-site linking of the noise).
-  Check(SurfaceSeed(secret, "other.example", Surface::kCanvas) != a,
-        "different site must get a different seed");
-  // Different surface => independent seed (leaking one must not leak another).
-  Check(SurfaceSeed(secret, "example.com", Surface::kWebgl) != a,
-        "different surface must get a different seed");
-  // Different session => different seed (no cross-session linking).
-  Check(SurfaceSeed(other_secret, "example.com", Surface::kCanvas) != a,
-        "new session secret must change the seed");
+  // Different site => different key (no cross-site linking of the noise).
+  Check(SurfaceKey(secret, "other.example", Surface::kCanvas) != a,
+        "different site must get a different key");
+  // Different surface => independent key (leaking one must not leak another).
+  Check(SurfaceKey(secret, "example.com", Surface::kWebgl) != a,
+        "different surface must get a different key");
+  // Different session => different key (no cross-session linking).
+  Check(SurfaceKey(other_secret, "example.com", Surface::kCanvas) != a,
+        "new session secret must change the key");
 
-  // Sanity: seeds spread out rather than collapsing onto a few values.
-  std::set<uint64_t> seeds;
-  for (int i = 0; i < 500; ++i) {
-    seeds.insert(SurfaceSeed(secret, "site" + std::to_string(i) + ".example",
-                             Surface::kCanvas));
+  // The session secret must not be reachable from a surface key. It cannot be
+  // proven by a test, but the structural property that made F4 exploitable can:
+  // the key does not contain the secret, and no site's key is a function of
+  // another's that the page could walk.
+  Check(a.find(secret) == std::string::npos,
+        "a surface key does not carry the session secret");
+  Check(SurfaceKey(secret, "example.com", Surface::kCanvas) !=
+            SurfaceKey(secret, "example.com.", Surface::kCanvas),
+        "site strings are not merged by the derivation");
+
+  // Streams of different surfaces must not overlap: with the old seed+index
+  // construction, one surface's stream continued into another's.
+  {
+    const std::string canvas = SurfaceKey(secret, "example.com", Surface::kCanvas);
+    const std::string webgl = SurfaceKey(secret, "example.com", Surface::kWebgl);
+    std::set<double> values;
+    for (uint64_t i = 0; i < 200; ++i) {
+      values.insert(SeededUnit(canvas, i));
+      values.insert(SeededUnit(webgl, i));
+    }
+    Check(values.size() == 400, "400 samples from two surfaces are all distinct");
   }
-  Check(seeds.size() == 500, "seeds must not collide across 500 sites");
+
+  // Sanity: keys spread out rather than collapsing onto a few values.
+  std::set<std::string> seeds;
+  for (int i = 0; i < 500; ++i) {
+    seeds.insert(SurfaceKey(secret, "site" + std::to_string(i) + ".example",
+                            Surface::kCanvas));
+  }
+  Check(seeds.size() == 500, "keys must not collide across 500 sites");
+
+  // The integer view is derived, not the key itself.
+  Check(SeedValue(a) != SeedValue(SurfaceKey(secret, "other.example",
+                                             Surface::kCanvas)),
+        "the 64-bit view differs per site too");
 
   // --- Normalized values -----------------------------------------------------
 
@@ -130,6 +161,17 @@ int main() {
   // A window smaller than one bucket must still report something usable.
   const Size tiny = QuantizeWindowSize({80, 40}, FpLevel::kStrict);
   Check(tiny.width > 0 && tiny.height > 0, "quantized size is never zero");
+  // Audit F7: a degenerate window reported as 0x0 is a division by zero in page
+  // script and a value no real window has, i.e. a fingerprint of its own.
+  for (Size degenerate : {Size{0, 0}, Size{0, 800}, Size{-1, -1},
+                          Size{-50, 900}}) {
+    for (FpLevel level : {FpLevel::kBalanced, FpLevel::kStrict,
+                          FpLevel::kMaximum}) {
+      const Size reported = QuantizeWindowSize(degenerate, level);
+      Check(reported.width > 0 && reported.height > 0,
+            "a degenerate window still reports a usable size");
+    }
+  }
 
   Check(TimerResolutionUs(FpLevel::kCompatibility) == 0, "no coarsening at L0");
   Check(TimerResolutionUs(FpLevel::kMaximum) > TimerResolutionUs(FpLevel::kStrict),

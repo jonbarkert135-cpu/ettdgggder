@@ -165,6 +165,38 @@ int main() {
     Check(heuristic.Export().empty(), "clear empties the table");
   }
 
+  // Audit F8: evidence ages out, which is what makes it safe to persist.
+  {
+    const int64_t day = 24 * 60 * 60;
+    TrackerHeuristic heuristic;
+    heuristic.SetNow(100 * day);
+    SeeOn(&heuristic, "old.test", "a.test");
+    heuristic.SetUserVerdict("decided.test", Verdict::kBlock);
+    heuristic.SetNow(150 * day);
+    SeeOn(&heuristic, "recent.test", "b.test");
+
+    heuristic.SetNow(200 * day);
+    Check(heuristic.ForgetOlderThan(60 * day) == 1,
+          "an observation older than the retention window is forgotten");
+    Check(heuristic.SiteCount("old.test") == 0, "and it is really gone");
+    Check(heuristic.SiteCount("recent.test") == 1,
+          "a recent observation is kept");
+    Check(heuristic.Classify("decided.test") == Verdict::kBlock,
+          "a user's decision is not evidence and never expires");
+    Check(heuristic.ForgetOlderThan(60 * day) == 0, "ageing out is idempotent");
+
+    // A table written before F8 has no timestamp column; it must still load,
+    // with its entries first in line to be forgotten rather than rejected.
+    TrackerHeuristic legacy;
+    legacy.SetNow(200 * day);
+    Check(legacy.Import("tracker.test\t3\t\n"), "a pre-F8 table still loads");
+    Check(legacy.SiteCount("tracker.test") == 3, "with its counter intact");
+    Check(legacy.ForgetOlderThan(60 * day) == 1,
+          "and it ages out on the next sweep");
+    Check(!legacy.Import("tracker.test\t3\t\tnot-a-number\n"),
+          "a corrupt timestamp is rejected, not guessed");
+  }
+
   if (failures == 0) {
     std::cout << "tracker_heuristic_test: all assertions passed\n";
   }

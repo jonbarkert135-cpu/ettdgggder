@@ -86,3 +86,13 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 70 | The twelve item-84 defaults ship as specified; telemetry and crash upload are on no axis of user control | `settings/defaults`, `scripts/check_defaults.py` |
 | 71 | Every ADR has context, decision, alternatives and consequences, and is in the index | `scripts/check_adr.py` |
 | 72 | A phase that needs a Chromium build cannot be called done until `build/ENFORCEMENT.md` records one | `scripts/check_phases.py`, `docs/PHASES.md` |
+| 73 | Fingerprint seeds are derived with a keyed one-way function, never a reversible mixer | `fingerprint_policy_test` (surface-key assertions) |
+| 74 | A password or key is verified by an AEAD tag, never by comparing stored ciphertexts | `password_store_test` (master-password assertions) |
+| 75 | A host name is compared only via `privacy/network/host_match.h` — normalised, at label boundaries, addresses parsed | `scripts/check_host_matching.py`, `host_match_test` |
+| 76 | Every shipped DNS preset is a real endpoint with a named operator and a re-check date under a year old | `scripts/check_dns_presets.py`, `dns_settings_test` |
+| 77 | Security exceptions expire; learned evidence ages out; user decisions do neither | `https_policy_test` (F9), `tracker_heuristic_test` (F8) |
+| 78 | A reuse mode claiming third-party material in the tree has a per-file provenance record, and vice versa | `scripts/check_provenance.py` rule 8 |
+| 79 | Another vendor's name may describe their product, never ours, and never near words implying endorsement; no foreign mark or CSS vocabulary in the tree | `scripts/check_trademarks.py` |
+| 80 | Every research note under `docs/research/` has a stance in `docs/IDENTITY.md` | `scripts/check_trademarks.py` |
+| 81 | Networking machinery only in a module declared in `remote_features.cc`; no host under our own name anywhere in the tree | `scripts/check_remote_features.py` |
+

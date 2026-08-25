@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** letterboxing is real geometry — `privacy/fingerprinting/letterboxing` renders the page into the quantised box with centred margins, no fullscreen and no per-site exception, with two guards so small windows are left alone (PR #41); CNAME uncloaking is a stage of the blocking pipeline, cache-only by design (PR #40); the Strict preset keeps first-party cookies and makes storage ephemeral instead of blocking cookies outright, and presets now set the storage lifetime as well as the controls (PR #39); `docs/BUILD_ON_YOUR_MACHINE.md` prices the one full build that phase 3 needs (PR #38); link cleaning + redirect debouncing (`privacy/tracker_blocker/url_cleaner`) and "forget about this site" (`privacy/core/forget_site`) landed as host-tested logic, two items off the research queue (PR #37); the interface is written against a semantic token vocabulary, enforced by `scripts/check_tokens.py`, and the background composition (light source plus grain) is generated into tokens.css (PR #35); window modes, the profile menu and the theme-to-CSS bridge exist (PR #34); settings, the Privacy Center and the extensions panel have pages and tested models (PR #33); the privacy panel, three tab layouts and the vendored type system landed (PR #32); the new tab page, its state object and the chrome composition exist (PR #31); the dark surface system is the shipped default and tokens.css is generated from the tokens (PR #30); the first-run page renders the flow (PR #29); roadmap 90–101 audited (`docs/ACCEPTANCE.md`) and first run / search disclosure landed; phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
+**As of:** letterboxing is real geometry — the page renders into the quantised box with centred margins, with a 200x100 floor and a 60%-of-pixels guard (PR #41); the first full security audit is on record (`docs/security/AUDIT-2026-08-25.md`, PR #42) — four defects fixed (prefix-matched LAN detection downgrading HTTPS, shields outranking HTTPS-Only, incomplete site deletion, silently refused strict DNS), and the two cryptographic ones now fixed too (F3 envelope-encrypted master password, F4 keyed one-way seed derivation, both on `bedrock/crypto`); CNAME uncloaking is a stage of the blocking pipeline, cache-only by design (PR #40); the Strict preset keeps first-party cookies and makes storage ephemeral instead of blocking cookies outright, and presets now set the storage lifetime as well as the controls (PR #39); `docs/BUILD_ON_YOUR_MACHINE.md` prices the one full build that phase 3 needs (PR #38); link cleaning + redirect debouncing (`privacy/tracker_blocker/url_cleaner`) and "forget about this site" (`privacy/core/forget_site`) landed as host-tested logic, two items off the research queue (PR #37); the interface is written against a semantic token vocabulary, enforced by `scripts/check_tokens.py`, and the background composition (light source plus grain) is generated into tokens.css (PR #35); window modes, the profile menu and the theme-to-CSS bridge exist (PR #34); settings, the Privacy Center and the extensions panel have pages and tested models (PR #33); the privacy panel, three tab layouts and the vendored type system landed (PR #32); the new tab page, its state object and the chrome composition exist (PR #31); the dark surface system is the shipped default and tokens.css is generated from the tokens (PR #30); the first-run page renders the flow (PR #29); roadmap 90–101 audited (`docs/ACCEPTANCE.md`) and first run / search disclosure landed; phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
 
 ## Position on the roadmap
 
@@ -61,7 +61,9 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 | 86 ADRs (14 records, indexed and mapped) | done |
 | 87–88 Research-first process, timeboxed | done — `docs/PROCESS.md` |
 | 89 Implementation order | `docs/PHASES.md`: **phases 0–2 done** (builds 1 and 2 in `build/ENFORCEMENT.md`), phases 3–15 still `policy-landed` and must be re-verified against the running shell |
-| 90–92 Quality rule, source integration, trademarks | done — already enforced by `check_no_fake_features`, `check_provenance`, `LICENSING.md` §4 |
+| 94, 95 No hidden cloud, optional remote features | done 2026-08-25 — `privacy/network/remote_features.{h,cc}` declares all 7 permitted remote interactions (all `kPolicyOnly`, only the user's own search on by default); `scripts/check_remote_features.py` fails on networking machinery in an undeclared module, on any `bedrock.*` host anywhere, and generates `docs/privacy/REMOTE.md` |
+| 92, 96, 97 Trademarks, product identity, no copied UI | done 2026-08-25 — were policy prose with no gate; now `docs/IDENTITY.md` + `scripts/check_trademarks.py` (affiliation wording, identity strings, foreign marks on disk, borrowed CSS vocabulary, undeclared influences) |
+| 90–92 Quality rule, source integration, trademarks | done — items 90/91 re-audited 2026-08-25: the inventory claimed `port`/`vendored` reuse of brave-core, adblock-rust and ungoogled-chromium with **no file in the tree**; modes corrected, `docs/PROVENANCE.md` now records every third-party file (7 fields, item 91) and `check_provenance.py` ties the two together in both directions |
 | 93 Search privacy disclosure | done — `onboarding/first_run` builds it from the engine facts, no search proxy |
 | 94–95 No hidden cloud, optional remote features off by default | done — no compiled-in hostname, `updater` provider-abstract |
 | 96–97 Product identity, own UI | done as policy — no WebUI exists to judge yet |
@@ -125,18 +127,38 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 
 ## Open threads
 
-- Roadmap items 90+ awaited from the project owner.
+- Roadmap items 90–101 were re-supplied by the owner on 2026-08-25 and re-audited
+  against the tree rather than taken as done. Findings: 90/91 were overstated (see
+  above); 93 (search disclosure), 98 (six-step first run, six import sources) and
+  99 (five privacy notes, "protection is not invisibility") are genuinely
+  implemented and host-tested, and stay `policy-only` only because no WebUI host
+  registers the page. 96/97 are policy. 100/101 are the scoreboard itself —
+  `docs/ACCEPTANCE.md`, 11 of 31, unchanged because nothing new was proven by a
+  build.
+- Host comparisons are centralised in `privacy/network/host_match.h` and fenced
+  by `scripts/check_host_matching.py` (audit rec. 4). Fixing F10 there — hosts
+  were compared in wire form, so `EVIL.com` and `evil.com.` bypassed every
+  domain-scoped filter rule.
+- **Audit debt: closed.** F1–F10 are fixed except the part of F8 that needs the
+  profile layer (writing the learned table to disk — same blocker as wiring the
+  features in). dns0.eu shut down in October 2025 and we shipped its preset
+  anyway; presets now carry a `verified` date that expires the build after a
+  year (`scripts/check_dns_presets.py`).
+- `bedrock/crypto` is a *reference* implementation verified against published
+  vectors. Wiring BoringSSL behind the same signatures (`BEDROCK_USE_BORINGSSL`)
+  is a build-time task and is the one thing standing between this and shipping
+  crypto.
+- No security decision may be made by `StartsWith`/`EndsWith` on a hostname (F1);
+  `scripts/check_host_matching.py` enforces it (PR #45).
 - **Default filter lists are empty** until each list's licence is verified and dated in
   `docs/privacy/FILTER_LISTS.md` (item 52 rule). This is a deliberate blocker, not an oversight.
-- Research queue, highest value first: referrer/Client-Hints policy · dynamic
-  filtering as a pipeline stage · the blocking-`webRequest` ADR.
-  (Letterboxing landed in PR #41 — logic only; the content-view size constraint,
-  the margin paint and the `screen.*`/`innerWidth` shims are phase 3.)
+- Research queue, highest value first: referrer/Client-Hints policy ·
+  dynamic filtering as a pipeline stage · the blocking-`webRequest` ADR.
   (CNAME uncloaking landed in PR #40 — logic only; the resolver plumbing is phase 3.) (Query stripping + debouncing and "forget about
   this site" are done — logic only, entry points need phase 3.)
 - No Rust module exists yet; first candidate is the filter-list parser (ADR 0004).
 - From item 49, one follow-up remains: an ADR deciding whether extensions keep
-  blocking `webRequest` (letterboxing and "forget about this site" landed).
+  blocking `webRequest` (letterboxing landed in PR #41; "forget about this site" landed).
   Parked as too large for now: RLBox-style library sandboxing, a Bedrock root store.
 - Chromium has been built **by hand on Linux only** — not in CI, never on Windows. The build is
   also driven around a siso scheduler stall, so objects can go stale; recompile the object of each

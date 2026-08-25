@@ -19,6 +19,18 @@ Bookmark store: folders and tags together, search over title, URL and tags. Item
 | `bookmark_store.h` | Bookmarks (roadmap item 35). |
 | `bookmark_store_test.cc` | Host test, no Chromium. |
 
+### `src_overrides/bedrock/crypto/`
+SHA-256/HMAC/HKDF/PBKDF2 plus Seal/Open, all verified against published test vectors; BoringSSL replaces it in the Chromium build. No cipher and no RNG live here. Added to fix audit findings F3 and F4.
+
+| File | What it is |
+| --- | --- |
+| `aead.cc` | implementation |
+| `aead.h` | Authenticated encryption with associated data, behind an interface. |
+| `aead_test.cc` | Host test, no Chromium. |
+| `hash.cc` | implementation |
+| `hash.h` | SHA-256 and the three standard constructions built on it: HMAC (RFC 2104), HKDF (RFC 5869) and PBKDF2 (RFC 8018). |
+| `hash_test.cc` | Host test, no Chromium. |
+
 ### `src_overrides/bedrock/devtools/`
 Added DevTools privacy panels. Rule zero: never break an upstream Chromium panel. Item 36.
 
@@ -207,9 +219,15 @@ Network privacy: DNS settings (named resolvers, fail-closed strict mode), HTTPS 
 | `dns_settings.cc` | implementation |
 | `dns_settings.h` | DNS and network privacy (roadmap item 17). |
 | `dns_settings_test.cc` | Host test, no Chromium. |
+| `host_match.cc` | implementation |
+| `host_match.h` | The one place a host name is compared to anything. |
+| `host_match_test.cc` | Host test, no Chromium. |
 | `https_policy.cc` | implementation |
 | `https_policy.h` | HTTPS upgrading, mixed content and certificate errors (roadmap item 16). |
 | `https_policy_test.cc` | Host test, no Chromium. |
+| `remote_features.cc` | implementation |
+| `remote_features.h` | Every way this browser can talk to a server that is not the page you asked for (roadmap items 94 and 95). |
+| `remote_features_test.cc` | Host test, no Chromium. |
 | `webrtc_policy.cc` | implementation |
 | `webrtc_policy.h` | WebRTC IP exposure (roadmap item 18). |
 | `webrtc_policy_test.cc` | Host test, no Chromium. |
@@ -432,6 +450,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/DIAGNOSTICS.md`](../../docs/DIAGNOSTICS.md) | Diagnostics: debug logs and crash reports |
 | [`docs/ERRORS.md`](../../docs/ERRORS.md) | Errors: what the user sees when something fails |
 | [`docs/FORMATS.md`](../../docs/FORMATS.md) | Import and export formats |
+| [`docs/IDENTITY.md`](../../docs/IDENTITY.md) | What Bedrock is, and what it refuses to be |
 | [`docs/LICENSING.md`](../../docs/LICENSING.md) | Bedrock Browser — Licensing & Provenance Policy |
 | [`docs/LOCALIZATION.md`](../../docs/LOCALIZATION.md) | Localization |
 | [`docs/PATCHES.md`](../../docs/PATCHES.md) | Patch management |
@@ -439,6 +458,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/PLATFORMS.md`](../../docs/PLATFORMS.md) | Platform support |
 | [`docs/PRIVACY.md`](../../docs/PRIVACY.md) | Privacy |
 | [`docs/PROCESS.md`](../../docs/PROCESS.md) | How a part of Bedrock gets built |
+| [`docs/PROVENANCE.md`](../../docs/PROVENANCE.md) | Provenance — every piece of third-party material, file by file |
 | [`docs/README.md`](../../docs/README.md) | Documentation index |
 | [`docs/RELEASES.md`](../../docs/RELEASES.md) | Releases |
 | [`docs/REPRODUCIBILITY.md`](../../docs/REPRODUCIBILITY.md) | Reproducible Builds |
@@ -506,9 +526,11 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/design/048-link-cleaning-and-forgetting.md`](../../docs/design/048-link-cleaning-and-forgetting.md) | 048 — Link cleaning, redirect debouncing, and forgetting a site |
 | [`docs/design/049-cname-uncloaking.md`](../../docs/design/049-cname-uncloaking.md) | 049 — CNAME uncloaking |
 | [`docs/design/050-letterboxing.md`](../../docs/design/050-letterboxing.md) | 050 — Letterboxing |
+| [`docs/design/051-crypto-primitives.md`](../../docs/design/051-crypto-primitives.md) | 051 — Crypto primitives |
 | [`docs/performance/BUDGETS.md`](../../docs/performance/BUDGETS.md) | Performance budgets |
 | [`docs/privacy/FEATURES.md`](../../docs/privacy/FEATURES.md) | Privacy features, in full |
 | [`docs/privacy/FILTER_LISTS.md`](../../docs/privacy/FILTER_LISTS.md) | Filter lists — licences, one per list |
+| [`docs/privacy/REMOTE.md`](../../docs/privacy/REMOTE.md) | Everything that leaves your machine |
 | [`docs/privacy/TRADEOFFS.md`](../../docs/privacy/TRADEOFFS.md) | Privacy versus usability: the scoring table |
 | [`docs/privacy/fingerprinting/README.md`](../../docs/privacy/fingerprinting/README.md) | Anti-fingerprinting: per-surface documentation |
 | [`docs/privacy/fingerprinting/audio.md`](../../docs/privacy/fingerprinting/audio.md) | Web Audio |
@@ -540,6 +562,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/research/PRIVACY_BADGER.md`](../../docs/research/PRIVACY_BADGER.md) | Privacy Badger research |
 | [`docs/research/TOR_BROWSER.md`](../../docs/research/TOR_BROWSER.md) | Tor Browser research |
 | [`docs/research/UBLOCK_ORIGIN.md`](../../docs/research/UBLOCK_ORIGIN.md) | uBlock Origin research |
+| [`docs/security/AUDIT-2026-08-25.md`](../../docs/security/AUDIT-2026-08-25.md) | Security and privacy audit — 2026-08-25 |
 | [`docs/security/TESTING.md`](../../docs/security/TESTING.md) | Security testing |
 
 ## CI gates — `scripts/`
@@ -553,9 +576,11 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | `scripts/check_config_surface.py` | Fail if the configuration surface and its documentation disagree (item 56). |
 | `scripts/check_defaults.py` | Gate: the shipped defaults are the ones that were specified and documented. |
 | `scripts/check_diagnostics.py` | Gate: debug logs stay logs, crashes stay local, errors stay localized. |
+| `scripts/check_dns_presets.py` | Gate: every shipped DNS preset is an endpoint, and none has gone stale. |
 | `scripts/check_docs.py` | Documentation gate (roadmap item 72). |
 | `scripts/check_fp_docs.py` | Every anti-fingerprinting surface must have a documented rationale. |
 | `scripts/check_frameworks.py` | Gate: no JS framework where Chromium's own infrastructure is the answer. |
+| `scripts/check_host_matching.py` | Gate: nothing decides anything about a host name with a prefix or a suffix. |
 | `scripts/check_languages.py` | Fail if the language policy of ADR 0004 is broken. |
 | `scripts/check_memory.py` | Fail if the project memory in `.ai/` is missing, stale or out of sync. |
 | `scripts/check_no_fake_features.py` | Fail if the browser would claim something it does not do (roadmap item 55). |
@@ -567,10 +592,12 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | `scripts/check_privacy_suite.py` | Gate: the privacy regression suite stays complete and stays local. |
 | `scripts/check_provenance.py` | Fail if the licensing record is incomplete. Run: python3 scripts/check_provenance.py |
 | `scripts/check_releases.py` | Release channel and release-notes gate (roadmap item 71). |
+| `scripts/check_remote_features.py` | Gate: no hidden cloud, and every remote feature stays optional (items 94, 95). |
 | `scripts/check_security_testing.py` | Fail if the security testing setup has decayed. Run: |
 | `scripts/check_strings.py` | Localization gate (roadmap item 61). |
 | `scripts/check_test_matrix.py` | Gate: the roadmap-74 test matrix stays complete, honest and executable. |
 | `scripts/check_tokens.py` | Design items 31 and 32, as a gate. |
+| `scripts/check_trademarks.py` | Other people's trademarks and other people's interfaces (items 92, 96, 97). |
 | `scripts/check_transparency.py` | Gate: every privacy feature explains itself, including its limits. |
 | `scripts/check_ui_style.py` | Roadmap item 27's taste rules, as a gate. |
 | `scripts/check_upstream.py` | Upstream sync and patch gate (roadmap items 66, 67, 69). |
