@@ -4,6 +4,24 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #48 — items 92, 96, 97: the other half of the branding line
+
+- `check_branding.py` guarded *our* identity but never looked at the shipped UI
+  or at C++ string literals, where other vendors' names actually live
+  (`first_run_page.cc` lists Chrome/Firefox/Edge, the DoH presets name their
+  operators). A blanket ban would break item 98, which requires those labels.
+- New `scripts/check_trademarks.py` splits nominative use (allowed) from
+  identity and affiliation use (banned): a vendor name within 60 characters of
+  "official", "powered by", "certified", "in partnership" fails; a vendor name
+  in a string assigned to an app/product/title/brand/logo identifier fails; an
+  image file anywhere named after a vendor fails; `--moz-`, `--brave-`,
+  `.chrome-` CSS vocabulary in the UI fails (items 96, 97). Comments are exempt
+  on purpose — the reasoning should stay visible.
+- `docs/IDENTITY.md`: what the product is ("one product, not five browsers
+  wearing one skin"), the no-copied-UI rule, and a stance table saying what was
+  taken and refused from each research note. A note with no row fails the build.
+- All five rules probed live by injecting a violation of each. Invariants 79, 80.
+
 ## PR #47 — items 90 and 91: provenance that is true in both directions
 
 - The inventory claimed reuse mode `port` for brave-core and ungoogled-chromium
