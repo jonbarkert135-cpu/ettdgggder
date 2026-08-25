@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** CNAME uncloaking is a stage of the blocking pipeline, cache-only by design (PR #40); the Strict preset keeps first-party cookies and makes storage ephemeral instead of blocking cookies outright, and presets now set the storage lifetime as well as the controls (PR #39); `docs/BUILD_ON_YOUR_MACHINE.md` prices the one full build that phase 3 needs (PR #38); link cleaning + redirect debouncing (`privacy/tracker_blocker/url_cleaner`) and "forget about this site" (`privacy/core/forget_site`) landed as host-tested logic, two items off the research queue (PR #37); the interface is written against a semantic token vocabulary, enforced by `scripts/check_tokens.py`, and the background composition (light source plus grain) is generated into tokens.css (PR #35); window modes, the profile menu and the theme-to-CSS bridge exist (PR #34); settings, the Privacy Center and the extensions panel have pages and tested models (PR #33); the privacy panel, three tab layouts and the vendored type system landed (PR #32); the new tab page, its state object and the chrome composition exist (PR #31); the dark surface system is the shipped default and tokens.css is generated from the tokens (PR #30); the first-run page renders the flow (PR #29); roadmap 90–101 audited (`docs/ACCEPTANCE.md`) and first run / search disclosure landed; phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
+**As of:** letterboxing is real geometry — `privacy/fingerprinting/letterboxing` renders the page into the quantised box with centred margins, no fullscreen and no per-site exception, with two guards so small windows are left alone (PR #41); CNAME uncloaking is a stage of the blocking pipeline, cache-only by design (PR #40); the Strict preset keeps first-party cookies and makes storage ephemeral instead of blocking cookies outright, and presets now set the storage lifetime as well as the controls (PR #39); `docs/BUILD_ON_YOUR_MACHINE.md` prices the one full build that phase 3 needs (PR #38); link cleaning + redirect debouncing (`privacy/tracker_blocker/url_cleaner`) and "forget about this site" (`privacy/core/forget_site`) landed as host-tested logic, two items off the research queue (PR #37); the interface is written against a semantic token vocabulary, enforced by `scripts/check_tokens.py`, and the background composition (light source plus grain) is generated into tokens.css (PR #35); window modes, the profile menu and the theme-to-CSS bridge exist (PR #34); settings, the Privacy Center and the extensions panel have pages and tested models (PR #33); the privacy panel, three tab layouts and the vendored type system landed (PR #32); the new tab page, its state object and the chrome composition exist (PR #31); the dark surface system is the shipped default and tokens.css is generated from the tokens (PR #30); the first-run page renders the flow (PR #29); roadmap 90–101 audited (`docs/ACCEPTANCE.md`) and first run / search disclosure landed; phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
 
 ## Position on the roadmap
 
@@ -128,13 +128,15 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 - Roadmap items 90+ awaited from the project owner.
 - **Default filter lists are empty** until each list's licence is verified and dated in
   `docs/privacy/FILTER_LISTS.md` (item 52 rule). This is a deliberate blocker, not an oversight.
-- Research queue, highest value first: letterboxing · referrer/Client-Hints policy ·
-  dynamic filtering as a pipeline stage · the blocking-`webRequest` ADR.
+- Research queue, highest value first: referrer/Client-Hints policy · dynamic
+  filtering as a pipeline stage · the blocking-`webRequest` ADR.
+  (Letterboxing landed in PR #41 — logic only; the content-view size constraint,
+  the margin paint and the `screen.*`/`innerWidth` shims are phase 3.)
   (CNAME uncloaking landed in PR #40 — logic only; the resolver plumbing is phase 3.) (Query stripping + debouncing and "forget about
   this site" are done — logic only, entry points need phase 3.)
 - No Rust module exists yet; first candidate is the filter-list parser (ADR 0004).
-- From item 49, two follow-ups remain: letterboxing and an ADR deciding whether
-  extensions keep blocking `webRequest` ("forget about this site" landed).
+- From item 49, one follow-up remains: an ADR deciding whether extensions keep
+  blocking `webRequest` (letterboxing and "forget about this site" landed).
   Parked as too large for now: RLBox-style library sandboxing, a Bedrock root store.
 - Chromium has been built **by hand on Linux only** — not in CI, never on Windows. The build is
   also driven around a siso scheduler stall, so objects can go stale; recompile the object of each

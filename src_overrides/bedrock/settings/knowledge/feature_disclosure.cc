@@ -260,10 +260,13 @@ const std::vector<Disclosure>& Table() {
        "letterboxed to a standard size so the viewport is one of few values.",
        "The exact window size, which is both distinguishing and stable across "
        "a session.",
-       "Sites that measure layout indirectly, and the fact that letterboxing "
-       "itself is visible to the page.",
-       "Visible margins around the page in some window sizes; responsive "
-       "layouts may pick a different breakpoint than expected.",
+       "Sites that measure layout indirectly, the fact that letterboxing "
+       "itself is visible to the page, and windows too small to letterbox: "
+       "below 200x100, or when rounding down would cost more than 40% of the "
+       "pixels, the real window size is used.",
+       "Visible margins around the page in some window sizes, fullscreen "
+       "included; responsive layouts may pick a different breakpoint than "
+       "expected.",
        {2, 0, 2, 0, 2, ""}},
 
       {Feature::kHardwareInfoReduction, "hardware_info",

@@ -195,6 +195,9 @@ Anti-fingerprinting policy and deterministic value derivation: normalize first, 
 | `fingerprint_policy.cc` | implementation |
 | `fingerprint_policy.h` | Anti-fingerprinting policy: which strategy applies to which Web API surface at which level, plus the deterministic value derivation used by every shim. |
 | `fingerprint_policy_test.cc` | Host test, no Chromium. |
+| `letterboxing.cc` | implementation |
+| `letterboxing.h` | Letterboxing: the geometry half of the `screen` surface. |
+| `letterboxing_test.cc` | Host test, no Chromium. |
 
 ### `src_overrides/bedrock/privacy/network/`
 Network privacy: DNS settings (named resolvers, fail-closed strict mode), HTTPS upgrading and per-host certificate exceptions, WebRTC IP exposure modes. Items 16-18.
@@ -502,6 +505,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/design/047-token-system-and-surface.md`](../../docs/design/047-token-system-and-surface.md) | 047 — Semantic tokens, motion, grain, background |
 | [`docs/design/048-link-cleaning-and-forgetting.md`](../../docs/design/048-link-cleaning-and-forgetting.md) | 048 — Link cleaning, redirect debouncing, and forgetting a site |
 | [`docs/design/049-cname-uncloaking.md`](../../docs/design/049-cname-uncloaking.md) | 049 — CNAME uncloaking |
+| [`docs/design/050-letterboxing.md`](../../docs/design/050-letterboxing.md) | 050 — Letterboxing |
 | [`docs/performance/BUDGETS.md`](../../docs/performance/BUDGETS.md) | Performance budgets |
 | [`docs/privacy/FEATURES.md`](../../docs/privacy/FEATURES.md) | Privacy features, in full |
 | [`docs/privacy/FILTER_LISTS.md`](../../docs/privacy/FILTER_LISTS.md) | Filter lists — licences, one per list |

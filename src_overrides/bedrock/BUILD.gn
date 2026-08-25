@@ -83,6 +83,8 @@ source_set("bedrock") {
     "privacy/core/telemetry_policy.h",
     "privacy/fingerprinting/fingerprint_policy.cc",
     "privacy/fingerprinting/fingerprint_policy.h",
+    "privacy/fingerprinting/letterboxing.cc",
+    "privacy/fingerprinting/letterboxing.h",
     "privacy/network/dns_settings.cc",
     "privacy/network/dns_settings.h",
     "privacy/network/https_policy.cc",
