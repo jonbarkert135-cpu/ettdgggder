@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "bedrock/privacy/network/host_match.h"
+
 namespace bedrock {
 namespace net {
 namespace {
@@ -14,48 +16,10 @@ namespace {
 using privacy::Control;
 using privacy::Value;
 
-bool StartsWith(const std::string& text, const std::string& prefix) {
-  return text.compare(0, prefix.size(), prefix) == 0;
-}
-
-bool EndsWith(const std::string& text, const std::string& suffix) {
-  return text.size() >= suffix.size() &&
-         text.compare(text.size() - suffix.size(), suffix.size(), suffix) == 0;
-}
-
-// True only for a literal dotted-quad. `10.example.com` is a *domain* that an
-// attacker can register; treating it as an address is how a private-range
-// prefix check becomes an HTTPS downgrade for anyone who buys the right name.
-bool IsIPv4Literal(const std::string& host, int octets[4]) {
-  int value = 0;
-  int digits = 0;
-  int index = 0;
-  for (size_t i = 0; i <= host.size(); ++i) {
-    const char c = i < host.size() ? host[i] : '.';
-    if (c >= '0' && c <= '9') {
-      if (++digits > 3) {
-        return false;
-      }
-      value = value * 10 + (c - '0');
-      if (value > 255) {
-        return false;
-      }
-      continue;
-    }
-    if (c != '.' || digits == 0 || index > 3) {
-      return false;
-    }
-    octets[index++] = value;
-    value = 0;
-    digits = 0;
-  }
-  return index == 4;
-}
-
-// Label-boundary suffix: `.onion` must be a real last label, so
-// `notonion.example.com` and `evil-onion.test` do not qualify.
-bool HasSuffixLabel(const std::string& host, const std::string& label) {
-  return host.size() > label.size() && EndsWith(host, label);
+// Scheme check on a full URL. Host comparisons go through host_match.h; this
+// one is deliberately not one.
+bool HasScheme(const std::string& url, const std::string& scheme) {
+  return url.compare(0, scheme.size(), scheme) == 0;
 }
 
 }  // namespace
@@ -67,28 +31,10 @@ HttpsPolicy::~HttpsPolicy() = default;
 
 // static
 bool HttpsPolicy::IsLocalOrOnion(const std::string& host) {
-  if (host == "localhost" || HasSuffixLabel(host, ".localhost")) {
-    return true;
-  }
-  if (host == "[::1]" || StartsWith(host, "[fc") || StartsWith(host, "[fd") ||
-      StartsWith(host, "[fe80:")) {
-    return true;  // IPv6 loopback, unique-local, link-local
-  }
-  if (HasSuffixLabel(host, ".local") || HasSuffixLabel(host, ".onion") ||
-      HasSuffixLabel(host, ".internal")) {
-    return true;
-  }
-  int octet[4] = {0, 0, 0, 0};
-  if (IsIPv4Literal(host, octet)) {
-    // RFC 1918 + loopback + link-local. Checked on parsed octets, never on the
-    // spelling of the name: `10.example.com` is not 10.0.0.0/8.
-    return octet[0] == 127 || octet[0] == 10 ||
-           (octet[0] == 192 && octet[1] == 168) ||
-           (octet[0] == 172 && octet[1] >= 16 && octet[1] <= 31) ||
-           (octet[0] == 169 && octet[1] == 254) ||
-           (octet[0] == 0 && octet[1] == 0 && octet[2] == 0 && octet[3] == 0);
-  }
-  return false;
+  const std::string name = NormalizeHost(host);
+  return name == "localhost" || HasFinalLabel(name, "localhost") ||
+         HasFinalLabel(name, "local") || HasFinalLabel(name, "onion") ||
+         HasFinalLabel(name, "internal") || IsPrivateAddress(name);
 }
 
 HttpsMode HttpsPolicy::ModeForHost(const std::string& host) const {
@@ -103,10 +49,10 @@ HttpsMode HttpsPolicy::ModeForHost(const std::string& host) const {
 
 UpgradeAction HttpsPolicy::ForNavigation(const std::string& url,
                                          const std::string& host) const {
-  if (StartsWith(url, "https://")) {
+  if (HasScheme(url, "https://")) {
     return UpgradeAction::kAlreadySecure;
   }
-  if (!StartsWith(url, "http://")) {
+  if (!HasScheme(url, "http://")) {
     return UpgradeAction::kAlreadySecure;  // non-web scheme, not ours to judge
   }
   if (IsLocalOrOnion(host)) {

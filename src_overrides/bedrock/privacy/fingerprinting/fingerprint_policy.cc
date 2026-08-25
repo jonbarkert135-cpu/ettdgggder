@@ -5,6 +5,8 @@
 
 #include "bedrock/privacy/fingerprinting/fingerprint_policy.h"
 
+#include "bedrock/crypto/hash.h"
+
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -119,14 +121,6 @@ const Row& RowFor(Surface surface) {
   return row;
 }
 
-// splitmix64: small, fast, well-distributed, and — crucially — reproducible.
-uint64_t Mix(uint64_t x) {
-  x += 0x9e3779b97f4a7c15ULL;
-  x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ULL;
-  x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;
-  return x ^ (x >> 31);
-}
-
 }  // namespace
 
 Strategy GetStrategy(Surface surface, FpLevel level) {
@@ -141,22 +135,39 @@ bool BreaksSites(Surface surface, FpLevel level) {
   return static_cast<int>(level) >= static_cast<int>(RowFor(surface).breaks_from);
 }
 
-uint64_t SurfaceSeed(uint64_t session_secret,
-                     const std::string& etld_plus_one,
-                     Surface surface) {
-  // FNV-1a over the site, then mixed with the secret and the surface so that
-  // learning one surface's noise tells an attacker nothing about another.
-  uint64_t hash = 0xcbf29ce484222325ULL;
-  for (unsigned char c : etld_plus_one) {
-    hash ^= c;
-    hash *= 0x100000001b3ULL;
-  }
-  return Mix(Mix(session_secret ^ hash) + static_cast<uint64_t>(surface) + 1);
+std::string SurfaceKey(const std::string& session_secret,
+                       const std::string& etld_plus_one,
+                       Surface surface) {
+  // One subkey per site (HKDF), then one key per surface under it (HMAC).
+  // Both steps are keyed and one-way, and both carry a versioned label so this
+  // secret can never collide with another use of the same bytes.
+  const std::string site_key = crypto::HkdfSha256(
+      session_secret, "bedrock/fp/v1/site", "site:" + etld_plus_one,
+      crypto::kSha256Size);
+  return crypto::HmacSha256(site_key,
+                            std::string("surface:") + SurfaceId(surface));
 }
 
-double SeededUnit(uint64_t seed, uint64_t index) {
+double SeededUnit(const std::string& surface_key, uint64_t index) {
+  // A distinct HMAC per index: streams cannot overlap the way seed+index did.
+  std::string counter(8, '\0');
+  for (int i = 7; i >= 0; --i)
+    counter[7 - i] = static_cast<char>((index >> (i * 8)) & 0xFF);
+  const std::string block = crypto::HmacSha256(surface_key, "unit:" + counter);
+
   // 53 bits -> [0,1), the same construction as a standard double generator.
-  return static_cast<double>(Mix(seed + index) >> 11) / 9007199254740992.0;
+  uint64_t value = 0;
+  for (int i = 0; i < 8; ++i)
+    value = (value << 8) | static_cast<unsigned char>(block[i]);
+  return static_cast<double>(value >> 11) / 9007199254740992.0;
+}
+
+uint64_t SeedValue(const std::string& surface_key) {
+  const std::string block = crypto::HmacSha256(surface_key, "seed-value");
+  uint64_t value = 0;
+  for (int i = 0; i < 8; ++i)
+    value = (value << 8) | static_cast<unsigned char>(block[i]);
+  return value;
 }
 
 int NormalizedHardwareConcurrency(int actual, FpLevel level) {

@@ -5,6 +5,8 @@
 
 #include "bedrock/passwords/password_store.h"
 
+#include "bedrock/crypto/hash.h"
+
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -31,82 +33,158 @@ bool IsHttps(const std::string& origin) {
   return origin.rfind("https://", 0) == 0;
 }
 
-uint32_t RotateLeft(uint32_t value, int bits) {
-  return (value << bits) | (value >> (32 - bits));
+// Domain separation labels. Each envelope is bound to its purpose, so a blob
+// from one context cannot be replayed into another.
+constexpr char kMasterAad[] = "bedrock/pw/v1/master-key";
+constexpr char kKdfInfo[] = "bedrock/pw/v1/kek";
+
+std::string EntryAad(const std::string& origin, const std::string& username) {
+  // Binds a sealed password to its own row: swapping two blobs in the file, or
+  // moving one to a different site, fails the tag check.
+  return "bedrock/pw/v1/entry\n" + origin + "\n" + username;
 }
 
 }  // namespace
 
-// Plain SHA-1, used only to build the five-character k-anonymity prefix for
-// breach lookups. It is not used to protect anything — the platform keystore
-// does that.
-std::string Sha1Hex(const std::string& input) {
-  uint32_t h[5] = {0x67452301u, 0xEFCDAB89u, 0x98BADCFEu, 0x10325476u,
-                   0xC3D2E1F0u};
-  std::string message = input;
-  const uint64_t bit_length = static_cast<uint64_t>(input.size()) * 8;
-  message.push_back(static_cast<char>(0x80));
-  while (message.size() % 64 != 56)
-    message.push_back('\0');
-  for (int i = 7; i >= 0; --i)
-    message.push_back(static_cast<char>((bit_length >> (i * 8)) & 0xFF));
-
-  for (size_t chunk = 0; chunk < message.size(); chunk += 64) {
-    uint32_t w[80];
-    for (int i = 0; i < 16; ++i) {
-      const unsigned char* p =
-          reinterpret_cast<const unsigned char*>(message.data()) + chunk + i * 4;
-      w[i] = (static_cast<uint32_t>(p[0]) << 24) |
-             (static_cast<uint32_t>(p[1]) << 16) |
-             (static_cast<uint32_t>(p[2]) << 8) | static_cast<uint32_t>(p[3]);
-    }
-    for (int i = 16; i < 80; ++i)
-      w[i] = RotateLeft(w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16], 1);
-
-    uint32_t a = h[0], b = h[1], c = h[2], d = h[3], e = h[4];
-    for (int i = 0; i < 80; ++i) {
-      uint32_t f, k;
-      if (i < 20) {
-        f = (b & c) | (~b & d);
-        k = 0x5A827999u;
-      } else if (i < 40) {
-        f = b ^ c ^ d;
-        k = 0x6ED9EBA1u;
-      } else if (i < 60) {
-        f = (b & c) | (b & d) | (c & d);
-        k = 0x8F1BBCDCu;
-      } else {
-        f = b ^ c ^ d;
-        k = 0xCA62C1D6u;
-      }
-      const uint32_t temp = RotateLeft(a, 5) + f + e + k + w[i];
-      e = d;
-      d = c;
-      c = RotateLeft(b, 30);
-      b = a;
-      a = temp;
-    }
-    h[0] += a;
-    h[1] += b;
-    h[2] += c;
-    h[3] += d;
-    h[4] += e;
+// Uppercase hex of SHA-1, used only to build the five-character k-anonymity
+// prefix for breach lookups, because that is what the range APIs in the world
+// are defined on. It protects nothing — the AEAD and the KDF do that. The
+// digest now comes from bedrock/crypto (BoringSSL in the real build); this file
+// no longer carries a hand-rolled one.
+std::string PasswordHashHex(const std::string& input) {
+  std::string hex = crypto::ToHex(crypto::Sha1(input));
+  for (char& c : hex) {
+    if (c >= 'a' && c <= 'f')
+      c = static_cast<char>(c - 'a' + 'A');
   }
-
-  char out[41];
-  for (int i = 0; i < 5; ++i)
-    std::snprintf(out + i * 8, 9, "%08X", h[i]);
-  return std::string(out, 40);
+  return hex;
 }
 
-PasswordStore::PasswordStore(std::unique_ptr<Cipher> cipher)
-    : cipher_(std::move(cipher)) {}
+PasswordStore::PasswordStore(std::unique_ptr<Cipher> cipher,
+                             std::unique_ptr<crypto::RandomSource> random)
+    : cipher_(std::move(cipher)), random_(std::move(random)) {}
 
-PasswordStore::~PasswordStore() = default;
+PasswordStore::~PasswordStore() {
+  // Key material does not outlive the object, even if the allocator reuses the
+  // page. (The real build uses a scrubbing container; this is the honest
+  // minimum without one.)
+  for (char& c : data_key_)
+    c = '\0';
+}
 
-void PasswordStore::SetMasterProtection(MasterProtection protection) {
+bool PasswordStore::SetMasterProtection(MasterProtection protection) {
+  last_error_.clear();
+  if (protection == MasterProtection::kMasterPassword &&
+      master_envelope_.empty()) {
+    // Otherwise the store would be locked behind a password that does not
+    // exist: unopenable, with no error the user could act on.
+    last_error_ = "set a master password before requiring one";
+    return false;
+  }
   protection_ = protection;
   locked_ = true;  // changing the lock relocks; anything else is a hole
+  for (char& c : data_key_)
+    c = '\0';
+  data_key_.clear();
+  return true;
+}
+
+bool PasswordStore::SetMasterPassword(const std::string& master_password) {
+  last_error_.clear();
+  if (master_password.empty()) {
+    last_error_ = "a master password is required";
+    return false;
+  }
+  if (!master_envelope_.empty()) {
+    last_error_ = "a master password is already set";
+    return false;
+  }
+  // The data key must exist before it can be wrapped, and creating it requires
+  // an unlocked store — otherwise this call would be a way to replace the key
+  // (and orphan every stored entry) from a locked store.
+  if (locked_ && !Unlock()) {
+    last_error_ = "unlock the store before setting a master password";
+    return false;
+  }
+  if (data_key_.size() != crypto::kKeySize) {
+    last_error_ = "no data key";
+    return false;
+  }
+  kdf_salt_ = random_->Bytes(16);
+  const std::string kek = crypto::HkdfSha256(
+      crypto::Pbkdf2HmacSha256(master_password, kdf_salt_, kdf_iterations_,
+                               crypto::kKeySize),
+      kdf_salt_, kKdfInfo, crypto::kKeySize);
+  const std::string sealed = crypto::Seal(
+      kek, random_->Bytes(crypto::kNonceSize), kMasterAad, data_key_);
+  // Then the keystore on top: an attacker with the profile directory but no OS
+  // session cannot even start guessing the master password offline.
+  master_envelope_ = sealed.empty() ? std::string() : cipher_->Encrypt(sealed);
+  if (master_envelope_.empty()) {
+    last_error_ = "could not wrap the data key";
+    return false;
+  }
+  protection_ = MasterProtection::kMasterPassword;
+  locked_ = true;  // prove the new password works before trusting it
+  for (char& c : data_key_)
+    c = '\0';
+  data_key_.clear();
+  return true;
+}
+
+bool PasswordStore::ChangeMasterPassword(const std::string& current,
+                                         const std::string& next) {
+  last_error_.clear();
+  if (master_envelope_.empty()) {
+    last_error_ = "no master password is set";
+    return false;
+  }
+  if (next.empty()) {
+    last_error_ = "a master password is required";
+    return false;
+  }
+  std::string data_key;
+  if (!UnwrapWithPassword(current, &data_key)) {
+    last_error_ = "incorrect master password";
+    return false;
+  }
+  // The SAME data key is re-wrapped: changing the password must not orphan
+  // stored entries, and must not require re-encrypting them one by one.
+  const std::string salt = random_->Bytes(16);
+  const std::string kek = crypto::HkdfSha256(
+      crypto::Pbkdf2HmacSha256(next, salt, kdf_iterations_, crypto::kKeySize),
+      salt, kKdfInfo, crypto::kKeySize);
+  const std::string sealed = crypto::Seal(
+      kek, random_->Bytes(crypto::kNonceSize), kMasterAad, data_key);
+  const std::string envelope =
+      sealed.empty() ? std::string() : cipher_->Encrypt(sealed);
+  if (envelope.empty()) {
+    last_error_ = "could not wrap the data key";
+    return false;
+  }
+  kdf_salt_ = salt;
+  master_envelope_ = envelope;
+  for (char& c : data_key)
+    c = '\0';
+  locked_ = true;
+  return true;
+}
+
+bool PasswordStore::UnwrapWithPassword(const std::string& password,
+                                       std::string* data_key_out) {
+  if (master_envelope_.empty() || kdf_salt_.empty())
+    return false;
+  const std::string kek = crypto::HkdfSha256(
+      crypto::Pbkdf2HmacSha256(password, kdf_salt_, kdf_iterations_,
+                               crypto::kKeySize),
+      kdf_salt_, kKdfInfo, crypto::kKeySize);
+  std::string sealed;
+  if (!cipher_->Decrypt(master_envelope_, &sealed))
+    return false;  // the keystore layer, before the password layer
+  // No stored verifier: the wrapped key either opens or it does not. A wrong
+  // password fails the AEAD tag, which is a constant-time check and reveals
+  // nothing beyond "wrong".
+  return crypto::Open(kek, kMasterAad, sealed, data_key_out);
 }
 
 bool PasswordStore::Unlock() {
@@ -115,6 +193,25 @@ bool PasswordStore::Unlock() {
     last_error_ = "a master password is required";
     return false;
   }
+  if (keystore_envelope_.empty()) {
+    // First run: create the data key and let the keystore hold it.
+    std::string key = random_->Bytes(crypto::kKeySize);
+    if (key.size() != crypto::kKeySize) {
+      last_error_ = "no random source";
+      return false;
+    }
+    keystore_envelope_ = cipher_->Encrypt(key);
+    data_key_ = std::move(key);
+    locked_ = false;
+    return true;
+  }
+  std::string key;
+  if (!cipher_->Decrypt(keystore_envelope_, &key) ||
+      key.size() != crypto::kKeySize) {
+    last_error_ = "the platform keystore could not release the key";
+    return false;
+  }
+  data_key_ = std::move(key);
   locked_ = false;
   return true;
 }
@@ -127,22 +224,27 @@ bool PasswordStore::Unlock(const std::string& master_password) {
     last_error_ = "a master password is required";
     return false;
   }
-  // The verifier is a known string encrypted under the derived key. We never
-  // store the master password itself, not even encrypted.
-  const std::string verifier = cipher_->Encrypt("bedrock-verifier:" +
-                                                master_password);
-  if (master_password_verifier_.empty())
-    master_password_verifier_ = verifier;
-  if (verifier != master_password_verifier_) {
+  if (master_envelope_.empty()) {
+    // Never trust-on-first-use: with no envelope there is nothing to open, and
+    // accepting the first password offered is how F3 let any password in.
+    last_error_ = "no master password is set";
+    return false;
+  }
+  std::string key;
+  if (!UnwrapWithPassword(master_password, &key)) {
     last_error_ = "incorrect master password";
     return false;
   }
+  data_key_ = std::move(key);
   locked_ = false;
   return true;
 }
 
 void PasswordStore::Lock() {
   locked_ = true;
+  for (char& c : data_key_)
+    c = '\0';
+  data_key_.clear();  // locked means the key is gone, not just a flag flipped
 }
 
 bool PasswordStore::OnIdle(int elapsed_seconds) {
@@ -150,7 +252,7 @@ bool PasswordStore::OnIdle(int elapsed_seconds) {
     return false;
   if (elapsed_seconds < auto_lock_seconds_)
     return false;
-  locked_ = true;
+  Lock();
   return true;
 }
 
@@ -185,7 +287,14 @@ bool PasswordStore::Add(const Credential& credential) {
   StoredCredential entry;
   entry.origin = credential.origin;
   entry.username = credential.username;
-  entry.encrypted_password = cipher_->Encrypt(credential.password);
+  entry.encrypted_password =
+      crypto::Seal(data_key_, random_->Bytes(crypto::kNonceSize),
+                  EntryAad(credential.origin, credential.username),
+                  credential.password);
+  if (entry.encrypted_password.empty()) {
+    last_error_ = "could not encrypt the password";
+    return false;
+  }
   entries_.push_back(entry);
   return true;
 }
@@ -201,7 +310,13 @@ bool PasswordStore::Update(const std::string& origin,
   StoredCredential* entry = Find(origin, username);
   if (!entry)
     return false;
-  entry->encrypted_password = cipher_->Encrypt(new_password);
+  entry->encrypted_password =
+      crypto::Seal(data_key_, random_->Bytes(crypto::kNonceSize),
+                  EntryAad(origin, username), new_password);
+  if (entry->encrypted_password.empty()) {
+    last_error_ = "could not encrypt the password";
+    return false;
+  }
   entry->breached = false;  // a new password is not the breached one
   return true;
 }
@@ -228,7 +343,8 @@ bool PasswordStore::Get(const std::string& origin,
   StoredCredential* entry = Find(origin, username);
   if (!entry)
     return false;
-  return cipher_->Decrypt(entry->encrypted_password, password_out);
+  return crypto::Open(data_key_, EntryAad(origin, username),
+                     entry->encrypted_password, password_out);
 }
 
 std::vector<StoredCredential> PasswordStore::List() const {
@@ -310,7 +426,7 @@ BreachQuery PasswordStore::BuildBreachQuery(const std::string& password) const {
     return query;
   }
   query.enabled = true;
-  query.hash_prefix = Sha1Hex(password).substr(0, 5);
+  query.hash_prefix = PasswordHashHex(password).substr(0, 5);
   query.endpoint = breach_endpoint_;
   return query;
 }

@@ -4,6 +4,9 @@
     "bookmarks": {
       "summary": "Bookmark store: folders and tags together, search over title, URL and tags. Item 35. Mirrors Chromium's components/bookmarks placement."
     },
+    "crypto": {
+      "summary": "SHA-256/HMAC/HKDF/PBKDF2 plus Seal/Open, all verified against published test vectors; BoringSSL replaces it in the Chromium build. No cipher and no RNG live here. Added to fix audit findings F3 and F4."
+    },
     "devtools": {
       "summary": "Added DevTools privacy panels. Rule zero: never break an upstream Chromium panel. Item 36."
     },
@@ -31,11 +34,11 @@
     "integration": {
       "summary": "The seam between Bedrock policy and Chromium: computes the startup plan (which shipped defaults this build actually applies to a profile, which it does not, and why) that patches/bedrock/integration hands to chrome/browser/ui/browser_ui_prefs.cc and chrome/browser/renderer_preferences_util.cc. Phase 2: this is the code that actually runs inside the built browser."
     },
-    "onboarding": {
-      "summary": "First-run flow (welcome, privacy level, search engine, theme, import, finish), the per-provider search disclosure and the five honest privacy notes. Items 93, 98, 99. Logic only; no WebUI renders it yet."
-    },
     "omnibox": {
       "summary": "Omnibox input classification only — Chromium's own providers still rank bookmarks, history and tabs. Item 7."
+    },
+    "onboarding": {
+      "summary": "First-run flow (welcome, privacy level, search engine, theme, import, finish), the per-provider search disclosure and the five honest privacy notes. Items 93, 98, 99. Logic only; no WebUI renders it yet."
     },
     "passwords": {
       "summary": "Local password store, platform keystore encryption, no sync and no server. Item 34."

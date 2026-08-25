@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** the first full security audit is on record (`docs/security/AUDIT-2026-08-25.md`, PR #42) — four defects fixed (prefix-matched LAN detection downgrading HTTPS, shields outranking HTTPS-Only, incomplete site deletion, silently refused strict DNS), two cryptographic ones open (F3 master password is not a key; F4 invertible seed derivation leaks the session secret); CNAME uncloaking is a stage of the blocking pipeline, cache-only by design (PR #40); the Strict preset keeps first-party cookies and makes storage ephemeral instead of blocking cookies outright, and presets now set the storage lifetime as well as the controls (PR #39); `docs/BUILD_ON_YOUR_MACHINE.md` prices the one full build that phase 3 needs (PR #38); link cleaning + redirect debouncing (`privacy/tracker_blocker/url_cleaner`) and "forget about this site" (`privacy/core/forget_site`) landed as host-tested logic, two items off the research queue (PR #37); the interface is written against a semantic token vocabulary, enforced by `scripts/check_tokens.py`, and the background composition (light source plus grain) is generated into tokens.css (PR #35); window modes, the profile menu and the theme-to-CSS bridge exist (PR #34); settings, the Privacy Center and the extensions panel have pages and tested models (PR #33); the privacy panel, three tab layouts and the vendored type system landed (PR #32); the new tab page, its state object and the chrome composition exist (PR #31); the dark surface system is the shipped default and tokens.css is generated from the tokens (PR #30); the first-run page renders the flow (PR #29); roadmap 90–101 audited (`docs/ACCEPTANCE.md`) and first run / search disclosure landed; phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
+**As of:** the first full security audit is on record (`docs/security/AUDIT-2026-08-25.md`, PR #42) — four defects fixed (prefix-matched LAN detection downgrading HTTPS, shields outranking HTTPS-Only, incomplete site deletion, silently refused strict DNS), and the two cryptographic ones now fixed too (F3 envelope-encrypted master password, F4 keyed one-way seed derivation, both on `bedrock/crypto`); CNAME uncloaking is a stage of the blocking pipeline, cache-only by design (PR #40); the Strict preset keeps first-party cookies and makes storage ephemeral instead of blocking cookies outright, and presets now set the storage lifetime as well as the controls (PR #39); `docs/BUILD_ON_YOUR_MACHINE.md` prices the one full build that phase 3 needs (PR #38); link cleaning + redirect debouncing (`privacy/tracker_blocker/url_cleaner`) and "forget about this site" (`privacy/core/forget_site`) landed as host-tested logic, two items off the research queue (PR #37); the interface is written against a semantic token vocabulary, enforced by `scripts/check_tokens.py`, and the background composition (light source plus grain) is generated into tokens.css (PR #35); window modes, the profile menu and the theme-to-CSS bridge exist (PR #34); settings, the Privacy Center and the extensions panel have pages and tested models (PR #33); the privacy panel, three tab layouts and the vendored type system landed (PR #32); the new tab page, its state object and the chrome composition exist (PR #31); the dark surface system is the shipped default and tokens.css is generated from the tokens (PR #30); the first-run page renders the flow (PR #29); roadmap 90–101 audited (`docs/ACCEPTANCE.md`) and first run / search disclosure landed; phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
 
 ## Position on the roadmap
 
@@ -126,11 +126,18 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 ## Open threads
 
 - Roadmap items 90+ awaited from the project owner.
-- **Audit debt, highest first (`docs/security/AUDIT-2026-08-25.md`):** F3 password
-  envelope encryption with a real KDF · F4 keyed one-way seed derivation · F6b the
-  `dns0.eu` preset is the website, not a DoH endpoint (a bad preset plus fallback
-  = plaintext DNS) · F8 learned trackers are in-memory only · F9 cert exceptions
-  never expire. F3 and F4 need BoringSSL, i.e. the Chromium build.
+- Host comparisons are centralised in `privacy/network/host_match.h` and fenced
+  by `scripts/check_host_matching.py` (audit rec. 4). Fixing F10 there — hosts
+  were compared in wire form, so `EVIL.com` and `evil.com.` bypassed every
+  domain-scoped filter rule.
+- **Audit debt left (`docs/security/AUDIT-2026-08-25.md`):** F6b the `dns0.eu`
+  preset is the website, not a DoH endpoint (a bad preset plus fallback = plaintext
+  DNS) · F7 degenerate window sizes · F8 learned trackers are in-memory only ·
+  F9 cert exceptions never expire. All small; none needs a build.
+- `bedrock/crypto` is a *reference* implementation verified against published
+  vectors. Wiring BoringSSL behind the same signatures (`BEDROCK_USE_BORINGSSL`)
+  is a build-time task and is the one thing standing between this and shipping
+  crypto.
 - No security decision may be made by `StartsWith`/`EndsWith` on a hostname (F1);
   a gate for that pattern is not written yet.
 - **Default filter lists are empty** until each list's licence is verified and dated in
