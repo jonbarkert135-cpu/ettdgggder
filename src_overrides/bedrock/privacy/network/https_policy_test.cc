@@ -132,6 +132,47 @@ int main() {
           "cert error " + std::to_string(i) + " has a real explanation");
   }
 
+  // Audit F1: local-network detection must parse addresses, not spell-check
+  // hostnames. Every name below is registrable by an attacker, and a prefix
+  // check handed each of them a silent HTTPS downgrade.
+  for (const char* attacker : {"10.example.com", "127.evil.test",
+                               "192.168.attacker.net", "10.0.0.1.evil.test",
+                               "notlocal.test", "myonion.test",
+                               "localhost.evil.test"}) {
+    Check(!HttpsPolicy::IsLocalOrOnion(attacker),
+          std::string("a registrable name is never local: ") + attacker);
+  }
+  for (const char* local : {"localhost", "127.0.0.1", "10.0.0.1",
+                            "192.168.1.10", "172.16.5.4", "169.254.1.1",
+                            "printer.local", "example.onion", "[::1]"}) {
+    Check(HttpsPolicy::IsLocalOrOnion(local),
+          std::string("a real local or onion address is local: ") + local);
+  }
+  Check(!HttpsPolicy::IsLocalOrOnion("172.32.5.4"),
+        "172.32/16 is public: the private range stops at 172.31");
+
+  // Audit F2: HTTPS-Only outranks the per-site value and a stored plaintext
+  // exception. Before the fix, one per-site Allow turned HTTPS-Only off for
+  // that host with no interstitial.
+  {
+    ProtectionController controls;
+    HttpsPolicy only(&controls);
+    only.set_mode(HttpsMode::kHttpsOnly);
+    controls.Set(Scope::kSite, "plain.test", Control::kHttps, Value::kAllow);
+    Check(only.ForNavigation("http://plain.test/", "plain.test") ==
+              UpgradeAction::kInterstitial,
+          "a per-site Allow cannot switch HTTPS-Only off");
+    // An explicit per-host exception (the user clicked through an
+    // interstitial) is a different thing and is still honoured.
+    only.AllowPlaintextForHost("plain.test");
+    Check(only.ForNavigation("http://plain.test/", "plain.test") ==
+              UpgradeAction::kAllowPlaintext,
+          "an explicit per-host exception is still honoured");
+    Check(only.ForNavigation("http://printer.local/", "printer.local") ==
+              UpgradeAction::kAllowPlaintext,
+          "a LAN name with no possible certificate is still reachable");
+  }
+
   if (failures == 0) {
     std::cout << "https_policy_test: all assertions passed\n";
   }

@@ -78,7 +78,7 @@ int main() {
   dns.set_fallback(FallbackPolicy::kSystemWithWarning);
   Check(dns.fallback() == FallbackPolicy::kSystemWithWarning,
         "fallback to the system resolver is configurable");
-  dns.SetStrict(true);
+  Check(dns.SetStrict(true), "strict mode can be applied to a secure resolver");
   Check(dns.mode() == DnsMode::kSecureStrict, "strict mode set");
   Check(dns.fallback() == FallbackPolicy::kFailClosed,
         "strict mode is fail-closed no matter what the fallback setting says");
@@ -91,7 +91,10 @@ int main() {
 
   // Strict is meaningless without a secure resolver, so it is not offered.
   dns.UseSystemResolver();
-  dns.SetStrict(true);
+  // Audit F6: refusing is fine, refusing *silently* is not — the caller showed
+  // strict mode as on while queries went to the OS resolver.
+  Check(!dns.SetStrict(true),
+        "strict is refused, and the refusal is reported to the caller");
   Check(dns.mode() == DnsMode::kSystem,
         "strict does nothing while using the system resolver");
 

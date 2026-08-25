@@ -83,16 +83,21 @@ bool DnsSettings::UseCustom(const std::string& uri_template) {
   return true;
 }
 
-void DnsSettings::SetStrict(bool strict) {
+bool DnsSettings::SetStrict(bool strict) {
   if (strict) {
     if (mode_ == DnsMode::kSystem) {
-      return;  // nothing to be strict about; the OS resolver is the OS's
+      // Nothing to be strict about: the OS resolver is the OS's. Say so
+      // instead of pretending the switch took effect.
+      return false;
     }
     mode_ = DnsMode::kSecureStrict;
-  } else if (mode_ == DnsMode::kSecureStrict) {
+    return true;
+  }
+  if (mode_ == DnsMode::kSecureStrict) {
     mode_ = provider_name_.empty() ? DnsMode::kSecureCustom
                                    : DnsMode::kSecurePreset;
   }
+  return true;
 }
 
 FallbackPolicy DnsSettings::fallback() const {

@@ -128,8 +128,23 @@ int main() {
     Check(to_clear.size() == 2,
           "clearing a site clears its own and its embedded third-party areas");
     for (const StorageKey& key : to_clear) {
-      Check(key.top_level_site == "news.test", "only that site's areas");
+      Check(key.top_level_site == "news.test" ||
+                key.origin_site == "news.test",
+            "only that site's areas");
     }
+
+    // Audit F5: the other direction. Clearing widget.test must also drop what
+    // widget.test wrote while it was embedded on news.test and shop.test —
+    // those partitions are exactly the identifier the user asked to delete.
+    const auto widget = isolation.KeysToClearForSite(all, "widget.test");
+    Check(widget.size() == 2,
+          "clearing a site also drops what it stored while embedded elsewhere");
+    for (const StorageKey& key : widget) {
+      Check(key.origin_site == "widget.test",
+            "and every one of them belongs to that site");
+    }
+    Check(isolation.KeysToClearForSite(all, "absent.test").empty(),
+          "a site with no storage clears nothing");
   }
 
   Check(StorageIsolation::IsPerTab(StorageType::kSessionStorage),
