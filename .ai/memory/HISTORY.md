@@ -4,6 +4,22 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #45 — one place where host comparisons happen
+
+- New `privacy/network/host_match`: `NormalizeHost`, `IsOrSubdomainOf`,
+  `HasFinalLabel`, `ParseIPv4`, `IsPrivateAddress`. Three duplicate local
+  helpers (https_policy, filter_engine, url_cleaner) deleted and routed here —
+  F1 was a bug in one copy of logic that existed in four.
+- `scripts/check_host_matching.py` fails the build on prefix/suffix *decisions*
+  about host-shaped variables outside that file. First version also flagged
+  `substr`/`find` used for parsing (7 false positives) and was narrowed to
+  comparisons; the self-test contains the original F1 line.
+- **F10** found while writing it (medium, live): rules are lowercased at parse
+  time but the request host was compared in wire form, so `EVIL.com` and
+  `evil.com.` matched no domain-scoped rule at all. Both sides normalise now.
+- Scheme checks that legitimately look at a prefix renamed `HasScheme()`.
+  Invariant 75.
+
 ## PR #43 — F3 and F4: real cryptography behind the password store
 
 - New `bedrock/crypto/`: `hash` (SHA-256, HMAC, HKDF, PBKDF2, SHA-1 for the

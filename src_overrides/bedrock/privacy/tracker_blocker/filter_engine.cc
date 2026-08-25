@@ -5,6 +5,8 @@
 
 #include "bedrock/privacy/tracker_blocker/filter_engine.h"
 
+#include "bedrock/privacy/network/host_match.h"
+
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -142,16 +144,6 @@ size_t FindSegment(const std::string& segment, const std::string& url,
     }
   }
   return kNpos;
-}
-
-// True if `host` is `domain` or a subdomain of it.
-bool HostMatches(const std::string& host, const std::string& domain) {
-  if (host == domain) {
-    return true;
-  }
-  return host.size() > domain.size() &&
-         host.compare(host.size() - domain.size(), domain.size(), domain) == 0 &&
-         host[host.size() - domain.size() - 1] == '.';
 }
 
 // Where the host starts in "scheme://host/path". kNpos if there is no authority.
@@ -459,14 +451,14 @@ bool FilterEngine::Matches(const NetworkFilter& filter,
   if (!filter.domains.empty() || !filter.not_domains.empty()) {
     const std::string& context = request.top_etld1;
     for (const std::string& domain : filter.not_domains) {
-      if (HostMatches(context, domain)) {
+      if (net::IsOrSubdomainOf(context, domain)) {
         return false;
       }
     }
     if (!filter.domains.empty()) {
       bool any = false;
       for (const std::string& domain : filter.domains) {
-        any = any || HostMatches(context, domain);
+        any = any || net::IsOrSubdomainOf(context, domain);
       }
       if (!any) {
         return false;
@@ -627,7 +619,7 @@ FilterEngine::Cosmetics FilterEngine::CosmeticsFor(
     const std::string& host) const {
   auto applies = [&host](const CosmeticFilter& filter) {
     for (const std::string& domain : filter.not_domains) {
-      if (HostMatches(host, domain)) {
+      if (net::IsOrSubdomainOf(host, domain)) {
         return false;
       }
     }
@@ -635,7 +627,7 @@ FilterEngine::Cosmetics FilterEngine::CosmeticsFor(
       return true;  // generic rule
     }
     for (const std::string& domain : filter.domains) {
-      if (HostMatches(host, domain)) {
+      if (net::IsOrSubdomainOf(host, domain)) {
         return true;
       }
     }

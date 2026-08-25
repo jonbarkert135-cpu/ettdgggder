@@ -88,4 +88,5 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 72 | A phase that needs a Chromium build cannot be called done until `build/ENFORCEMENT.md` records one | `scripts/check_phases.py`, `docs/PHASES.md` |
 | 73 | Fingerprint seeds are derived with a keyed one-way function, never a reversible mixer | `fingerprint_policy_test` (surface-key assertions) |
 | 74 | A password or key is verified by an AEAD tag, never by comparing stored ciphertexts | `password_store_test` (master-password assertions) |
+| 75 | A host name is compared only via `privacy/network/host_match.h` — normalised, at label boundaries, addresses parsed | `scripts/check_host_matching.py`, `host_match_test` |
 

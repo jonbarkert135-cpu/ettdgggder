@@ -126,6 +126,10 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 ## Open threads
 
 - Roadmap items 90+ awaited from the project owner.
+- Host comparisons are centralised in `privacy/network/host_match.h` and fenced
+  by `scripts/check_host_matching.py` (audit rec. 4). Fixing F10 there — hosts
+  were compared in wire form, so `EVIL.com` and `evil.com.` bypassed every
+  domain-scoped filter rule.
 - **Audit debt left (`docs/security/AUDIT-2026-08-25.md`):** F6b the `dns0.eu`
   preset is the website, not a DoH endpoint (a bad preset plus fallback = plaintext
   DNS) · F7 degenerate window sizes · F8 learned trackers are in-memory only ·

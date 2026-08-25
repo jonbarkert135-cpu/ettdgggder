@@ -216,6 +216,9 @@ Network privacy: DNS settings (named resolvers, fail-closed strict mode), HTTPS 
 | `dns_settings.cc` | implementation |
 | `dns_settings.h` | DNS and network privacy (roadmap item 17). |
 | `dns_settings_test.cc` | Host test, no Chromium. |
+| `host_match.cc` | implementation |
+| `host_match.h` | The one place a host name is compared to anything. |
+| `host_match_test.cc` | Host test, no Chromium. |
 | `https_policy.cc` | implementation |
 | `https_policy.h` | HTTPS upgrading, mixed content and certificate errors (roadmap item 16). |
 | `https_policy_test.cc` | Host test, no Chromium. |
@@ -566,6 +569,7 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | `scripts/check_docs.py` | Documentation gate (roadmap item 72). |
 | `scripts/check_fp_docs.py` | Every anti-fingerprinting surface must have a documented rationale. |
 | `scripts/check_frameworks.py` | Gate: no JS framework where Chromium's own infrastructure is the answer. |
+| `scripts/check_host_matching.py` | Gate: nothing decides anything about a host name with a prefix or a suffix. |
 | `scripts/check_languages.py` | Fail if the language policy of ADR 0004 is broken. |
 | `scripts/check_memory.py` | Fail if the project memory in `.ai/` is missing, stale or out of sync. |
 | `scripts/check_no_fake_features.py` | Fail if the browser would claim something it does not do (roadmap item 55). |
