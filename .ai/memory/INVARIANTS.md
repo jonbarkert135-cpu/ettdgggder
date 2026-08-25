@@ -91,4 +91,5 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 75 | A host name is compared only via `privacy/network/host_match.h` — normalised, at label boundaries, addresses parsed | `scripts/check_host_matching.py`, `host_match_test` |
 | 76 | Every shipped DNS preset is a real endpoint with a named operator and a re-check date under a year old | `scripts/check_dns_presets.py`, `dns_settings_test` |
 | 77 | Security exceptions expire; learned evidence ages out; user decisions do neither | `https_policy_test` (F9), `tracker_heuristic_test` (F8) |
+| 78 | A reuse mode claiming third-party material in the tree has a per-file provenance record, and vice versa | `scripts/check_provenance.py` rule 8 |
 

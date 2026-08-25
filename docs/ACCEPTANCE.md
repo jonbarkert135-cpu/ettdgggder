@@ -10,7 +10,8 @@ Statuses: **yes** (proven, with the proof named) · **stock** (works because it 
 Chromium's, Bedrock's own version is not wired in) · **policy-only** (specified,
 host-tested, no engine executes it) · **no**.
 
-Last updated against build 2 (2026-08-23, Linux x64, `is_component_build=true`).
+Last updated against build 2 (2026-08-23, Linux x64, `is_component_build=true`); test and
+gate counts refreshed 2026-08-25.
 
 | # | Criterion | Status | Proof / what is missing |
 | --- | --- | --- | --- |
@@ -38,9 +39,9 @@ Last updated against build 2 (2026-08-23, Linux x64, `is_component_build=true`).
 | 22 | Security sandbox enabled | yes | release args keep the Chromium sandbox; `privacy/security/security_baseline` fails any change that weakens it |
 | 23 | No mandatory backend | yes | no hostname is compiled in; `updater` is provider-abstract, tested for it |
 | 24 | No hidden telemetry | yes | `check_no_telemetry.py`: no reporting machinery, `enable_reporting=false`, `safe_browsing_mode=0`, `use_official_google_api_keys=false` |
-| 25 | Licensing documented | yes | `LICENSING.md` + `check_provenance.py` (9 dependencies, 9 notices) |
-| 26 | Third-party components documented | yes | `THIRD_PARTY.md`, `THIRD_PARTY_NOTICES/` |
-| 27 | Tests pass | yes, for what they cover | 49 host tests, 9 fuzz smoke harnesses, 29 gates in CI; sanitizers, libFuzzer campaigns and browser tests need a Chromium build and have no numbers |
+| 25 | Licensing documented | yes | `LICENSING.md` + `check_provenance.py` (9 dependencies, 9 notices, per-file records) |
+| 26 | Third-party components documented | yes | `THIRD_PARTY.md` (projects) + `PROVENANCE.md` (files, item 91), both machine-checked against each other |
+| 27 | Tests pass | yes, for what they cover | 63 host tests, 9 fuzz smoke harnesses, 29 gates in CI; sanitizers, libFuzzer campaigns and browser tests need a Chromium build and have no numbers |
 | 28 | Build instructions work | yes, on Linux | `BUILD.md` + `scripts/resume_build.sh` reproduce build 2; Windows instructions are untested |
 | 29 | Security documentation exists | yes | `SECURITY.md`, `docs/security/` |
 | 30 | Threat model exists | yes | `docs/THREAT_MODEL.md` |

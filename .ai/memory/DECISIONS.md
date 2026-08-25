@@ -52,4 +52,5 @@ when its premise no longer holds. Full ADRs live in `docs/adr/`.
 | 2026-08-25 (F6b) | Presets carry a `verified` date and the build fails after a year | A resolver list is perishable and CI cannot phone the internet; dns0.eu shipped for ten months after shutting down | `scripts/check_dns_presets.py` |
 | 2026-08-25 (F8) | Bound the retention of learned tracker evidence instead of wiring persistence | Writing the file needs the profile layer (blocked on the build), and an unbounded table would be a permanent record of browsing — the policy is the part that belongs in this repo | `tracker_heuristic.h` `ForgetOlderThan()` |
 | 2026-08-25 (F9) | Certificate exceptions expire after 7 days | An exception is a decision about a moment; a replaced certificate must not inherit trust granted to a broken one | `https_policy.h` `kCertExceptionTtlSeconds` |
+| 2026-08-25 (item 91) | Per-file provenance records in `docs/PROVENANCE.md`, tied to the inventory by the gate | Project-level rows cannot answer "where did this file come from?", and a reuse mode with no instance reads as a dependency that exists | `scripts/check_provenance.py` rule 8 |
 
