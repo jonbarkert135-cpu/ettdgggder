@@ -4,6 +4,25 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #43 — F3 and F4: real cryptography behind the password store
+
+- New `bedrock/crypto/`: `hash` (SHA-256, HMAC, HKDF, PBKDF2, SHA-1 for the
+  breach prefix, constant-time compare) and `aead` (`Seal`/`Open`, 32-byte key,
+  12-byte nonce, 16-byte tag). Every primitive is asserted against published
+  vectors — FIPS 180-4, RFC 4231, RFC 5869, RFC 8018 — because a hash that is
+  merely self-consistent is worthless. `BEDROCK_USE_BORINGSSL` is a hard
+  `#error`: the host build must never quietly become the shipping crypto.
+- **F3**: the master password is now a key, not a comparison.
+  PBKDF2(600k) then HKDF to a KEK, which wraps a random data key; the AEAD tag
+  is the verifier, so there is no ciphertext to compare. Entry AAD binds
+  (origin, username) so a record cannot be moved between sites. `Lock()` wipes
+  the key; `ChangeMasterPassword` rewraps without touching entries.
+- **F4**: `SurfaceSeed()` was unkeyed and invertible — one canvas read gave up
+  the session secret. Replaced by `SurfaceKey(secret, eTLD+1, surface)` =
+  HKDF then HMAC, with `SeededUnit()` for the per-index draw. Old helpers deleted.
+- Ponytail applied retroactively: the `Aead` interface, a stub platform random
+  source and a one-field `KdfParams` struct were removed as invented ceremony.
+
 ## PR #40 — CNAME uncloaking
 
 - `privacy/tracker_blocker/cname_uncloak`: a DNS alias on a first-party-looking
