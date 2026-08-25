@@ -89,6 +89,23 @@ read, not skimmed. Anything longer belongs in a doc, linked from here.
   HKDF then HMAC, with `SeededUnit()` for the per-index draw. Old helpers deleted.
 - Ponytail applied retroactively: the `Aead` interface, a stub platform random
   source and a one-field `KdfParams` struct were removed as invented ceremony.
+## PR #42 — security audit of 2026-08-25
+
+- Full audit against the owner's Project-Zero-style brief. Governing finding
+  **F0**: only two patches exist (`build/0001-add-bedrock-to-chrome-browser`,
+  `integration/0001-bedrock-startup-hook`) and nothing touches Blink, V8,
+  //content or //net — so 20 of 21 fingerprinting surfaces and every blocking
+  and storage protection are policy, not enforcement. Report:
+  `docs/security/AUDIT-2026-08-25.md`.
+- Two goals in the brief were rejected with reasons, not implemented: a new
+  random fingerprint per launch (makes the user *more* identifiable across a
+  session than a stable, common one) and a fixed 1920x1080 screen (a lie the
+  first `window.resize` exposes).
+- Fixed here: **F1** (critical) `IsLocalOrOnion()` matched by prefix, so
+  `10.example.com` and `127.evil.test` were treated as local; **F2** (high)
+  `ForNavigation()` ordering; **F5** (high) `KeysToClearForSite()` cleared the
+  wrong direction of the relationship; **F6** (medium) `DnsSettings::SetStrict()`
+  swallowed failures by returning void.
 
 ## PR #40 — CNAME uncloaking
 
