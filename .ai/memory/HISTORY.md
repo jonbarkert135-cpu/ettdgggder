@@ -4,7 +4,7 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
-## PR #43 — Windows / low-memory build path
+## PR #44 — Windows / low-memory build path
 
 - `build/sync.py`: overrides are **copied** when the OS refuses a symlink
   (Windows without Developer Mode raises `WinError 1314`), a `--no-history` flag
