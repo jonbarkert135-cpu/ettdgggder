@@ -86,3 +86,6 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 70 | The twelve item-84 defaults ship as specified; telemetry and crash upload are on no axis of user control | `settings/defaults`, `scripts/check_defaults.py` |
 | 71 | Every ADR has context, decision, alternatives and consequences, and is in the index | `scripts/check_adr.py` |
 | 72 | A phase that needs a Chromium build cannot be called done until `build/ENFORCEMENT.md` records one | `scripts/check_phases.py`, `docs/PHASES.md` |
+| 73 | Fingerprint seeds are derived with a keyed one-way function, never a reversible mixer | `fingerprint_policy_test` (surface-key assertions) |
+| 74 | A password or key is verified by an AEAD tag, never by comparing stored ciphertexts | `password_store_test` (master-password assertions) |
+
