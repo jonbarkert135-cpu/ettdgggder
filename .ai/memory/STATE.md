@@ -61,7 +61,7 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 | 86 ADRs (14 records, indexed and mapped) | done |
 | 87–88 Research-first process, timeboxed | done — `docs/PROCESS.md` |
 | 89 Implementation order | `docs/PHASES.md`: **phases 0–2 done** (builds 1 and 2 in `build/ENFORCEMENT.md`), phases 3–15 still `policy-landed` and must be re-verified against the running shell |
-| 90–92 Quality rule, source integration, trademarks | done — already enforced by `check_no_fake_features`, `check_provenance`, `LICENSING.md` §4 |
+| 90–92 Quality rule, source integration, trademarks | done — items 90/91 re-audited 2026-08-25: the inventory claimed `port`/`vendored` reuse of brave-core, adblock-rust and ungoogled-chromium with **no file in the tree**; modes corrected, `docs/PROVENANCE.md` now records every third-party file (7 fields, item 91) and `check_provenance.py` ties the two together in both directions |
 | 93 Search privacy disclosure | done — `onboarding/first_run` builds it from the engine facts, no search proxy |
 | 94–95 No hidden cloud, optional remote features off by default | done — no compiled-in hostname, `updater` provider-abstract |
 | 96–97 Product identity, own UI | done as policy — no WebUI exists to judge yet |
@@ -125,15 +125,23 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 
 ## Open threads
 
-- Roadmap items 90+ awaited from the project owner.
+- Roadmap items 90–101 were re-supplied by the owner on 2026-08-25 and re-audited
+  against the tree rather than taken as done. Findings: 90/91 were overstated (see
+  above); 93 (search disclosure), 98 (six-step first run, six import sources) and
+  99 (five privacy notes, "protection is not invisibility") are genuinely
+  implemented and host-tested, and stay `policy-only` only because no WebUI host
+  registers the page. 96/97 are policy. 100/101 are the scoreboard itself —
+  `docs/ACCEPTANCE.md`, 11 of 31, unchanged because nothing new was proven by a
+  build.
 - Host comparisons are centralised in `privacy/network/host_match.h` and fenced
   by `scripts/check_host_matching.py` (audit rec. 4). Fixing F10 there — hosts
   were compared in wire form, so `EVIL.com` and `evil.com.` bypassed every
   domain-scoped filter rule.
-- **Audit debt left (`docs/security/AUDIT-2026-08-25.md`):** F6b the `dns0.eu`
-  preset is the website, not a DoH endpoint (a bad preset plus fallback = plaintext
-  DNS) · F7 degenerate window sizes · F8 learned trackers are in-memory only ·
-  F9 cert exceptions never expire. All small; none needs a build.
+- **Audit debt: closed.** F1–F10 are fixed except the part of F8 that needs the
+  profile layer (writing the learned table to disk — same blocker as wiring the
+  features in). dns0.eu shut down in October 2025 and we shipped its preset
+  anyway; presets now carry a `verified` date that expires the build after a
+  year (`scripts/check_dns_presets.py`).
 - `bedrock/crypto` is a *reference* implementation verified against published
   vectors. Wiring BoringSSL behind the same signatures (`BEDROCK_USE_BORINGSSL`)
   is a build-time task and is the one thing standing between this and shipping

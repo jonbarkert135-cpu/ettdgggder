@@ -4,6 +4,39 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #47 — items 90 and 91: provenance that is true in both directions
+
+- The inventory claimed reuse mode `port` for brave-core and ungoogled-chromium
+  and `vendored` for adblock-rust, and `THIRD_PARTY.md` described how ported
+  files keep their upstream header "with the exact upstream path and commit" — a
+  process with **zero instances**. Nothing was mis-licensed; the record described
+  an intention as the state of the tree, which is what item 90 bans in a feature
+  switch. Modes are now `reimplement`/`not-used`.
+- New `docs/PROVENANCE.md`: item 91's seven fields per third-party file. One row
+  today (the PrivacyTools.io catalog snapshot), and the file says why one row is
+  the honest answer for a 5 MB independently written overlay.
+- `check_provenance.py` rule 8 enforces it both ways: a `port`/`vendored` row
+  with no record fails, a record for a `reimplement` project fails, and a source
+  file declaring `Derived-from:` without a record fails. Verified by flipping
+  brave-core back to `port` and watching the build fail.
+- Items 93, 98, 99 audited against the owner's text and found genuinely
+  implemented — no code needed.
+
+## PR #46 — the rest of the audit debt (F6b–F9)
+
+- **F6b**: dns0.eu shut down in October 2025 — verified before touching the
+  code, not assumed. Preset replaced with DNS4EU (Whalebone s.r.o., Czechia).
+  `DnsProvider` gained a `verified` date and `scripts/check_dns_presets.py`
+  rejects a preset older than a year, or one without an operator and a policy URL.
+- **F7**: `QuantizeWindowSize()` returned a degenerate size for zero or negative
+  input; it now returns one step.
+- **F8** (partial, and labelled partial): the learned-tracker table gained time —
+  `SetNow()`, `last_seen`, `ForgetOlderThan()`, a 90-day default, user verdicts
+  exempt, timestamps in the export, pre-F8 files still load. Writing the table
+  to disk stays blocked on the Chromium profile layer and says so.
+- **F9**: certificate exceptions expire after 7 days; both exception maps are
+  keyed on `NormalizeHost`. Invariants 76, 77; audit addendum 2.
+
 ## PR #45 — one place where host comparisons happen
 
 - New `privacy/network/host_match`: `NormalizeHost`, `IsOrSubdomainOf`,

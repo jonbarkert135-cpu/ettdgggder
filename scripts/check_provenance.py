@@ -10,6 +10,9 @@ Enforces docs/LICENSING.md section 7:
   6. docs/privacy/FILTER_LISTS.md: one licence row per list, defaults verified, none bundled
   7. zero-trust dependencies (item 77): every row is reviewed within the last
      year and carries a justification that is about need, not taste
+  8. per-file provenance (item 91): docs/PROVENANCE.md records every file in the
+     tree that came from a third party, with the seven fields item 91 asks for,
+     and the record and the inventory mode cannot drift apart
 """
 
 from __future__ import annotations
@@ -24,6 +27,15 @@ INVENTORY = REPO / "docs" / "THIRD_PARTY.md"
 NOTICES = REPO / "THIRD_PARTY_NOTICES"
 PIN = REPO / "build" / "chromium.pin"
 FILTER_LISTS = REPO / "docs" / "privacy" / "FILTER_LISTS.md"
+PROVENANCE = REPO / "docs" / "PROVENANCE.md"
+
+# Item 91: what a record must say about a piece of third-party material.
+PROVENANCE_FIELDS = ["file", "project", "license", "version", "commit",
+                     "upstream_file", "status", "attribution"]
+MODIFICATION_STATUSES = {"verbatim", "modified", "data-snapshot"}
+# Only these modes mean "their code/data is in our tree", so only these require
+# -- and permit -- a per-file record.
+CODE_IN_TREE_MODES = {"port", "vendored"}
 
 # Item 77: a dependency must be justified by what it does for the product, not
 # by taste or momentum. These are the words that show up when it is neither.
@@ -158,6 +170,72 @@ def check_zero_trust(rows: list[dict[str, str]]) -> list[str]:
     return errors
 
 
+def parse_provenance(text: str) -> list[dict[str, str]]:
+    block = re.search(r"<!-- BEGIN PROVENANCE -->(.*?)<!-- END PROVENANCE -->", text, re.S)
+    if not block:
+        sys.exit("PROVENANCE.md: PROVENANCE markers not found")
+    records = []
+    for line in block.group(1).strip().splitlines():
+        cells = [c.strip().strip("`") for c in line.strip().strip("|").split("|")]
+        if len(cells) != 8 or cells[0].startswith("File in") or set(cells[0]) <= set("- "):
+            continue
+        records.append(dict(zip(PROVENANCE_FIELDS, cells)))
+    return records
+
+
+def check_provenance_records(rows: list[dict[str, str]]) -> list[str]:
+    """Item 91: traceable in both directions, or it is not traceable at all."""
+    errors: list[str] = []
+    records = parse_provenance(PROVENANCE.read_text())
+    by_project = {row["project"]: row for row in rows}
+
+    for record in records:
+        where = record["file"]
+        if not (REPO / record["file"]).is_file():
+            errors.append(f"PROVENANCE.md: {where} does not exist in the tree")
+        row = by_project.get(record["project"])
+        if row is None:
+            errors.append(f"PROVENANCE.md: {where} names {record['project']!r}, "
+                          "which is not in the THIRD_PARTY.md inventory")
+        else:
+            if row["license"] != record["license"]:
+                errors.append(
+                    f"PROVENANCE.md: {where} says {record['license']!r} but the "
+                    f"inventory says {row['license']!r} for {record['project']}")
+            if row["mode"] not in CODE_IN_TREE_MODES:
+                errors.append(
+                    f"PROVENANCE.md: {where} comes from {record['project']}, whose "
+                    f"reuse mode is {row['mode']!r} -- a file in the tree means "
+                    "mode 'port' or 'vendored'")
+        if record["status"] not in MODIFICATION_STATUSES:
+            errors.append(f"PROVENANCE.md: {where} has modification status "
+                          f"{record['status']!r} (allowed: {sorted(MODIFICATION_STATUSES)})")
+        for field in ("commit", "upstream_file", "attribution", "version"):
+            if not record[field] or record[field] in ("-", "?", "unknown"):
+                errors.append(f"PROVENANCE.md: {where} does not record its {field}")
+
+    recorded_projects = {record["project"] for record in records}
+    for row in rows:
+        if row["mode"] in CODE_IN_TREE_MODES and row["project"] not in recorded_projects:
+            errors.append(
+                f"{row['project']}: reuse mode {row['mode']!r} claims their material is in "
+                "the tree, but PROVENANCE.md has no record of a single file -- either add "
+                "the record or set the mode to 'reimplement'/'not-used'")
+
+    # The honesty direction: a file that says where it came from must be recorded.
+    recorded_files = {record["file"] for record in records}
+    for path in sorted((REPO / "src_overrides").rglob("*")):
+        if path.suffix not in (".cc", ".h", ".js", ".html", ".json"):
+            continue
+        head = path.read_text(errors="replace")[:4000]
+        if "Derived-from:" in head:
+            relative = path.relative_to(REPO).as_posix()
+            if relative not in recorded_files:
+                errors.append(f"{relative}: declares Derived-from: but has no "
+                              "PROVENANCE.md record")
+    return errors
+
+
 def check_upstream_patches(rows: list[dict[str, str]]) -> list[str]:
     """patches/upstream/<slug>/ must correspond to a port/patched-base inventory row."""
     allowed = {
@@ -212,13 +290,17 @@ def check_filter_lists() -> list[str]:
 def main() -> int:
     rows = parse_inventory()
     errors = (check(rows) + check_pin(rows) + check_upstream_patches(rows)
-              + check_zero_trust(rows) + check_filter_lists())
+              + check_zero_trust(rows) + check_filter_lists()
+              + check_provenance_records(rows))
     if errors:
         print("provenance check FAILED:")
         for error in errors:
             print(f"  - {error}")
         return 1
-    print(f"provenance OK: {len(rows)} dependencies, {len(list(NOTICES.glob('*.txt')))} notices")
+    records = parse_provenance(PROVENANCE.read_text())
+    print(f"provenance OK: {len(rows)} dependencies, "
+          f"{len(list(NOTICES.glob('*.txt')))} notices, "
+          f"{len(records)} per-file records (item 91)")
     return 0
 
 
@@ -233,6 +315,23 @@ def _selftest() -> None:
     unpinned = dict(good[0], project="X", version="master", notice="chromium.txt")
     assert any("not pinned" in e for e in check([unpinned])), "pin rule not enforced"
     assert check_filter_lists() == [], "filter list inventory should be clean"
+
+    # Item 91, both directions.
+    claiming = [{"project": "brave-core", "repository": "https://x", "version": "v1",
+                 "license": "MPL-2.0", "mode": "port", "notice": "brave-core.txt",
+                 "reviewed": "2026-08-25", "justification": "x"}]
+    assert any("no record of a single file" in e
+               for e in check_provenance_records(claiming)), "a port with no record must fail"
+    sample = parse_provenance(
+        "<!-- BEGIN PROVENANCE -->\n"
+        "| File in this tree | Source project | Licence | Version | Commit / snapshot |"
+        " Upstream file | Modification status | Attribution |\n"
+        "|---|---|---|---|---|---|---|---|\n"
+        "| `docs/PROVENANCE.md` | PrivacyTools.io | VERNAM License | v1 | snapshot-1 |"
+        " https://u/ | verbatim | credit link |\n"
+        "<!-- END PROVENANCE -->\n")
+    assert len(sample) == 1 and sample[0]["status"] == "verbatim", sample
+    assert check_provenance_records([]) , "a record naming no inventory project must fail"
     print("selftest OK")
 
 

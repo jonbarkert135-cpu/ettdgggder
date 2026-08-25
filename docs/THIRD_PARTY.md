@@ -3,13 +3,18 @@
 Machine-checked by `scripts/check_provenance.py`. Do not edit the table format.
 Versions verified against upstream on **2026-08-21**.
 
+This file records **which projects** Bedrock relates to and under what terms.
+[`PROVENANCE.md`](PROVENANCE.md) records **which files** in this tree come from them (item 91) —
+today, one data snapshot and nothing else. A reuse mode of `port` or `vendored` here is only legal
+while `PROVENANCE.md` has a matching record, so the two cannot drift apart.
+
 <!-- BEGIN INVENTORY -->
 | Project | Repository | Pinned version | License | Reuse mode | Notice | Reviewed | Justification |
 |---|---|---|---|---|---|---|---|
 | Chromium | https://chromium.googlesource.com/chromium/src | 151.0.7922.173 | BSD-3-Clause | patched-base | chromium.txt | 2026-08-21 | The browser engine; the project is an overlay on it (ADR 0001) |
-| brave-core | https://github.com/brave/brave-core | v1.96.5 | MPL-2.0 | port | brave-core.txt | 2026-08-21 | Reference for Shields behaviour; MPL files reused with attribution where a reimplementation would only differ cosmetically |
-| adblock-rust | https://github.com/brave/adblock-rust | v0.13.3 | MPL-2.0 | vendored | adblock-rust.txt | 2026-08-21 | Candidate filter-matching backend evaluated in ADR 0002; kept because it is MPL and already field-proven |
-| ungoogled-chromium | https://github.com/ungoogled-software/ungoogled-chromium | 151.0.7922.169-1 | BSD-3-Clause | port | ungoogled-chromium.txt | 2026-08-21 | Patch reference for removing Google service endpoints — work we would otherwise redo and get wrong |
+| brave-core | https://github.com/brave/brave-core | v1.96.5 | MPL-2.0 | reimplement | brave-core.txt | 2026-08-25 | Reference for Shields *behaviour*; no Brave file is in the tree (see PROVENANCE.md) |
+| adblock-rust | https://github.com/brave/adblock-rust | v0.13.3 | MPL-2.0 | not-used | adblock-rust.txt | 2026-08-25 | Recorded alternative backend behind `FilterEngine` (ADR 0002); no Rust code in the tree |
+| ungoogled-chromium | https://github.com/ungoogled-software/ungoogled-chromium | 151.0.7922.169-1 | BSD-3-Clause | reimplement | ungoogled-chromium.txt | 2026-08-25 | Patch *reference* for removing Google service endpoints; no upstream patch is adopted verbatim today |
 | uBlock Origin | https://github.com/gorhill/uBlock | 1.73.0 | GPL-3.0-or-later | separate-artifact | ublock-origin.txt | 2026-08-21 | Filter syntax reference only; GPL-3.0 keeps it a separate artifact, never linked |
 | Privacy Badger | https://github.com/EFForg/privacybadger | release-2026.8.7 | GPL-3.0-or-later | separate-artifact | privacy-badger.txt | 2026-08-21 | Tracker-heuristic reference only; GPL-3.0, separate artifact |
 | Tor Browser (tor-browser) | https://gitlab.torproject.org/tpo/applications/tor-browser | not-pinned-yet | MPL-2.0 | reimplement | tor-browser.txt | 2026-08-21 | Anti-fingerprinting research source; no code enters the tree |
@@ -42,13 +47,17 @@ is nothing to pin); the checker enforces this.
   service endpoints. See `docs/adr/0001-chromium-overlay.md`.
 - **Compatibility:** BSD-3 + MPL-2.0 combination is fine; MPL files remain individually MPL.
 
-## brave-core — `port`
+## brave-core — `reimplement`
 
 - **Copyright:** © The Brave Authors.
-- **What we use:** targeted files/ideas for privacy mechanisms (fingerprint farbling design,
-  shields settings model, ad-block service wiring). Each ported file keeps its MPL-2.0 header
-  plus a `Modified by the Bedrock authors` line and is listed in `THIRD_PARTY_NOTICES/brave-core.txt`
-  with its exact upstream path and commit.
+- **What we use:** the *published description* of privacy mechanisms (fingerprint farbling, the
+  shields settings model, ad-block service wiring). **No Brave file is in this tree**, which is why
+  the mode is `reimplement` and not `port` — it read `port` until 2026-08-25, describing an
+  intention as if it were the state of the code (items 90, 91).
+- **If a file is ever ported:** it keeps its MPL-2.0 header plus a `Modified by the Bedrock authors`
+  line and a `Derived-from:` line, gets a row in [`PROVENANCE.md`](PROVENANCE.md) with the exact
+  upstream path and commit, and the mode above becomes `port` in the same commit. `check_provenance.py`
+  fails the build if any of those three drift apart.
 - **Redistribution / disclosure:** MPL-2.0 — ported files and our modifications to them stay open.
 - **Trademark:** no Brave naming, no Brave Rewards/BAT, no Brave update or Brave Search endpoints.
 - **Compatibility:** MPL-2.0 file-level copyleft; compatible with our MPL-2.0 overlay and with
@@ -57,22 +66,27 @@ is nothing to pin); the checker enforces this.
   verdicts. MPL is per *file*: a port needs that file's header, a notice row and the upstream
   commit, never "brave-core is MPL".
 
-## adblock-rust — `vendored`
+## adblock-rust — `not-used`
 
 - **Copyright:** © The Brave Authors.
-- **Status at this commit: not in the tree.** No Rust code, no vendored crate. The row above
-  records the mode we would use *if* the backend is adopted (ADR 0002).
+- **Status at this commit: not in the tree.** No Rust code, no vendored crate — so the mode is
+  `not-used`. It read `vendored` until 2026-08-25, which claimed a dependency the build does not
+  have. If the backend is adopted (ADR 0002) the mode becomes `vendored` together with a
+  [`PROVENANCE.md`](PROVENANCE.md) record.
 - **What we would use:** the crate as-is, as an alternative matcher behind
   `bedrock::blocking::FilterEngine`. Consumed as a pinned crate, not copied file-by-file.
 - **Trademark:** none used.
 - **Compatibility:** MPL-2.0; Rust-in-Chromium is supported by the upstream build.
 
-## ungoogled-chromium — `port`
+## ungoogled-chromium — `reimplement`
 
 - **Copyright:** © The ungoogled-chromium contributors.
-- **What we use:** the *approach* and, where directly applicable, individual de-Google patches
-  (domain substitution, binary pruning, disabling of Google-bound services). Any patch adopted
-  verbatim is stored under `patches/upstream/ungoogled/` with the upstream path recorded.
+- **What we use:** the *approach* — domain substitution, binary pruning, disabling Google-bound
+  services. **No upstream patch is adopted today**: `patches/upstream/` does not exist, so the mode
+  is `reimplement`. It read `port` until 2026-08-25.
+- **If a patch is ever adopted verbatim:** it goes to `patches/upstream/ungoogled/` with the
+  upstream path and commit recorded, gets a [`PROVENANCE.md`](PROVENANCE.md) row, and the mode
+  becomes `port`.
 - **Compatibility:** BSD-3, no obligations beyond notice.
 
 ## uBlock Origin — `separate-artifact` ⚠ GPL-3.0

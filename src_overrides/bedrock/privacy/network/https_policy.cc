@@ -152,31 +152,50 @@ const char* HttpsPolicy::ExplainCertError(CertError error) {
 }
 
 void HttpsPolicy::AllowPlaintextForHost(const std::string& host) {
-  plaintext_exceptions_[host] = true;
+  plaintext_exceptions_[NormalizeHost(host)] = true;
 }
 
 void HttpsPolicy::ClearPlaintextException(const std::string& host) {
-  plaintext_exceptions_.erase(host);
+  plaintext_exceptions_.erase(NormalizeHost(host));
 }
 
 bool HttpsPolicy::HasPlaintextException(const std::string& host) const {
-  return plaintext_exceptions_.count(host) != 0;
+  return plaintext_exceptions_.count(NormalizeHost(host)) != 0;
 }
 
-bool HttpsPolicy::AddCertException(const std::string& host, CertError error) {
+bool HttpsPolicy::AddCertException(const std::string& host,
+                                   CertError error,
+                                   int64_t now) {
   if (!Proceedable(error)) {
     return false;
   }
-  cert_exceptions_[host] = error;
+  cert_exceptions_[NormalizeHost(host)] = {error,
+                                          now + kCertExceptionTtlSeconds};
   return true;
 }
 
 bool HttpsPolicy::HasCertException(const std::string& host,
-                                   CertError error) const {
-  auto it = cert_exceptions_.find(host);
-  // The exception covers the exact error it was granted for. A site excepted
-  // for an expired certificate must still warn if the authority changes.
-  return it != cert_exceptions_.end() && it->second == error;
+                                   CertError error,
+                                   int64_t now) const {
+  auto it = cert_exceptions_.find(NormalizeHost(host));
+  // The exception covers the exact error it was granted for, and only until it
+  // expires. A site excepted for an expired certificate must still warn if the
+  // authority changes.
+  return it != cert_exceptions_.end() && it->second.error == error &&
+         now < it->second.expires_at;
+}
+
+int HttpsPolicy::PruneCertExceptions(int64_t now) {
+  int removed = 0;
+  for (auto it = cert_exceptions_.begin(); it != cert_exceptions_.end();) {
+    if (now >= it->second.expires_at) {
+      it = cert_exceptions_.erase(it);
+      ++removed;
+    } else {
+      ++it;
+    }
+  }
+  return removed;
 }
 
 void HttpsPolicy::ClearCertExceptions() {

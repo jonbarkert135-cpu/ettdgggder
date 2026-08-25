@@ -218,9 +218,16 @@ Size QuantizeWindowSize(Size actual, FpLevel level) {
       step = 200;
       break;
   }
+  // A window is never reported as 0 or negative (audit finding F7). A caller
+  // that hands us a degenerate size gets the smallest bucket: 0 would be both a
+  // division by zero in page script and a value no real window ever has, which
+  // makes it a fingerprint of its own.
+  if (actual.width <= 0 || actual.height <= 0) {
+    return Size{step, step};
+  }
   Size quantized{actual.width - actual.width % step,
                  actual.height - actual.height % step};
-  // Never report 0: a tiny window must still land in the smallest bucket.
+  // A window smaller than one step still reports its own size rather than 0.
   quantized.width = std::max(quantized.width, std::min(actual.width, step));
   quantized.height = std::max(quantized.height, std::min(actual.height, step));
   return quantized;

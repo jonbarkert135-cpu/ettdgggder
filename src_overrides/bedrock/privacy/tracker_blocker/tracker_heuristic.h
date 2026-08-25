@@ -28,6 +28,15 @@
 //   * The stored table is domains and counters, not history: it records that
 //     `tracker.example` was seen on three sites, never which sites, once the
 //     threshold is reached.
+//   * Evidence ages out. Audit finding F8 was that the table lives only in
+//     memory, so behavioural blocking restarts from zero every session. The
+//     table has always been serialisable (`Export`/`Import`); what was missing
+//     was the reason it is safe to keep: a record that never expires is a
+//     permanent local trace of what the user has browsed, and a verdict from
+//     two years ago is evidence about a domain that may have changed hands.
+//     `ForgetOlderThan()` bounds both. Writing the file is the integration
+//     layer's job (it needs the profile directory, i.e. the Chromium build);
+//     the policy lives here and is tested here.
 
 namespace bedrock {
 namespace blocking {
@@ -88,6 +97,19 @@ class TrackerHeuristic {
   void Forget(const std::string& domain);
   void Clear();
 
+  // Injected clock, in seconds, following `cname_uncloak`. Observations made
+  // before it is ever set are stamped 0 and so are the first to be forgotten.
+  void SetNow(int64_t now_seconds) { now_ = now_seconds; }
+  int64_t now() const { return now_; }
+
+  // Default retention for learned evidence: long enough to survive a holiday,
+  // short enough that a table restored from disk is about the present.
+  static constexpr int64_t kDefaultMaxAgeSeconds = 90 * 24 * 60 * 60;
+
+  // Drops entries not observed within `max_age_seconds`, and returns how many.
+  // User verdicts are never dropped: those are decisions, not evidence.
+  int ForgetOlderThan(int64_t max_age_seconds);
+
   // Import/export of the learned table, so the user can inspect, back up or
   // move it. Line format: "domain<TAB>count<TAB>flags".
   std::string Export() const;
@@ -99,6 +121,7 @@ class TrackerHeuristic {
   struct Entry {
     std::set<std::string> first_parties;  // cleared once the threshold is hit
     int count = 0;
+    int64_t last_seen = 0;
     bool partition_only = false;
     bool honours_signals = false;
     Verdict user_verdict = Verdict::kUnknown;
@@ -110,6 +133,7 @@ class TrackerHeuristic {
 
   std::map<std::string, Entry> entries_;
   int threshold_ = kDefaultThreshold;
+  int64_t now_ = 0;
 };
 
 }  // namespace blocking

@@ -16,6 +16,8 @@ Why MPL-2.0 and not BSD-3 or GPL-3.0:
   a ported Brave file stays MPL-2.0 and stays open, and we can keep it in-tree legally as
   long as we preserve its header and disclose modifications. Choosing MPL-2.0 for the whole
   overlay removes any per-file license mixing question for the largest reuse source.
+  (No such file exists today — see [`PROVENANCE.md`](PROVENANCE.md), which records every
+  third-party file in the tree, and is the reason those rows now read `reimplement`.)
 - Firefox and Tor Browser's Firefox patches are MPL-2.0 → same treatment.
 - GPL-3.0 is **not** chosen: it would be incompatible with distributing a binary that links
   proprietary-but-permitted third-party bits Chromium already ships (e.g. some codec and

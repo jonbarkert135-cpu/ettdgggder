@@ -53,6 +53,13 @@ struct DnsProvider {
   std::string policy_url;
   bool logs_queries = false;
   bool filters_content = false;  // blocks malware/ads at the resolver
+  // ISO date this entry was last checked against the operator's own
+  // documentation. A shipped resolver list is a perishable good: audit finding
+  // F6b was a preset (`dns0.eu`) whose service had shut down, pointing at the
+  // website instead of a DoH endpoint — with fallback enabled, that is a
+  // plaintext DNS query. `scripts/check_dns_presets.py` fails the build when an
+  // entry goes stale or stops looking like an endpoint.
+  std::string verified;
 };
 
 class DnsSettings {

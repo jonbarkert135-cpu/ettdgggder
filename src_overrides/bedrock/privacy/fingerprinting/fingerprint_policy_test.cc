@@ -161,6 +161,17 @@ int main() {
   // A window smaller than one bucket must still report something usable.
   const Size tiny = QuantizeWindowSize({80, 40}, FpLevel::kStrict);
   Check(tiny.width > 0 && tiny.height > 0, "quantized size is never zero");
+  // Audit F7: a degenerate window reported as 0x0 is a division by zero in page
+  // script and a value no real window has, i.e. a fingerprint of its own.
+  for (Size degenerate : {Size{0, 0}, Size{0, 800}, Size{-1, -1},
+                          Size{-50, 900}}) {
+    for (FpLevel level : {FpLevel::kBalanced, FpLevel::kStrict,
+                          FpLevel::kMaximum}) {
+      const Size reported = QuantizeWindowSize(degenerate, level);
+      Check(reported.width > 0 && reported.height > 0,
+            "a degenerate window still reports a usable size");
+    }
+  }
 
   Check(TimerResolutionUs(FpLevel::kCompatibility) == 0, "no coarsening at L0");
   Check(TimerResolutionUs(FpLevel::kMaximum) > TimerResolutionUs(FpLevel::kStrict),

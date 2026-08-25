@@ -103,27 +103,55 @@ int main() {
                              CertError::kWeakSignature};
   for (CertError error : bypassable) {
     Check(HttpsPolicy::Proceedable(error), "misconfiguration is proceedable");
-    Check(https.AddCertException("broken.test", error),
+    Check(https.AddCertException("broken.test", error, 1000),
           "an exception can be stored for it");
   }
   for (CertError error : never) {
     Check(!HttpsPolicy::Proceedable(error),
           "interception-grade error is not proceedable");
-    Check(!https.AddCertException("evil.test", error),
+    Check(!https.AddCertException("evil.test", error, 1000),
           "and no exception can be stored for it");
-    Check(!https.HasCertException("evil.test", error),
+    Check(!https.HasCertException("evil.test", error, 1000),
           "so no bypass exists");
   }
 
   // An exception covers the exact error it was granted for, nothing more.
   https.ClearCertExceptions();
-  https.AddCertException("broken.test", CertError::kExpired);
-  Check(https.HasCertException("broken.test", CertError::kExpired),
+  const int64_t granted = 1'000'000;
+  https.AddCertException("broken.test", CertError::kExpired, granted);
+  Check(https.HasCertException("broken.test", CertError::kExpired, granted),
         "exception applies to the error it was granted for");
-  Check(!https.HasCertException("broken.test", CertError::kAuthorityInvalid),
+  Check(!https.HasCertException("broken.test", CertError::kAuthorityInvalid,
+                                granted),
         "a new kind of problem on the same host still warns");
-  Check(!https.HasCertException("elsewhere.test", CertError::kExpired),
+  Check(!https.HasCertException("elsewhere.test", CertError::kExpired, granted),
         "exceptions never apply to another host");
+
+  // Audit F9: a certificate exception expires. Clicking through once is a
+  // decision about a moment, not a permanent downgrade of this host.
+  const int64_t ttl = HttpsPolicy::kCertExceptionTtlSeconds;
+  Check(https.HasCertException("broken.test", CertError::kExpired,
+                               granted + ttl - 1),
+        "the exception holds right up to its expiry");
+  Check(!https.HasCertException("broken.test", CertError::kExpired,
+                                granted + ttl),
+        "and not one second past it");
+  Check(https.PruneCertExceptions(granted + ttl) == 1,
+        "pruning removes the expired exception");
+  Check(https.PruneCertExceptions(granted + ttl) == 0,
+        "and there is nothing left to remove");
+  https.AddCertException("broken.test", CertError::kExpired, granted);
+  Check(https.PruneCertExceptions(granted + ttl - 1) == 0,
+        "pruning never drops an exception that is still in force");
+
+  // F10 sibling: an exception is about a host, not about a spelling of one.
+  https.ClearCertExceptions();
+  https.AddCertException("BROKEN.test.", CertError::kExpired, granted);
+  Check(https.HasCertException("broken.test", CertError::kExpired, granted),
+        "case and a trailing root dot do not create a second host");
+  https.AllowPlaintextForHost("Plain.TEST");
+  Check(https.HasPlaintextException("plain.test"),
+        "and the same holds for plaintext exceptions");
 
   // Every error is explained in words a person can act on.
   for (int i = 0; i <= static_cast<int>(CertError::kWeakSignature); ++i) {
