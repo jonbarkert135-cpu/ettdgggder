@@ -90,6 +90,20 @@ read, not skimmed. Anything longer belongs in a doc, linked from here.
 - Scheme checks that legitimately look at a prefix renamed `HasScheme()`.
   Invariant 75.
 
+## PR #44 — Windows / low-memory build path
+
+- `build/sync.py`: overrides are **copied** when the OS refuses a symlink
+  (Windows without Developer Mode raises `WinError 1314`), a `--no-history` flag
+  drops Chromium's git history for a much smaller checkout, and the printed next
+  steps are PowerShell on Windows. Consequence of copying: `--overlay-only` must
+  be re-run after every overlay edit, because a copy does not track its source.
+- `build/args/bedrock-lowmem.gn`: overrides to **append after** the release args
+  (component build, no official build, no debug info) so an 8 GB laptop can link.
+  Alone it would drop the autonomy flags, so the file says so at the top.
+- `docs/BUILD.md` → "Building on 8 GB": job caps, 32 GB page file, Defender
+  exclusions, and an honest 35–50 h estimate extrapolated from the one measured
+  build (56 105 steps / 12 h 16 m / 17 cores). Nobody has run this config yet.
+
 ## PR #43 — F3 and F4: real cryptography behind the password store
 
 - New `bedrock/crypto/`: `hash` (SHA-256, HMAC, HKDF, PBKDF2, SHA-1 for the

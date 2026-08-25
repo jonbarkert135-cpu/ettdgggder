@@ -8,6 +8,9 @@ Nothing here is required to contribute. Every gate the project enforces
 (`scripts/run_host_tests.sh`) runs on one core in minutes. This is only for
 producing a running browser binary.
 
+If renting is not an option, the build can be done on a developer laptop instead —
+slowly, and with different arguments: [`BUILD.md` → Building on 8 GB](BUILD.md#building-on-8-gb).
+
 ## What the build actually needs
 
 | Resource | Minimum | Why |

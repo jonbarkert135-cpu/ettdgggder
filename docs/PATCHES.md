@@ -11,7 +11,8 @@ dares delete anything, so the patch set only grows and the rolls only get harder
 
 ## Two ways to change the engine, in order of preference
 
-1. **`src_overrides/`** — new files, symlinked into the Chromium tree at build time. New files do
+1. **`src_overrides/`** — new files, symlinked into the Chromium tree at build time (copied where
+   the OS refuses symlinks, e.g. Windows without Developer Mode). New files do
    not conflict on a roll. Almost all Bedrock code lives here for that reason alone.
 2. **`patches/`** — real diffs against upstream files, applied by `build/sync.py` in sorted path
    order. Only when an existing upstream file has to change.

@@ -1,0 +1,37 @@
+# Bedrock Browser — low-memory overrides for a developer laptop.
+#
+# NOT a standalone configuration and NOT a release configuration: append these
+# lines *after* bedrock-release.gn so the autonomy flags (no Google API keys, no
+# reporting, no Safe Browsing) still apply. A binary built with these args is a
+# development build — unoptimised relative to a release build, and never to be
+# published (build/ENFORCEMENT.md records builds; docs/RELEASES.md is the gate).
+#
+# Target: 6–8 cores, 8–16 GB RAM. The peak memory of a Chromium build is the
+# link, not the compile, so the overrides are about linking small and often.
+# See docs/BUILD.md → "Building on 8 GB".
+
+# Many small shared libraries instead of one giant binary: each link needs a
+# fraction of the memory, and re-linking after an overlay edit takes seconds.
+# The binary must then be run from out/ — it is not relocatable.
+is_component_build = true
+
+# Official builds add whole-program optimisation and take hours longer. Wrong
+# trade for a machine where the build is measured in nights.
+is_official_build = false
+
+# Debug info is the single largest consumer of RAM and disk here. Symbols come
+# back with symbol_level=1 once there is a crash worth reading.
+symbol_level = 0
+blink_symbol_level = 0
+
+# Rewrites the link into a memory-hungry global step; the compile-time win is
+# irrelevant when the build is disk-bound anyway.
+use_thin_lto = false
+
+# Neither is needed to run and exercise the overlay, and both cost build time.
+enable_nacl = false
+dcheck_always_on = false
+
+# One caveat when combining files: the release args set use_sysroot = true, which
+# is a Linux concept. If `gn gen` on Windows rejects it, drop that single line
+# from the combined args — do not drop any of the autonomy flags around it.
