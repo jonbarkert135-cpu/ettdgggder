@@ -59,6 +59,39 @@ free:
   `-fno-exceptions`, the `raw_ptr` plugin and Chromium's strict standard-library includes each
   required real changes to code that had passed its host tests for weeks.
 
+## The owner's 16-step workflow (item 102), mapped
+
+Item 102 states the order the project should have been built in. The phases above are that order,
+renumbered; this table is the mapping, with the evidence for each claim rather than a status word.
+"Policy" always means the same thing here: real, host-tested logic that no Chromium call site
+invokes yet.
+
+| Step (item 102) | State | Evidence |
+| --- | --- | --- |
+| 1 Research | done | [`research/`](research/) — Chromium, Brave, Firefox, Tor Browser, uBO, Privacy Badger, and `ORIGIN_TOOLS.md`, which records a project from the brief that **does not exist** rather than inventing it |
+| 2 License audit / provenance map | done | [`LICENSING.md`](LICENSING.md), [`THIRD_PARTY.md`](THIRD_PARTY.md) (9 components, versions, licences, reuse mode), [`PROVENANCE.md`](PROVENANCE.md) (per file, item 91), SBOM, `check_provenance.py` |
+| 3 Architecture | done | [`ARCHITECTURE.md`](ARCHITECTURE.md) incl. the trust-boundary diagram, ADRs 0001–0014 |
+| 4 Threat model | done | [`security/THREAT_MODEL.md`](security/THREAT_MODEL.md) — 14 adversaries, each with where it stops |
+| 5 **Chromium build** | done once, not reproducible on demand | Builds of 2026-08-22 and 2026-08-23 on Linux x64 by hand; `build/ENFORCEMENT.md`. No CI build, no Windows build, ~35–50 h on the owner's laptop ([`BUILD_ON_YOUR_MACHINE.md`](BUILD_ON_YOUR_MACHINE.md)) |
+| 6 Minimal browser shell | done | First Chromium call site into `bedrock::` runs — `patches/bedrock/integration/0001-bedrock-startup-hook.patch` |
+| 7 Privacy core | policy | `privacy/core/`, 30-feature registry, ADR 0007 |
+| 8 Blocking | policy | `privacy/tracker_blocker/`, pipeline + CNAME uncloaking, 0.21 µs matcher |
+| 9 Fingerprinting | policy, 1 enforced | 21 surfaces, letterboxing, keyed derivation; `webrtc_policy` is the single `kEnforced` feature |
+| 10 UI | policy | `ui/`, own visual language ([`IDENTITY.md`](IDENTITY.md), items 96/97) — pages exist, no WebUI host registers them |
+| 11 Customisation | policy | `themes/`, `branding/design-tokens.json`, ADR 0012 |
+| 12 Search | policy | `search/engine_selector`, Google + DuckDuckGo with per-engine disclosure (item 93) |
+| 13 Tor | not started | ADR 0010 states the open question (bundled daemon vs system Tor); no code |
+| 14 Security testing | partial | 64 host tests, 9 fuzz harnesses, 31 gates, the 2026-08-25 audit and its ten findings — but no sanitiser run and no libFuzzer campaign, both of which need a build |
+| 15 Performance | policy | 6 measured host-level metrics, 8 budgets that cannot be measured without a build |
+| 16 Release | not started | [`BUILD.md`](BUILD.md), [`RELEASES.md`](RELEASES.md), [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md) describe it; nothing has been packaged |
+
+**The honest summary of that table:** steps 1–4 are complete and step 6 is real. Everything from
+step 7 down is one build away from being either true or false, and that build is the project's only
+real bottleneck — not the remaining roadmap items. Item 103 asks that every milestone leave a
+working, buildable product; the tree satisfies "buildable" (the overlay compiles into Chromium and
+the host suite is green on every commit) and does not yet satisfy "the privacy features work",
+which is exactly why this table says `policy` eleven times instead of claiming otherwise.
+
 ## What comes next, in order
 
 1. **Re-verify phases 3–5 against the running shell.** Phase 2 landed on 2026-08-23: the browser

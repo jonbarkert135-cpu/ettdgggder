@@ -104,4 +104,4 @@ for upload.
 
 Related: [`PRIVACY.md`](PRIVACY.md) (what connects out — nothing),
 [`ERRORS.md`](ERRORS.md) (what the user sees when something fails),
-[`THREAT_MODEL.md`](THREAT_MODEL.md) (who reads a stolen profile directory).
+[`THREAT_MODEL.md`](security/THREAT_MODEL.md) (who reads a stolen profile directory).

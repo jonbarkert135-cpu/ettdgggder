@@ -44,7 +44,7 @@ gate counts refreshed 2026-08-25.
 | 27 | Tests pass | yes, for what they cover | 64 host tests, 9 fuzz smoke harnesses, 31 gates in CI; sanitizers, libFuzzer campaigns and browser tests need a Chromium build and have no numbers |
 | 28 | Build instructions work | yes, on Linux | `BUILD.md` + `scripts/resume_build.sh` reproduce build 2; Windows instructions are untested |
 | 29 | Security documentation exists | yes | `SECURITY.md`, `docs/security/` |
-| 30 | Threat model exists | yes | `docs/THREAT_MODEL.md` |
+| 30 | Threat model exists | yes | `docs/security/THREAT_MODEL.md` |
 | 31 | Upstream strategy exists | yes | `docs/UPSTREAM_SYNC.md`, `PATCHES.md`, `scripts/upstream_sync.py` |
 
 **The honest summary: 11 of 31 criteria are met.** Everything in the privacy

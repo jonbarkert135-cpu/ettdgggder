@@ -35,7 +35,7 @@ REQUIRED = [
     "SECURITY.md",
     "docs/ARCHITECTURE.md",
     "docs/BUILD.md",
-    "docs/THREAT_MODEL.md",
+    "docs/security/THREAT_MODEL.md",
     "docs/PRIVACY.md",
     "docs/LICENSING.md",
     "docs/THIRD_PARTY.md",

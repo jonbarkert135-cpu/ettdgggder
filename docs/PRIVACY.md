@@ -52,7 +52,7 @@ heuristics learn nothing there either.
 - No "anonymous" telemetry, no A/B experiments, no variations service, no engagement metrics.
 - No claim that Bedrock makes you anonymous. It reduces what sites can observe and correlate;
   anonymity is a different, much stronger property that no browser alone can provide
-  ([`THREAT_MODEL.md`](THREAT_MODEL.md) lists what is out of scope).
+  ([`THREAT_MODEL.md`](security/THREAT_MODEL.md) lists what is out of scope).
 - No counter or badge for an event the engine does not actually emit (item 55, gated by
   `check_no_fake_features.py`).
 - No default that is more private on paper than in use: a protection that breaks the web is turned
