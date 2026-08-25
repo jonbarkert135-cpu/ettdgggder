@@ -95,6 +95,8 @@ source_set("bedrock") {
     "privacy/network/host_match.h",
     "privacy/network/https_policy.cc",
     "privacy/network/https_policy.h",
+    "privacy/network/remote_features.cc",
+    "privacy/network/remote_features.h",
     "privacy/network/webrtc_policy.cc",
     "privacy/network/webrtc_policy.h",
     "privacy/security/security_baseline.cc",

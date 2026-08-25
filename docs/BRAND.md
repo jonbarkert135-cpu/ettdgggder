@@ -2,7 +2,9 @@
 
 **Roadmap item 65.** Bedrock's identity is its own: name, mark, colours, type and UI language are
 authored here and owe nothing to another browser. `scripts/check_branding.py` enforces the parts
-of that a script can check.
+of that a script can check. The mirror image — other vendors' names, marks and interface
+vocabulary, and what Bedrock refuses to borrow from them — is [`IDENTITY.md`](IDENTITY.md)
+(items 92, 96, 97), enforced by `scripts/check_trademarks.py`.
 
 ## Name
 

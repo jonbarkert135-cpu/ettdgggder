@@ -4,6 +4,43 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #49 — items 94, 95: the hidden cloud, made impossible to add quietly
+
+- New `privacy/network/remote_features`: the seven remote interactions the
+  design permits (search query, suggestions, DoH, filter list subscriptions,
+  extension updates, Tor mode, update check), each with operator, default, how
+  to disable, what it can be replaced with, and a doc link.
+  `Operator::kBedrockOperated` exists only so the validator can reject it.
+- Every row is `Status::kPolicyOnly` because this overlay has no network stack
+  code at all — stated in the generated doc rather than glossed over (item 90).
+  Only `search_query` is on by default, and only because it is the user's own
+  request going where they sent it.
+- `scripts/check_remote_features.py`: a module using `SimpleURLLoader`,
+  `URLLoaderFactory`, `fetch(` or a socket without a row fails the build; any
+  `bedrock.*` hostname anywhere in the tree fails; `docs/privacy/REMOTE.md` is
+  generated from the table. Probed with a fake sync .cc and a fetching .js.
+- False positive fixed while building it: symbol names inside string literals
+  ("the URLLoaderFactory hook is phase 7") are prose, not calls, so literals are
+  stripped before the scan. Invariant 81.
+
+## PR #48 — items 92, 96, 97: the other half of the branding line
+
+- `check_branding.py` guarded *our* identity but never looked at the shipped UI
+  or at C++ string literals, where other vendors' names actually live
+  (`first_run_page.cc` lists Chrome/Firefox/Edge, the DoH presets name their
+  operators). A blanket ban would break item 98, which requires those labels.
+- New `scripts/check_trademarks.py` splits nominative use (allowed) from
+  identity and affiliation use (banned): a vendor name within 60 characters of
+  "official", "powered by", "certified", "in partnership" fails; a vendor name
+  in a string assigned to an app/product/title/brand/logo identifier fails; an
+  image file anywhere named after a vendor fails; `--moz-`, `--brave-`,
+  `.chrome-` CSS vocabulary in the UI fails (items 96, 97). Comments are exempt
+  on purpose — the reasoning should stay visible.
+- `docs/IDENTITY.md`: what the product is ("one product, not five browsers
+  wearing one skin"), the no-copied-UI rule, and a stance table saying what was
+  taken and refused from each research note. A note with no row fails the build.
+- All five rules probed live by injecting a violation of each. Invariants 79, 80.
+
 ## PR #47 — items 90 and 91: provenance that is true in both directions
 
 - The inventory claimed reuse mode `port` for brave-core and ungoogled-chromium
@@ -560,6 +597,13 @@ Anti-fingerprinting levels, deterministic derivation, Protection Controller.
 
 ## PR #1 — Roadmap 6–8
 Search system, omnibox classifier, Privacy Engine architecture.
+
+## Process note (2026-08-25)
+
+Six PRs in a row (#42–#49) shipped with no HISTORY.md entry: the edits were made
+with `str.replace()` on an anchor that did not exist, so the write was a no-op
+and nothing failed locally. CI caught it, as designed. When editing memory from
+a script, assert the replacement changed the file.
 
 ## Foundation
 Chromium overlay build system + licensing/provenance gate; CI.

@@ -27,6 +27,7 @@ where GitHub looks for them; `check_open_source.py` enforces their presence and 
 | [`privacy/FILTER_LISTS.md`](privacy/FILTER_LISTS.md) | which filter lists, under which licences |
 | [`privacy/fingerprinting/README.md`](privacy/fingerprinting/README.md) | every fingerprinting surface and its mitigation |
 | [`privacy/FEATURES.md`](privacy/FEATURES.md) | every protection: how it works, what it protects, what it cannot, what it breaks |
+| [`privacy/REMOTE.md`](privacy/REMOTE.md) | everything that can leave your machine, and how to switch it off (items 94, 95) |
 | [`privacy/TRADEOFFS.md`](privacy/TRADEOFFS.md) | the five-axis score behind every default, and the exceptions |
 | [`security/TESTING.md`](security/TESTING.md) | sanitizers, fuzzing, and what CI runs |
 | [`DIAGNOSTICS.md`](DIAGNOSTICS.md) | local debug logs and crash reports, and why neither is telemetry |
@@ -49,6 +50,7 @@ where GitHub looks for them; `check_open_source.py` enforces their presence and 
 | [`LICENSING.md`](LICENSING.md) | the reuse decision ladder and the GPL boundary |
 | [`THIRD_PARTY.md`](THIRD_PARTY.md) | the component inventory that the SBOM is generated from |
 | [`PROVENANCE.md`](PROVENANCE.md) | every third-party file in the tree, field by field (item 91) |
+| [`IDENTITY.md`](IDENTITY.md) | what the product is, whose names and interfaces it refuses (items 92, 96, 97) |
 
 ## Product surfaces
 
