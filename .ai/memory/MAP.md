@@ -451,6 +451,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/PLATFORMS.md`](../../docs/PLATFORMS.md) | Platform support |
 | [`docs/PRIVACY.md`](../../docs/PRIVACY.md) | Privacy |
 | [`docs/PROCESS.md`](../../docs/PROCESS.md) | How a part of Bedrock gets built |
+| [`docs/PROVENANCE.md`](../../docs/PROVENANCE.md) | Provenance — every piece of third-party material, file by file |
 | [`docs/README.md`](../../docs/README.md) | Documentation index |
 | [`docs/RELEASES.md`](../../docs/RELEASES.md) | Releases |
 | [`docs/REPRODUCIBILITY.md`](../../docs/REPRODUCIBILITY.md) | Reproducible Builds |

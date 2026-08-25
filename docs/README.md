@@ -48,6 +48,7 @@ where GitHub looks for them; `check_open_source.py` enforces their presence and 
 | --- | --- |
 | [`LICENSING.md`](LICENSING.md) | the reuse decision ladder and the GPL boundary |
 | [`THIRD_PARTY.md`](THIRD_PARTY.md) | the component inventory that the SBOM is generated from |
+| [`PROVENANCE.md`](PROVENANCE.md) | every third-party file in the tree, field by field (item 91) |
 
 ## Product surfaces
 
