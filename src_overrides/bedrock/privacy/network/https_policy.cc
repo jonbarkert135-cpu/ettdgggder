@@ -23,6 +23,41 @@ bool EndsWith(const std::string& text, const std::string& suffix) {
          text.compare(text.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
+// True only for a literal dotted-quad. `10.example.com` is a *domain* that an
+// attacker can register; treating it as an address is how a private-range
+// prefix check becomes an HTTPS downgrade for anyone who buys the right name.
+bool IsIPv4Literal(const std::string& host, int octets[4]) {
+  int value = 0;
+  int digits = 0;
+  int index = 0;
+  for (size_t i = 0; i <= host.size(); ++i) {
+    const char c = i < host.size() ? host[i] : '.';
+    if (c >= '0' && c <= '9') {
+      if (++digits > 3) {
+        return false;
+      }
+      value = value * 10 + (c - '0');
+      if (value > 255) {
+        return false;
+      }
+      continue;
+    }
+    if (c != '.' || digits == 0 || index > 3) {
+      return false;
+    }
+    octets[index++] = value;
+    value = 0;
+    digits = 0;
+  }
+  return index == 4;
+}
+
+// Label-boundary suffix: `.onion` must be a real last label, so
+// `notonion.example.com` and `evil-onion.test` do not qualify.
+bool HasSuffixLabel(const std::string& host, const std::string& label) {
+  return host.size() > label.size() && EndsWith(host, label);
+}
+
 }  // namespace
 
 HttpsPolicy::HttpsPolicy(privacy::ProtectionController* controls)
@@ -32,10 +67,28 @@ HttpsPolicy::~HttpsPolicy() = default;
 
 // static
 bool HttpsPolicy::IsLocalOrOnion(const std::string& host) {
-  return host == "localhost" || StartsWith(host, "127.") ||
-         StartsWith(host, "192.168.") || StartsWith(host, "10.") ||
-         EndsWith(host, ".local") || EndsWith(host, ".onion") ||
-         host == "[::1]";
+  if (host == "localhost" || HasSuffixLabel(host, ".localhost")) {
+    return true;
+  }
+  if (host == "[::1]" || StartsWith(host, "[fc") || StartsWith(host, "[fd") ||
+      StartsWith(host, "[fe80:")) {
+    return true;  // IPv6 loopback, unique-local, link-local
+  }
+  if (HasSuffixLabel(host, ".local") || HasSuffixLabel(host, ".onion") ||
+      HasSuffixLabel(host, ".internal")) {
+    return true;
+  }
+  int octet[4] = {0, 0, 0, 0};
+  if (IsIPv4Literal(host, octet)) {
+    // RFC 1918 + loopback + link-local. Checked on parsed octets, never on the
+    // spelling of the name: `10.example.com` is not 10.0.0.0/8.
+    return octet[0] == 127 || octet[0] == 10 ||
+           (octet[0] == 192 && octet[1] == 168) ||
+           (octet[0] == 172 && octet[1] >= 16 && octet[1] <= 31) ||
+           (octet[0] == 169 && octet[1] == 254) ||
+           (octet[0] == 0 && octet[1] == 0 && octet[2] == 0 && octet[3] == 0);
+  }
+  return false;
 }
 
 HttpsMode HttpsPolicy::ModeForHost(const std::string& host) const {
@@ -56,19 +109,27 @@ UpgradeAction HttpsPolicy::ForNavigation(const std::string& url,
   if (!StartsWith(url, "http://")) {
     return UpgradeAction::kAlreadySecure;  // non-web scheme, not ours to judge
   }
-  if (controls_->Get(Control::kHttps, host, host) == Value::kAllow) {
-    return UpgradeAction::kAllowPlaintext;  // user turned upgrading off here
-  }
-  if (HasPlaintextException(host)) {
-    return UpgradeAction::kAllowPlaintext;
-  }
   if (IsLocalOrOnion(host)) {
     // A printer on the LAN and a .onion address have no public certificate.
     // Warning here would teach the user that the warning means nothing.
     return UpgradeAction::kAllowPlaintext;
   }
+  if (HasPlaintextException(host)) {
+    // An explicit, per-host decision the user made at an interstitial. This is
+    // the only thing that outranks HTTPS-Only, and it is remembered per host,
+    // never globally.
+    return UpgradeAction::kAllowPlaintext;
+  }
+  // The mode is checked *before* the per-site shields value. `ModeForHost()`
+  // documents that a site can only make HTTPS stronger; reading the per-site
+  // Allow first made that false, so one shields toggle silently switched
+  // HTTPS-Only off for that host with no interstitial and no record.
+  // See docs/security/AUDIT-2026-08-25.md (F2).
   if (ModeForHost(host) == HttpsMode::kHttpsOnly) {
     return UpgradeAction::kInterstitial;
+  }
+  if (controls_->Get(Control::kHttps, host, host) == Value::kAllow) {
+    return UpgradeAction::kAllowPlaintext;  // user turned upgrading off here
   }
   return UpgradeAction::kUpgrade;
 }
