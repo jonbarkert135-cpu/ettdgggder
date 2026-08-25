@@ -4,6 +4,74 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #47 — items 90 and 91: provenance that is true in both directions
+
+- The inventory claimed reuse mode `port` for brave-core and ungoogled-chromium
+  and `vendored` for adblock-rust, and `THIRD_PARTY.md` described how ported
+  files keep their upstream header "with the exact upstream path and commit" — a
+  process with **zero instances**. Nothing was mis-licensed; the record described
+  an intention as the state of the tree, which is what item 90 bans in a feature
+  switch. Modes are now `reimplement`/`not-used`.
+- New `docs/PROVENANCE.md`: item 91's seven fields per third-party file. One row
+  today (the PrivacyTools.io catalog snapshot), and the file says why one row is
+  the honest answer for a 5 MB independently written overlay.
+- `check_provenance.py` rule 8 enforces it both ways: a `port`/`vendored` row
+  with no record fails, a record for a `reimplement` project fails, and a source
+  file declaring `Derived-from:` without a record fails. Verified by flipping
+  brave-core back to `port` and watching the build fail.
+- Items 93, 98, 99 audited against the owner's text and found genuinely
+  implemented — no code needed.
+
+## PR #46 — the rest of the audit debt (F6b–F9)
+
+- **F6b**: dns0.eu shut down in October 2025 — verified before touching the
+  code, not assumed. Preset replaced with DNS4EU (Whalebone s.r.o., Czechia).
+  `DnsProvider` gained a `verified` date and `scripts/check_dns_presets.py`
+  rejects a preset older than a year, or one without an operator and a policy URL.
+- **F7**: `QuantizeWindowSize()` returned a degenerate size for zero or negative
+  input; it now returns one step.
+- **F8** (partial, and labelled partial): the learned-tracker table gained time —
+  `SetNow()`, `last_seen`, `ForgetOlderThan()`, a 90-day default, user verdicts
+  exempt, timestamps in the export, pre-F8 files still load. Writing the table
+  to disk stays blocked on the Chromium profile layer and says so.
+- **F9**: certificate exceptions expire after 7 days; both exception maps are
+  keyed on `NormalizeHost`. Invariants 76, 77; audit addendum 2.
+
+## PR #45 — one place where host comparisons happen
+
+- New `privacy/network/host_match`: `NormalizeHost`, `IsOrSubdomainOf`,
+  `HasFinalLabel`, `ParseIPv4`, `IsPrivateAddress`. Three duplicate local
+  helpers (https_policy, filter_engine, url_cleaner) deleted and routed here —
+  F1 was a bug in one copy of logic that existed in four.
+- `scripts/check_host_matching.py` fails the build on prefix/suffix *decisions*
+  about host-shaped variables outside that file. First version also flagged
+  `substr`/`find` used for parsing (7 false positives) and was narrowed to
+  comparisons; the self-test contains the original F1 line.
+- **F10** found while writing it (medium, live): rules are lowercased at parse
+  time but the request host was compared in wire form, so `EVIL.com` and
+  `evil.com.` matched no domain-scoped rule at all. Both sides normalise now.
+- Scheme checks that legitimately look at a prefix renamed `HasScheme()`.
+  Invariant 75.
+
+## PR #43 — F3 and F4: real cryptography behind the password store
+
+- New `bedrock/crypto/`: `hash` (SHA-256, HMAC, HKDF, PBKDF2, SHA-1 for the
+  breach prefix, constant-time compare) and `aead` (`Seal`/`Open`, 32-byte key,
+  12-byte nonce, 16-byte tag). Every primitive is asserted against published
+  vectors — FIPS 180-4, RFC 4231, RFC 5869, RFC 8018 — because a hash that is
+  merely self-consistent is worthless. `BEDROCK_USE_BORINGSSL` is a hard
+  `#error`: the host build must never quietly become the shipping crypto.
+- **F3**: the master password is now a key, not a comparison.
+  PBKDF2(600k) then HKDF to a KEK, which wraps a random data key; the AEAD tag
+  is the verifier, so there is no ciphertext to compare. Entry AAD binds
+  (origin, username) so a record cannot be moved between sites. `Lock()` wipes
+  the key; `ChangeMasterPassword` rewraps without touching entries.
+- **F4**: `SurfaceSeed()` was unkeyed and invertible — one canvas read gave up
+  the session secret. Replaced by `SurfaceKey(secret, eTLD+1, surface)` =
+  HKDF then HMAC, with `SeededUnit()` for the per-index draw. Old helpers deleted.
+- Ponytail applied retroactively: the `Aead` interface, a stub platform random
+  source and a one-field `KdfParams` struct were removed as invented ceremony.
+
 ## PR #40 — CNAME uncloaking
 
 - `privacy/tracker_blocker/cname_uncloak`: a DNS alias on a first-party-looking
