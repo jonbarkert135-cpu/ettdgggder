@@ -126,6 +126,24 @@ read, not skimmed. Anything longer belongs in a doc, linked from here.
   wrong direction of the relationship; **F6** (medium) `DnsSettings::SetStrict()`
   swallowed failures by returning void.
 
+## PR #41 — Letterboxing
+
+- `privacy/fingerprinting/letterboxing`: `ComputeLetterbox()` turns the quantised
+  size from `QuantizeWindowSize()` into a real content box plus centred margins,
+  so the size a page is *told* is the size it *renders into*. Reporting one and
+  laying out the other is recoverable with one `getBoundingClientRect()`.
+- No fullscreen parameter exists, on purpose: `requestFullscreen()` would
+  otherwise be the cheap way to read the display size. No site parameter either.
+- Two guards stop it eating the window: 200x100 floor and "the page keeps >=60%
+  of the pixels". 320x240 at level 3 would drop to 200x200, so it is left alone
+  and `active()` is false — the panel must not claim an unapplied protection.
+- `ViewportChanges()` is the relayout test; without it a slow window drag streams
+  every intermediate size to the page and the quantisation buys nothing.
+- Cost table (1366x768: -3% / -13% / -31% by level) in
+  `docs/design/050-letterboxing.md`. `screen.md`'s old test case was wrong:
+  1366x768 and 1440x810 do *not* share a level-2 bucket (1300x700 vs 1400x800).
+- Logic only; the size constraint, margin paint and `screen.*` shims are phase 3.
+
 ## PR #40 — CNAME uncloaking
 
 - `privacy/tracker_blocker/cname_uncloak`: a DNS alias on a first-party-looking
