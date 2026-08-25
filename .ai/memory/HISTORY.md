@@ -4,23 +4,23 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
-## PR #41 — Letterboxing
+## PR #42 — security audit of 2026-08-25
 
-- `privacy/fingerprinting/letterboxing`: `ComputeLetterbox()` turns the quantised
-  size from `QuantizeWindowSize()` into a real content box plus centred margins,
-  so the size a page is *told* is the size it *renders into*. Reporting one and
-  laying out the other is recoverable with one `getBoundingClientRect()`.
-- No fullscreen parameter exists, on purpose: `requestFullscreen()` would
-  otherwise be the cheap way to read the display size. No site parameter either.
-- Two guards stop it eating the window: 200x100 floor and "the page keeps >=60%
-  of the pixels". 320x240 at level 3 would drop to 200x200, so it is left alone
-  and `active()` is false — the panel must not claim an unapplied protection.
-- `ViewportChanges()` is the relayout test; without it a slow window drag streams
-  every intermediate size to the page and the quantisation buys nothing.
-- Cost table (1366x768: -3% / -13% / -31% by level) in
-  `docs/design/050-letterboxing.md`. `screen.md`'s old test case was wrong:
-  1366x768 and 1440x810 do *not* share a level-2 bucket (1300x700 vs 1400x800).
-- Logic only; the size constraint, margin paint and `screen.*` shims are phase 3.
+- Full audit against the owner's Project-Zero-style brief. Governing finding
+  **F0**: only two patches exist (`build/0001-add-bedrock-to-chrome-browser`,
+  `integration/0001-bedrock-startup-hook`) and nothing touches Blink, V8,
+  //content or //net — so 20 of 21 fingerprinting surfaces and every blocking
+  and storage protection are policy, not enforcement. Report:
+  `docs/security/AUDIT-2026-08-25.md`.
+- Two goals in the brief were rejected with reasons, not implemented: a new
+  random fingerprint per launch (makes the user *more* identifiable across a
+  session than a stable, common one) and a fixed 1920x1080 screen (a lie the
+  first `window.resize` exposes).
+- Fixed here: **F1** (critical) `IsLocalOrOnion()` matched by prefix, so
+  `10.example.com` and `127.evil.test` were treated as local; **F2** (high)
+  `ForNavigation()` ordering; **F5** (high) `KeysToClearForSite()` cleared the
+  wrong direction of the relationship; **F6** (medium) `DnsSettings::SetStrict()`
+  swallowed failures by returning void.
 
 ## PR #40 — CNAME uncloaking
 

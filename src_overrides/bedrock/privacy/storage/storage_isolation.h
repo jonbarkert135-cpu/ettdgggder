@@ -56,6 +56,7 @@ enum class Lifetime {
 
 struct StorageKey {
   std::string origin;         // the frame's origin
+  std::string origin_site;    // eTLD+1 of the frame's origin
   std::string top_level_site; // eTLD+1 of the top-level document
   bool cross_site = false;    // origin's site != top_level_site
 
@@ -108,9 +109,16 @@ class StorageIsolation {
     return type == StorageType::kSessionStorage;
   }
 
-  // Data the user asked to delete for one site: every key whose top-level site
-  // matches, in every backend. Clearing "example.com" must also drop what
-  // third parties stored *under* example.com, or deletion is theatre.
+  // Data the user asked to delete for one site, in every backend. Both
+  // directions, because both are the site's data:
+  //   * every key whose top-level site matches — what third parties stored
+  //     *under* example.com;
+  //   * every key whose own origin belongs to the site — what example.com
+  //     stored while it was embedded on *other* sites.
+  // Matching only the first left an embedded widget's partitions behind after
+  // "Clear this site" and after "Forget about this site", which is deletion
+  // theatre: the identifier the user asked to remove is still on disk.
+  // See docs/security/AUDIT-2026-08-25.md (F5).
   std::vector<StorageKey> KeysToClearForSite(
       const std::vector<StorageKey>& all_keys,
       const std::string& site) const;

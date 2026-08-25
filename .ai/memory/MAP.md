@@ -540,6 +540,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/research/PRIVACY_BADGER.md`](../../docs/research/PRIVACY_BADGER.md) | Privacy Badger research |
 | [`docs/research/TOR_BROWSER.md`](../../docs/research/TOR_BROWSER.md) | Tor Browser research |
 | [`docs/research/UBLOCK_ORIGIN.md`](../../docs/research/UBLOCK_ORIGIN.md) | uBlock Origin research |
+| [`docs/security/AUDIT-2026-08-25.md`](../../docs/security/AUDIT-2026-08-25.md) | Security and privacy audit — 2026-08-25 |
 | [`docs/security/TESTING.md`](../../docs/security/TESTING.md) | Security testing |
 
 ## CI gates — `scripts/`
