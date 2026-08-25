@@ -222,6 +222,9 @@ Network privacy: DNS settings (named resolvers, fail-closed strict mode), HTTPS 
 | `https_policy.cc` | implementation |
 | `https_policy.h` | HTTPS upgrading, mixed content and certificate errors (roadmap item 16). |
 | `https_policy_test.cc` | Host test, no Chromium. |
+| `remote_features.cc` | implementation |
+| `remote_features.h` | Every way this browser can talk to a server that is not the page you asked for (roadmap items 94 and 95). |
+| `remote_features_test.cc` | Host test, no Chromium. |
 | `webrtc_policy.cc` | implementation |
 | `webrtc_policy.h` | WebRTC IP exposure (roadmap item 18). |
 | `webrtc_policy_test.cc` | Host test, no Chromium. |
@@ -523,6 +526,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/performance/BUDGETS.md`](../../docs/performance/BUDGETS.md) | Performance budgets |
 | [`docs/privacy/FEATURES.md`](../../docs/privacy/FEATURES.md) | Privacy features, in full |
 | [`docs/privacy/FILTER_LISTS.md`](../../docs/privacy/FILTER_LISTS.md) | Filter lists — licences, one per list |
+| [`docs/privacy/REMOTE.md`](../../docs/privacy/REMOTE.md) | Everything that leaves your machine |
 | [`docs/privacy/TRADEOFFS.md`](../../docs/privacy/TRADEOFFS.md) | Privacy versus usability: the scoring table |
 | [`docs/privacy/fingerprinting/README.md`](../../docs/privacy/fingerprinting/README.md) | Anti-fingerprinting: per-surface documentation |
 | [`docs/privacy/fingerprinting/audio.md`](../../docs/privacy/fingerprinting/audio.md) | Web Audio |
@@ -584,6 +588,7 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | `scripts/check_privacy_suite.py` | Gate: the privacy regression suite stays complete and stays local. |
 | `scripts/check_provenance.py` | Fail if the licensing record is incomplete. Run: python3 scripts/check_provenance.py |
 | `scripts/check_releases.py` | Release channel and release-notes gate (roadmap item 71). |
+| `scripts/check_remote_features.py` | Gate: no hidden cloud, and every remote feature stays optional (items 94, 95). |
 | `scripts/check_security_testing.py` | Fail if the security testing setup has decayed. Run: |
 | `scripts/check_strings.py` | Localization gate (roadmap item 61). |
 | `scripts/check_test_matrix.py` | Gate: the roadmap-74 test matrix stays complete, honest and executable. |

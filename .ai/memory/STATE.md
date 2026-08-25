@@ -61,6 +61,7 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 | 86 ADRs (14 records, indexed and mapped) | done |
 | 87–88 Research-first process, timeboxed | done — `docs/PROCESS.md` |
 | 89 Implementation order | `docs/PHASES.md`: **phases 0–2 done** (builds 1 and 2 in `build/ENFORCEMENT.md`), phases 3–15 still `policy-landed` and must be re-verified against the running shell |
+| 94, 95 No hidden cloud, optional remote features | done 2026-08-25 — `privacy/network/remote_features.{h,cc}` declares all 7 permitted remote interactions (all `kPolicyOnly`, only the user's own search on by default); `scripts/check_remote_features.py` fails on networking machinery in an undeclared module, on any `bedrock.*` host anywhere, and generates `docs/privacy/REMOTE.md` |
 | 92, 96, 97 Trademarks, product identity, no copied UI | done 2026-08-25 — were policy prose with no gate; now `docs/IDENTITY.md` + `scripts/check_trademarks.py` (affiliation wording, identity strings, foreign marks on disk, borrowed CSS vocabulary, undeclared influences) |
 | 90–92 Quality rule, source integration, trademarks | done — items 90/91 re-audited 2026-08-25: the inventory claimed `port`/`vendored` reuse of brave-core, adblock-rust and ungoogled-chromium with **no file in the tree**; modes corrected, `docs/PROVENANCE.md` now records every third-party file (7 fields, item 91) and `check_provenance.py` ties the two together in both directions |
 | 93 Search privacy disclosure | done — `onboarding/first_run` builds it from the engine facts, no search proxy |
