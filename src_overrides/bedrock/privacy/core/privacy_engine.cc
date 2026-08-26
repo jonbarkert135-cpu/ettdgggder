@@ -54,7 +54,7 @@ const std::vector<FeatureInfo>& Registry() {
       {Feature::kReferrerControl, Module::kNetwork, "referrer_control",
        "IDS_BEDROCK_PRIVACY_REFERRER_TITLE",
        "IDS_BEDROCK_PRIVACY_REFERRER_EXPLANATION",
-       Setting::kStandard, Setting::kStrict, false, Status::kDesigned},
+       Setting::kStandard, Setting::kStrict, false, Status::kPolicyLanded},
       {Feature::kQueryParamStripping, Module::kNetwork, "query_param_stripping",
        "IDS_BEDROCK_PRIVACY_QUERY_STRIPPING_TITLE",
        "IDS_BEDROCK_PRIVACY_QUERY_STRIPPING_EXPLANATION",

@@ -4,6 +4,32 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #52 — referrer policy and client hints, one component
+
+- Top of the research queue. `privacy/network/request_headers`
+  (`RequestHeaderPolicy`) decides both headers, because they are one question
+  with two outputs: what does this outgoing request say about the person making
+  it? Design: `docs/design/052-referrer-and-client-hints.md`.
+- Three rules, each with tests: a site may ask for less and never for more
+  (`unsafe-url` is parsed so it can be *refused*, and `DeclaredPolicyRefused()`
+  lets the panel say so); a high-entropy hint is never delegated to a third
+  party, and that is the one rule `kCompatibility` does not relax; every hint
+  value comes from the fingerprinting normalisers, since `Device-Memory: 16`
+  beside a `navigator.deviceMemory` of 8 is more identifying than either.
+- Downgrades (`https:` → `http:`) drop the referrer at *every* setting,
+  `kAllow` included: the floor can be lowered, a downgrade cannot.
+- Correction found while writing it: the first draft reduced the `Sec-CH-UA-*`
+  identity hints and kept sending them, while
+  `docs/privacy/fingerprinting/client-hints.md` already claimed none of them
+  appear on the wire from level 1. A stated claim wins — identity hints are now
+  dropped, layout hints (device memory, DPR, viewport width) stay because they
+  describe rendering and already carry normalised values. Two sources of truth
+  disagreeing is the bug, not the wording.
+- `fuzz/request_headers_fuzzer`: the referring URL and the declared policy both
+  come from the page, so this parser is remotely reachable by any site.
+- `referrer_control` moves `designed` → `policy-landed`. Nothing runs in a
+  browser yet; the entry points are phase 3.
+
 ## PR #51 — items 102, 103, 104: the workflow, audited rather than restarted
 
 - Item 102 asks for a 16-step build order starting at research. Checked each step

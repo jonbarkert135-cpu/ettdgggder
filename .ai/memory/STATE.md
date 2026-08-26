@@ -3,7 +3,7 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** the build path has a laptop variant — `build/args/bedrock-lowmem.gn`, `docs/BUILD.md` → "Building on 8 GB", and `sync.py` copies overrides where symlinks are refused and can fetch without history (PR #44); letterboxing is real geometry — the page renders into the quantised box with centred margins, with a 200x100 floor and a 60%-of-pixels guard (PR #41); the first full security audit is on record (`docs/security/AUDIT-2026-08-25.md`, PR #42) — four defects fixed (prefix-matched LAN detection downgrading HTTPS, shields outranking HTTPS-Only, incomplete site deletion, silently refused strict DNS), and the two cryptographic ones now fixed too (F3 envelope-encrypted master password, F4 keyed one-way seed derivation, both on `bedrock/crypto`); CNAME uncloaking is a stage of the blocking pipeline, cache-only by design (PR #40); the Strict preset keeps first-party cookies and makes storage ephemeral instead of blocking cookies outright, and presets now set the storage lifetime as well as the controls (PR #39); `docs/BUILD_ON_YOUR_MACHINE.md` prices the one full build that phase 3 needs (PR #38); link cleaning + redirect debouncing (`privacy/tracker_blocker/url_cleaner`) and "forget about this site" (`privacy/core/forget_site`) landed as host-tested logic, two items off the research queue (PR #37); the interface is written against a semantic token vocabulary, enforced by `scripts/check_tokens.py`, and the background composition (light source plus grain) is generated into tokens.css (PR #35); window modes, the profile menu and the theme-to-CSS bridge exist (PR #34); settings, the Privacy Center and the extensions panel have pages and tested models (PR #33); the privacy panel, three tab layouts and the vendored type system landed (PR #32); the new tab page, its state object and the chrome composition exist (PR #31); the dark surface system is the shipped default and tokens.css is generated from the tokens (PR #30); the first-run page renders the flow (PR #29); roadmap 90–101 audited (`docs/ACCEPTANCE.md`) and first run / search disclosure landed; phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
+**As of:** the referrer and client-hint headers are one component — `privacy/network/request_headers` decides both before a request leaves, a site may ask for less and never for more, and no `Sec-CH-UA-*` identity hint goes on the wire from level 1 (PR #52, `referrer_control` now policy-landed); the build path has a laptop variant — `build/args/bedrock-lowmem.gn`, `docs/BUILD.md` → "Building on 8 GB", and `sync.py` copies overrides where symlinks are refused and can fetch without history (PR #44); letterboxing is real geometry — the page renders into the quantised box with centred margins, with a 200x100 floor and a 60%-of-pixels guard (PR #41); the first full security audit is on record (`docs/security/AUDIT-2026-08-25.md`, PR #42) — four defects fixed (prefix-matched LAN detection downgrading HTTPS, shields outranking HTTPS-Only, incomplete site deletion, silently refused strict DNS), and the two cryptographic ones now fixed too (F3 envelope-encrypted master password, F4 keyed one-way seed derivation, both on `bedrock/crypto`); CNAME uncloaking is a stage of the blocking pipeline, cache-only by design (PR #40); the Strict preset keeps first-party cookies and makes storage ephemeral instead of blocking cookies outright, and presets now set the storage lifetime as well as the controls (PR #39); `docs/BUILD_ON_YOUR_MACHINE.md` prices the one full build that phase 3 needs (PR #38); link cleaning + redirect debouncing (`privacy/tracker_blocker/url_cleaner`) and "forget about this site" (`privacy/core/forget_site`) landed as host-tested logic, two items off the research queue (PR #37); the interface is written against a semantic token vocabulary, enforced by `scripts/check_tokens.py`, and the background composition (light source plus grain) is generated into tokens.css (PR #35); window modes, the profile menu and the theme-to-CSS bridge exist (PR #34); settings, the Privacy Center and the extensions panel have pages and tested models (PR #33); the privacy panel, three tab layouts and the vendored type system landed (PR #32); the new tab page, its state object and the chrome composition exist (PR #31); the dark surface system is the shipped default and tokens.css is generated from the tokens (PR #30); the first-run page renders the flow (PR #29); roadmap 90–101 audited (`docs/ACCEPTANCE.md`) and first run / search disclosure landed; phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
 
 ## Position on the roadmap
 
@@ -70,6 +70,7 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 | 96–97 Product identity, own UI | done as policy — no WebUI exists to judge yet |
 | 98–99 First-run flow, honest onboarding | logic + WebUI page (`ui/first_run.html`, `.js`) done and tested; the WebUI host that registers the page needs the Chromium build |
 | 100–101 Continuous verification, acceptance criteria | `docs/ACCEPTANCE.md`: **11 of 31 criteria met**, rest stock/policy-only |
+| Research queue: referrer + client hints | done 2026-08-26 (PR #52) — `privacy/network/request_headers`; `referrer_control` designed → policy-landed, `client_hints` gains its header layer |
 | 102+ | **not yet specified — waiting on the project owner**; meanwhile the research queue in "Open threads" is worked down, newest first |
 
 ## What is real vs. what is documented
@@ -90,8 +91,8 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
 - **The local build is not in git** (8.7 GB). `build/LOCAL_BUILD_HANDOFF.md` is the handoff: what
   exists on disk, what must never be rebuilt, the 11 errors hit so far, and
   `scripts/resume_build.sh` which syncs, builds and verifies in one command.
-- **Runs in CI today:** 52 host test binaries, 9 fuzz smoke harnesses (~860
-  inputs each), 7 measured performance metrics, 29 static gates.
+- **Runs in CI today:** 66 host test binaries, 10 fuzz smoke harnesses (~860
+  inputs each), 7 measured performance metrics, 29 static gates. (Counted from a full `run_host_tests.sh` on 2026-08-26; the line had said 52 binaries for several PRs.)
 - **Runs against a real browser binary (not in CI):**
   `tests/browser/run.py` (5/5 pass on Chrome-for-Testing 151) and
   `tests/privacy/run.py` (13 scenarios; stock-Chromium baseline committed as
@@ -153,10 +154,10 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
   `scripts/check_host_matching.py` enforces it (PR #45).
 - **Default filter lists are empty** until each list's licence is verified and dated in
   `docs/privacy/FILTER_LISTS.md` (item 52 rule). This is a deliberate blocker, not an oversight.
-- Research queue, highest value first: referrer/Client-Hints policy ·
-  dynamic filtering as a pipeline stage · the blocking-`webRequest` ADR.
-  (CNAME uncloaking landed in PR #40 — logic only; the resolver plumbing is phase 3.) (Query stripping + debouncing and "forget about
-  this site" are done — logic only, entry points need phase 3.)
+- Research queue, highest value first: dynamic filtering as a pipeline stage ·
+  the blocking-`webRequest` ADR. Everything logic-only until phase 3 wires the
+  entry points: referrer/Client-Hints headers (PR #52), CNAME uncloaking (#40),
+  query stripping + debouncing and "forget about this site" (#37).
 - No Rust module exists yet; first candidate is the filter-list parser (ADR 0004).
 - From item 49, one follow-up remains: an ADR deciding whether extensions keep
   blocking `webRequest` (letterboxing landed in PR #41; "forget about this site" landed).

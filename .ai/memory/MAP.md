@@ -108,6 +108,7 @@ libFuzzer harnesses for every untrusted-input entry point, each also built as a 
 | `fuzz_smoke_main.cc` | CI driver for the fuzz harnesses. |
 | `omnibox_input_fuzzer.cc` | Fuzzes omnibox input classification (roadmap item 43: URL parser). |
 | `privacy_rules_fuzzer.cc` | Fuzzes privacy rule resolution and storage keying (roadmap item 76). |
+| `request_headers_fuzzer.cc` | Fuzzes the outgoing-header policy (roadmap item 43: networking). |
 | `search_fuzzer.cc` | Fuzzes search engine selection (roadmap item 76). |
 
 ### `src_overrides/bedrock/history/`
@@ -228,6 +229,9 @@ Network privacy: DNS settings (named resolvers, fail-closed strict mode), HTTPS 
 | `remote_features.cc` | implementation |
 | `remote_features.h` | Every way this browser can talk to a server that is not the page you asked for (roadmap items 94 and 95). |
 | `remote_features_test.cc` | Host test, no Chromium. |
+| `request_headers.cc` | implementation |
+| `request_headers.h` | What Bedrock attaches to an outgoing request: the referrer and the client hints (features `referrer_control` and `client_hints`). |
+| `request_headers_test.cc` | Host test, no Chromium. |
 | `webrtc_policy.cc` | implementation |
 | `webrtc_policy.h` | WebRTC IP exposure (roadmap item 18). |
 | `webrtc_policy_test.cc` | Host test, no Chromium. |
@@ -526,6 +530,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/design/049-cname-uncloaking.md`](../../docs/design/049-cname-uncloaking.md) | 049 — CNAME uncloaking |
 | [`docs/design/050-letterboxing.md`](../../docs/design/050-letterboxing.md) | 050 — Letterboxing |
 | [`docs/design/051-crypto-primitives.md`](../../docs/design/051-crypto-primitives.md) | 051 — Crypto primitives |
+| [`docs/design/052-referrer-and-client-hints.md`](../../docs/design/052-referrer-and-client-hints.md) | 052 — Referrer policy and client hints |
 | [`docs/performance/BUDGETS.md`](../../docs/performance/BUDGETS.md) | Performance budgets |
 | [`docs/privacy/FEATURES.md`](../../docs/privacy/FEATURES.md) | Privacy features, in full |
 | [`docs/privacy/FILTER_LISTS.md`](../../docs/privacy/FILTER_LISTS.md) | Filter lists — licences, one per list |
