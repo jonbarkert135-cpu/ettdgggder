@@ -41,7 +41,7 @@ verifies the configurations still exist and still say what they should.
 | Area | Tests |
 | --- | --- |
 | Renderer-facing policy | `privacy/fingerprint_policy_test`, `privacy/privacy_policy_test` |
-| Networking | `net/dns_settings_test`, `net/https_policy_test`, `net/webrtc_policy_test` |
+| Networking | `net/dns_settings_test`, `net/https_policy_test`, `net/webrtc_policy_test`, `net/request_headers_test`, `fuzz/request_headers_fuzzer` |
 | URL parser | `omnibox/input_parser_test`, `fuzz/omnibox_input_fuzzer` |
 | Extension system | `extensions/extension_registry_test`, `catalog/extension_catalog_test` |
 | Content blocking | `blocking/filter_engine_test`, `blocking/blocking_pipeline_test`, `blocking/tracker_heuristic_test`, `fuzz/filter_list_fuzzer` |
@@ -56,7 +56,9 @@ verifies the configurations still exist and still say what they should.
 Harnesses live in `src_overrides/bedrock/fuzz/` and target the code that eats
 untrusted input: filter lists (a user can subscribe to any list on the
 internet), omnibox input (every keystroke, plus pasted data), download names and
-MIME types (attacker-chosen by definition), and bookmark import HTML.
+MIME types (attacker-chosen by definition), bookmark import HTML, and the
+outgoing-header policy (the referring URL and the declared `Referrer-Policy`
+both come from the page, so a crash there is remotely triggerable by any site).
 
 Each file is a normal libFuzzer entry point *and* compiles with
 `-DBEDROCK_FUZZ_SMOKE` into a deterministic replay binary. That dual build is
