@@ -102,11 +102,58 @@ The lasting finding is about the *test gap*, not about the code: a 12-hour build
 one thing `g++` could never tell us. Every constraint of that kind now has a gate that runs in
 seconds (`scripts/check_toolchain_limits.py`, invariant 82).
 
+## Build 4 — 2026-08-27 (a claim tested and withdrawn)
+
+| | |
+| --- | --- |
+| Base | the build 3 output directory, incrementally rebuilt — same revision, same GN args |
+| Change | `patches/bedrock/integration/0002-bedrock-local-state-defaults.patch`: typed and scoped pref assignments, a Local State registration loop, and an effective-value line for the reporting-consent pref |
+| Objects rebuilt | `browser_prefs.o`, `chrome_metrics_services_manager_client.o`, `browser_ui_prefs.o`, `bedrock/startup.o` |
+| Link | `chrome` relinked, exit 0 (2 m 19 s – 3 m 14 s per iteration) |
+| Binary | `out/Release/chrome`, 194 189 768 bytes |
+| Symbols | `nm -C out/Release/chrome \| grep bedrock::` → **23** (build 3: 18) |
+| Run | headless with `--remote-debugging-port`, log `/work/build-logs/run4c.log` |
+
+The intent was to enforce two more shipped defaults: `telemetry` and `crash_reporting`, which in
+Chromium are one consent bit — `user_experience_metrics.reporting_enabled`, read by
+`ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled` for both metrics and Crashpad
+upload. Bedrock now registers that pref's default from its own defaults table.
+
+**The claim did not survive its own test.** The build was run twice: once with Bedrock asking for
+`false`, once with Bedrock asking for `true`. Both times the running browser reported:
+
+```
+[bedrock] effective user_experience_metrics.reporting_enabled = false (want true: MISMATCH)
+```
+
+`MetricsServiceAccessor::IsMetricsReportingEnabled` returns false unconditionally unless
+`GOOGLE_CHROME_BRANDING` is set. This build is quiet because it is unbranded, not because of
+Bedrock — so the two defaults stay in the **unenforced** list, with that measurement as the reason,
+and the startup log says `registering (not decisive in this build)` rather than `enforcing`:
+
+```
+[bedrock] Balanced Privacy: 1 of 12 shipped defaults enforced by this build
+[bedrock] registering (not decisive in this build) telemetry: user_experience_metrics.reporting_enabled = false
+[bedrock] registering (not decisive in this build) crash_reporting: user_experience_metrics.reporting_enabled = false
+[bedrock] enforcing webrtc_privacy: webrtc.ip_handling_policy = default_public_interface_only
+```
+
+### What this build proves
+
+The integration seam now carries boolean prefs and Local State prefs, not only profile strings, and
+a registration loop that skips a pref upstream no longer registers instead of crashing. The
+enforced count is unchanged at **one** feature — and the mechanism that keeps that number honest is
+now itself tested: an assignment whose `decides_behavior` is false must also appear in the
+unenforced list (invariant 83).
+
+The lasting lesson: "the browser does X and our pref says X" is not evidence. Flip the pref to the
+wrong value and rebuild — if the behaviour does not follow, the pref was never the cause.
+
 ## Enforced features
 
 | Feature | Enforced since | Where the browser performs it | Evidence |
 | --- | --- | --- | --- |
-| `webrtc_policy` (`webrtc_privacy` default) | Build 2, 2026-08-23 | `chrome/browser/ui/browser_ui_prefs.cc` registers the pref with the Bedrock default; `chrome/browser/renderer_preferences_util.cc` passes it to every renderer | `[bedrock] effective webrtc.ip_handling_policy = default_public_interface_only (want default_public_interface_only: match)` in `/work/build-logs/run2.log`; reproduce with `scripts/resume_build.sh` |
+| `webrtc_policy` (`webrtc_privacy` default) | Build 2, 2026-08-23 (re-verified builds 3 and 4) | `chrome/browser/ui/browser_ui_prefs.cc` registers the pref with the Bedrock default; `chrome/browser/renderer_preferences_util.cc` passes it to every renderer | `[bedrock] effective webrtc.ip_handling_policy = default_public_interface_only (want default_public_interface_only: match)` in `/work/build-logs/run2.log`; reproduce with `scripts/resume_build.sh` |
 
 ## Constraints this build discovered
 

@@ -96,4 +96,4 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 80 | Every research note under `docs/research/` has a stance in `docs/IDENTITY.md` | `scripts/check_trademarks.py` |
 | 81 | Networking machinery only in a module declared in `remote_features.cc`; no host under our own name anywhere in the tree | `scripts/check_remote_features.py` |
 | 82 | In-tree overlay code uses no exceptions and no `<cstdlib>` numeric helper — what `g++` accepts is not what Chromium's clang accepts | `scripts/check_toolchain_limits.py` |
-
+| 83 | A pref Bedrock registers but does not decide the behaviour with is listed as unenforced and logged as `registering`, never `enforcing` | `startup_test` (`RegisteredButNotDecisiveIsAlsoUnenforced`), `build/ENFORCEMENT.md` build 4 |

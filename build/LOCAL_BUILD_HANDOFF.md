@@ -156,19 +156,26 @@ Then `Target.createTarget` on a `data:` URL and `Runtime.evaluate` / `Page.captu
 the WebSocket (a WebSocket client must send no `Origin` header, or DevTools answers 403). This is
 how Build 3 was verified to render and to run JavaScript.
 
-Both checks passed again on 2026-08-27 (Build 3). `nm` finds **18** `bedrock::` symbols,
+Both checks passed again on 2026-08-27 (Build 4). `nm` finds **23** `bedrock::` symbols,
 and the running browser prints:
 
 ```
+[bedrock] effective user_experience_metrics.reporting_enabled = false (want false: match)
 [bedrock] Balanced Privacy: 1 of 12 shipped defaults enforced by this build
+[bedrock] registering (not decisive in this build) telemetry: user_experience_metrics.reporting_enabled = false
+[bedrock] registering (not decisive in this build) crash_reporting: user_experience_metrics.reporting_enabled = false
 [bedrock] enforcing webrtc_privacy: webrtc.ip_handling_policy = default_public_interface_only
 [bedrock] effective webrtc.ip_handling_policy = default_public_interface_only (want default_public_interface_only: match)
 ```
 
-The third line is the one that matters: it is measured inside
+The `effective ...` lines are the ones that matter: it is measured inside
 `UpdateFromSystemSettings`, i.e. the value a live profile really hands to the
 renderers, not a value the overlay printed to itself. Full log:
-`/work/build-logs/run2.log`.
+`/work/build-logs/run4c.log` (build 4); build 2's is `/work/build-logs/run2.log`.
+
+**Proving a pref is the cause.** Set the assignment to the *wrong* value, rebuild (2–4 min) and
+check the effective line reads `MISMATCH`. That is how build 4 found that the reporting-consent pref
+does not decide anything in an unbranded build.
 
 `scripts/resume_build.sh` runs sync + build + both checks in one go. Its startup check launches
 the browser exactly as in the second snippet above (`--headless=new` plus the sandbox-safe flags)
