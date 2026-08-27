@@ -472,6 +472,7 @@ Workspaces: named sets of tabs and visual settings inside one profile — an org
 | [`docs/SUPPLY_CHAIN.md`](../../docs/SUPPLY_CHAIN.md) | Supply chain security |
 | [`docs/THIRD_PARTY.md`](../../docs/THIRD_PARTY.md) | Bedrock Browser — Third-Party Inventory |
 | [`docs/UPSTREAM_SYNC.md`](../../docs/UPSTREAM_SYNC.md) | Upstream sync |
+| [`docs/WIRING.md`](../../docs/WIRING.md) | What of Bedrock actually runs |
 | [`docs/adr/0001-chromium-overlay.md`](../../docs/adr/0001-chromium-overlay.md) | ADR 0001 — Chromium base, overlay repository (not a fork) |
 | [`docs/adr/0002-filter-engine-backend.md`](../../docs/adr/0002-filter-engine-backend.md) | ADR 0002 — One matcher behind one interface: built-in C++ engine, adblock-rust as a swappable backend |
 | [`docs/adr/0003-source-layout.md`](../../docs/adr/0003-source-layout.md) | ADR 0003 — Source layout: subsystem tree where it helps, Chromium's layout where it must |

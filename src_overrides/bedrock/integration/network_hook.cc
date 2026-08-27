@@ -5,9 +5,11 @@
 
 #include "bedrock/integration/network_hook.h"
 
+#include <algorithm>
 #include <mutex>
 
 #include "bedrock/privacy/core/protection_controller.h"
+#include "bedrock/privacy/network/request_headers.h"
 #include "bedrock/privacy/tracker_blocker/blocking_pipeline.h"
 #include "bedrock/privacy/tracker_blocker/filter_engine.h"
 #include "bedrock/privacy/tracker_blocker/tracker_heuristic.h"
@@ -84,12 +86,48 @@ struct Engine {
   blocking::TrackerHeuristic heuristic;
   privacy::ProtectionController controls;
   blocking::BlockingPipeline pipeline;
+  net::RequestHeaderPolicy headers;
   std::size_t rules_accepted = 0;
 
-  Engine() : pipeline(&filters, &heuristic, &controls) {
+  Engine() : pipeline(&filters, &heuristic, &controls), headers(&controls) {
     rules_accepted = filters.AddList(kBuiltInList);
   }
 };
+
+// Every hint Bedrock knows, so a header on the wire can be recognised by name.
+constexpr net::Hint kAllHints[] = {
+    net::Hint::kUa,          net::Hint::kUaMobile,
+    net::Hint::kUaPlatform,  net::Hint::kUaArch,
+    net::Hint::kUaBitness,   net::Hint::kUaModel,
+    net::Hint::kUaFullVersionList, net::Hint::kUaPlatformVersion,
+    net::Hint::kDeviceMemory, net::Hint::kDpr,
+    net::Hint::kViewportWidth, net::Hint::kWidth,
+    net::Hint::kRtt,         net::Hint::kDownlink,
+    net::Hint::kEct,         net::Hint::kSaveData,
+    net::Hint::kPrefersColorScheme,
+};
+
+std::string LowerAscii(const std::string& text) {
+  std::string out = text;
+  for (char& c : out) {
+    if (c >= 'A' && c <= 'Z') {
+      c = static_cast<char>(c - 'A' + 'a');
+    }
+  }
+  return out;
+}
+
+const char* ScopeWord(net::ReferrerScope scope) {
+  switch (scope) {
+    case net::ReferrerScope::kFullUrl:
+      return "full-url";
+    case net::ReferrerScope::kOriginOnly:
+      return "origin-only";
+    case net::ReferrerScope::kNone:
+      return "none";
+  }
+  return "unchanged";
+}
 
 Engine& GetEngine() {
   static std::once_flag once;
@@ -153,6 +191,63 @@ NetworkDecision DecideRequest(const NetworkRequest& request) {
   decision.blocked = verdict.action == blocking::Action::kBlock;
   decision.reason = ReasonWord(verdict.reason);
   decision.detail = verdict.detail;
+  return decision;
+}
+
+OutgoingHeaderDecision DecideHeaders(const OutgoingHeaderRequest& request) {
+  OutgoingHeaderDecision decision;
+  if (request.top_host.empty() || request.target_host.empty()) {
+    return decision;
+  }
+
+  Engine& engine = GetEngine();
+
+  // --- Referrer. Chromium has already applied its own policy; Bedrock may only
+  // shorten what is left. The initiator is the referrer Chromium computed,
+  // which is exactly the document whose URL would go on the wire.
+  net::OutgoingRequest outgoing;
+  outgoing.initiator_url = request.referrer;
+  outgoing.initiator_host = request.top_host;
+  outgoing.initiator_etld1 = request.top_etld1;
+  outgoing.target_url = request.target_url;
+  outgoing.target_host = request.target_host;
+  outgoing.target_etld1 = request.target_etld1;
+  outgoing.navigation = request.navigation;
+
+  if (!request.referrer.empty()) {
+    const net::ReferrerScope scope = engine.headers.ScopeFor(outgoing);
+    const std::string wanted = engine.headers.ReferrerFor(outgoing);
+    // Never lengthen: a longer string than Chromium's means our floor would be
+    // adding information, which is the one thing this seam must not do.
+    if (wanted.size() < request.referrer.size() || wanted.empty()) {
+      decision.referrer_changed = true;
+      decision.referrer = wanted;
+      decision.referrer_scope = ScopeWord(scope);
+    }
+  }
+
+  // --- Client hints. Nothing here asks the site what it wants: the accepted
+  // list is the hints already on the request, and the policy answers which of
+  // them this level allows. Everything else is removed by name.
+  std::vector<net::Hint> present;
+  for (const net::Hint hint : kAllHints) {
+    const std::string name = LowerAscii(net::HintHeaderName(hint));
+    for (const std::string& header : request.present_headers) {
+      if (LowerAscii(header) == name) {
+        present.push_back(hint);
+        break;
+      }
+    }
+  }
+  if (!present.empty()) {
+    const std::vector<net::Hint> allowed =
+        engine.headers.HintsFor(outgoing, present);
+    for (const net::Hint hint : present) {
+      if (std::find(allowed.begin(), allowed.end(), hint) == allowed.end()) {
+        decision.remove_headers.push_back(net::HintHeaderName(hint));
+      }
+    }
+  }
   return decision;
 }
 

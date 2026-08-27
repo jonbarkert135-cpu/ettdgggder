@@ -4,6 +4,23 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #57 — the header floor, and a count of how much of the overlay runs
+
+`DecideHeaders` joins the network hook: given the referrer Chromium computed, the target, the
+top-level document and the header names already on the request, it answers with a shortened referrer
+and the client hints this level refuses. `URLLoader::ScheduleStart` applies it — the last point
+before `URLRequest::Start()`, and the only one where the referrer and the assembled headers both
+exist. It may only shorten, never lengthen (invariant 85).
+
+Build 6 measured both halves: a page declaring `Referrer-Policy: unsafe-url` leaked no path to a
+third party, and `Sec-CH-UA-Full-Version-List` — which Chromium sends to Google origins — was dropped
+during ordinary browsing. The three low-entropy hints still go out, on purpose.
+
+`scripts/report_wiring.py` and `docs/WIRING.md` are the other half of this PR, and the more useful
+one: they count how much of the overlay a running browser can reach (5 of 33 modules, 8 699 of
+22 670 lines) by matching class names against symbols in the linked binaries. Host tests prove logic;
+this proves wiring. Regenerate it after every build rather than editing the table.
+
 ## PR #56 — the browser blocks something for the first time
 
 Phase 7's first hook. `integration/network_hook.{h,cc}` exposes one function, `DecideRequest`, that

@@ -1,0 +1,112 @@
+# Bedrock-Patch: 0004-bedrock-outgoing-header-floor
+# Area: integration
+# Upstream-Paths: services/network/url_loader.cc
+# Reason: phase 7 — makes privacy/network/request_headers real. URLLoader::ScheduleStart
+#   is the last point before net::URLRequest::Start(), and the only place where the
+#   referrer Chromium computed and the assembled request headers both exist; it also
+#   runs again for each redirect, which is a new request to a new host.
+#   The patch collects the referrer, the target, the top-level document and the
+#   names of the headers already present, asks bedrock::integration::DecideHeaders,
+#   and applies exactly what comes back: SetReferrer for a shortened referrer,
+#   RemoveRequestHeaderByName for each refused client hint. It carries no policy —
+#   the floor lives in src_overrides/bedrock/privacy/network/request_headers.* and
+#   the seam is host-tested by network_hook_test.
+#   Direction is one-way by construction: the decision may only shorten what
+#   Chromium was going to send, never lengthen it (invariant 85).
+# Owner: integration
+# Chromium-Version: 151.0.7922.173
+# Upstream-Bug: none
+# Drop-When: Chromium grows a supported per-request referrer/client-hint policy
+#   hook, or the header floor moves behind the same profile plumbing that will
+#   carry per-site shields into the network service.
+diff --git a/services/network/url_loader.cc b/services/network/url_loader.cc
+index 98f6f203cd..8aeeb6edb6 100644
+--- a/services/network/url_loader.cc
++++ b/services/network/url_loader.cc
+@@ -4,6 +4,9 @@
+ 
+ #include "services/network/url_loader.h"
+ 
++#include "bedrock/integration/network_hook.h"
++#include "bedrock/integration/startup.h"
++
+ #include <algorithm>
+ #include <limits>
+ #include <map>
+@@ -53,6 +56,7 @@
+ #include "net/base/mime_sniffer.h"
+ #include "net/base/net_error_details.h"
+ #include "net/base/net_errors.h"
++#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+ #include "net/base/proxy_chain.h"
+ #include "net/base/schemeful_site.h"
+ #include "net/base/task/task_runner.h"
+@@ -142,6 +146,55 @@ namespace network {
+ 
+ namespace {
+ 
++// Bedrock: outgoing-header floor (phase 7). Chromium has already applied its own
++// referrer policy and assembled its client hints; this asks the Bedrock policy
++// whether any of it is more than the site should receive, and applies only what
++// comes back. Translation and application, no policy: the decision lives in
++// src_overrides/bedrock/privacy/network/request_headers.* and is host-tested.
++void ApplyBedrockHeaderFloor(net::URLRequest* request,
++                             bool is_navigation) {
++  const std::optional<url::Origin>& top_frame_origin =
++      request->isolation_info().top_frame_origin();
++  if (!top_frame_origin.has_value() || top_frame_origin->opaque() ||
++      !request->url().SchemeIsHTTPOrHTTPS()) {
++    return;
++  }
++
++  bedrock::integration::OutgoingHeaderRequest ask;
++  ask.referrer = request->referrer();
++  ask.target_url = request->url().spec();
++  ask.target_host = request->url().host();
++  ask.target_etld1 = net::registry_controlled_domains::GetDomainAndRegistry(
++      ask.target_host,
++      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
++  ask.top_host = top_frame_origin->host();
++  ask.top_etld1 = net::registry_controlled_domains::GetDomainAndRegistry(
++      ask.top_host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
++  ask.navigation = is_navigation;
++  for (const auto& header : request->extra_request_headers().GetHeaderVector()) {
++    ask.present_headers.push_back(header.key);
++  }
++
++  const bedrock::integration::OutgoingHeaderDecision decision =
++      bedrock::integration::DecideHeaders(ask);
++  if (decision.referrer_changed) {
++    // SetReferrer before Start() is the supported way to shorten a referrer;
++    // the policy stays as Chromium computed it, only the value gets smaller.
++    request->SetReferrer(decision.referrer);
++    LOG(WARNING) << bedrock::integration::kLogPrefix << "referrer "
++                 << decision.referrer_scope << " for " << ask.target_host
++                 << " on " << ask.top_host;
++  }
++  for (const std::string& name : decision.remove_headers) {
++    request->RemoveRequestHeaderByName(name);
++    LOG(WARNING) << bedrock::integration::kLogPrefix << "dropped hint " << name
++                 << " for " << ask.target_host;
++  }
++}
++}  // namespace
++
++namespace {
++
+ BASE_FEATURE(kDelayedCookieNotification, base::FEATURE_DISABLED_BY_DEFAULT);
+ 
+ // Cannot use 0, because this means "default" in
+@@ -753,6 +806,12 @@ void URLLoader::ProcessOutboundSharedStorageInterceptor() {
+ void URLLoader::ScheduleStart() {
+   TRACE_EVENT("loading", "URLLoader::ScheduleStart",
+               net::NetLogWithSourceToFlow(url_request_->net_log()));
++  // Bedrock: last point before the request goes out, and the only place where
++  // both the referrer and the assembled headers exist. Runs for redirects too,
++  // because a redirect is a new request to a new host.
++  ApplyBedrockHeaderFloor(
++      url_request_.get(),
++      request_destination_ == mojom::RequestDestination::kDocument);
+   bool defer = false;
+   if (resource_scheduler_client_) {
+     resource_scheduler_request_handle_ =

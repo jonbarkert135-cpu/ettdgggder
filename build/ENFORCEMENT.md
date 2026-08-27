@@ -196,11 +196,49 @@ other half of the claim: a blocker is only useful if the web still works.
 * Cosmetic filtering, referrer and Client-Hints control (PR #52) and CNAME uncloaking are still not
   called from anywhere — this hook only asks the network stage of the pipeline.
 
+## Build 6 — 2026-08-27 (the header floor, and a first honest wiring count)
+
+| | |
+| --- | --- |
+| Change | `DecideHeaders` added to the network hook; `patches/bedrock/integration/0004-bedrock-outgoing-header-floor.patch` calls it from `URLLoader::ScheduleStart` |
+| Build | exit 0, 2 m 13 s (5 steps — no `BUILD.gn` change this time) |
+| Run | headless, log `/work/build-logs/verify_run3.log` |
+
+Two measurements on the running browser.
+
+**A refused referrer policy.** A page was loaded whose response declared
+`Referrer-Policy: unsafe-url` — the loosest value there is, and one Chromium honours by
+specification — with a path worth leaking (`?x=secret-path-value`). A cross-site `fetch()` from that
+page arrived at the third party with **no path**, and the browser said why:
+
+```
+[bedrock] referrer origin-only for postman-echo.com on httpbin.org
+```
+
+**A high-entropy hint dropped in normal browsing**, with no probe involved — Chromium sends the full
+version list to Google origins, and the floor removed it:
+
+```
+[bedrock] dropped hint Sec-CH-UA-Full-Version-List for www.google.com
+```
+
+Low-entropy hints (`Sec-CH-UA`, `-Mobile`, `-Platform`) still go out unchanged, verified against
+`httpbin.org/headers`: removing them would make this browser stand out rather than blend in, which
+is the opposite of the goal.
+
+### How much of the overlay is reached at all
+
+`scripts/report_wiring.py` counts it from the linked binaries, and `docs/WIRING.md` records the
+answer: **5 of 33 modules, 8 699 of 22 670 lines**. Everything else compiles and has host tests but
+has no call site yet. That number is the project's real progress bar, and it is deliberately in the
+tree next to the enforcement claims rather than in a status message.
+
 ## Enforced features
 
 | Feature | Enforced since | Where the browser performs it | Evidence |
 | --- | --- | --- | --- |
 | `webrtc_policy` (`webrtc_privacy` default) | Build 2, 2026-08-23 (re-verified builds 3, 4 and 5) | `chrome/browser/ui/browser_ui_prefs.cc` registers the pref with the Bedrock default; `chrome/browser/renderer_preferences_util.cc` passes it to every renderer | `[bedrock] effective webrtc.ip_handling_policy = default_public_interface_only (want default_public_interface_only: match)` in `/work/build-logs/run2.log`; reproduce with `scripts/resume_build.sh` |
+| Referrer floor and client-hint refusal (`referrer_control`, high-entropy hints) | Build 6, 2026-08-27 | `services/network/url_loader.cc` asks `bedrock::integration::DecideHeaders` in `ScheduleStart` and applies it with `SetReferrer` / `RemoveRequestHeaderByName` | `[bedrock] referrer origin-only …` and `[bedrock] dropped hint Sec-CH-UA-Full-Version-List …` in `/work/build-logs/verify_run3.log`; a page declaring `unsafe-url` leaked no path to a third party |
 | Tracker blocking (`ads` / `trackers` shields defaults, list stage only) | Build 5, 2026-08-27 | `services/network/url_loader_factory.cc` asks `bedrock::integration::DecideRequest` before creating a loader; a blocked request is completed with `net::ERR_BLOCKED_BY_CLIENT` | `[bedrock] blocked ...` lines above in `/work/build-logs/verify_run2.log`, against the same fetches completing on build 4 |
 
 ## Constraints this build discovered

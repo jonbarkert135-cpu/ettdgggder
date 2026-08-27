@@ -8,6 +8,7 @@
 
 #include <cstddef>
 #include <string>
+#include <vector>
 
 // The seam between the blocking pipeline and Chromium's network service
 // (phase 7). Everything above this file is Bedrock policy; the only thing the
@@ -71,6 +72,41 @@ struct NetworkDecision {
 // first party and always allowed — a blocker that cannot tell which page it is
 // protecting must not guess.
 NetworkDecision DecideRequest(const NetworkRequest& request);
+
+// --- Outgoing headers (phase 7, second stage) -------------------------------
+
+// What Chromium is about to send, described without Chromium types. The patch
+// fills in the referrer Chromium computed and the header names present on the
+// request; Bedrock answers with what must change.
+struct OutgoingHeaderRequest {
+  std::string referrer;       // referrer Chromium computed, "" if none
+  std::string target_url;
+  std::string target_host;
+  std::string target_etld1;
+  std::string top_host;       // top-level document host, "" if unknown
+  std::string top_etld1;
+  bool navigation = false;    // top-level navigation vs. subresource
+  // Header names already on the request, spelled as they go on the wire.
+  std::vector<std::string> present_headers;
+};
+
+struct OutgoingHeaderDecision {
+  // Referrer to send. `referrer_changed` false means leave Chromium's alone;
+  // true with an empty string means send no Referer header at all.
+  bool referrer_changed = false;
+  std::string referrer;
+  // Header names to remove — high-entropy client hints the shipped level
+  // refuses. Only names that were present are ever returned.
+  std::vector<std::string> remove_headers;
+  // Log-safe words: "full-url", "origin-only", "none", "unchanged".
+  std::string referrer_scope = "unchanged";
+};
+
+// Bedrock is a floor, never a loosener: this can shorten or drop a referrer
+// Chromium was going to send, and never lengthens one. A request whose
+// top-level document is unknown is left untouched, for the same reason blocking
+// declines to guess.
+OutgoingHeaderDecision DecideHeaders(const OutgoingHeaderRequest& request);
 
 // The starter list this build ships, authored by Bedrock: a handful of
 // unambiguous third-party analytics and ad hosts, no imported list. It exists
