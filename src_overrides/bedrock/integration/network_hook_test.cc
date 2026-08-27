@@ -18,7 +18,10 @@ using bedrock::integration::DecideRequest;
 using bedrock::integration::NetworkDecision;
 using bedrock::integration::NetworkHookStartupLine;
 using bedrock::integration::NetworkRequest;
+using bedrock::integration::OutgoingHeaderDecision;
+using bedrock::integration::OutgoingHeaderRequest;
 using bedrock::integration::RequestKind;
+using bedrock::integration::DecideHeaders;
 
 int failures = 0;
 
@@ -126,6 +129,88 @@ void TheStartupLineIsHonest() {
         "line admits profile settings are not applied yet: " + line);
 }
 
+OutgoingHeaderRequest HeaderRequest() {
+  OutgoingHeaderRequest request;
+  request.referrer = "https://news.example.com/article/42";
+  request.target_url = "https://cdn.other.test/a.js";
+  request.target_host = "cdn.other.test";
+  request.target_etld1 = "other.test";
+  request.top_host = "news.example.com";
+  request.top_etld1 = "example.com";
+  request.present_headers = {"Sec-CH-UA",     "Sec-CH-UA-Mobile",
+                            "Sec-CH-UA-Platform", "Sec-CH-UA-Model",
+                            "Sec-CH-UA-Full-Version-List", "Device-Memory",
+                            "DPR", "Accept"};
+  return request;
+}
+
+// The page a user is reading must not be handed to a third party in full. The
+// referrer is cut to the origin, which is what the target legitimately needs to
+// answer a request.
+void CrossSiteReferrerIsCutToTheOrigin() {
+  const OutgoingHeaderDecision decision = DecideHeaders(HeaderRequest());
+  Check(decision.referrer_changed, "cross-site referrer is changed");
+  Check(decision.referrer == "https://news.example.com/",
+        "referrer is origin only, got: " + decision.referrer);
+  Check(decision.referrer_scope == "origin-only",
+        "scope word, got: " + decision.referrer_scope);
+}
+
+// The seam is a floor: it may shorten what Chromium decided to send and must
+// never produce something longer, or Bedrock would be adding information.
+void TheDecisionNeverLengthensAReferrer() {
+  OutgoingHeaderRequest request = HeaderRequest();
+  request.referrer = "https://news.example.com/";  // already just the origin
+  const OutgoingHeaderDecision decision = DecideHeaders(request);
+  Check(!decision.referrer_changed || decision.referrer.size() <=
+            request.referrer.size(),
+        "a referrer is never lengthened, got: " + decision.referrer);
+}
+
+// High-entropy hints identify the machine, so they go whatever the site asks.
+// The three low-entropy hints every platform sends stay, because removing them
+// makes this browser stand out rather than blend in.
+void HighEntropyHintsAreRemovedAndLowEntropyOnesKept() {
+  const OutgoingHeaderDecision decision = DecideHeaders(HeaderRequest());
+  const std::string removed = [&decision] {
+    std::string all;
+    for (const std::string& name : decision.remove_headers) {
+      all += name + " ";
+    }
+    return all;
+  }();
+  Check(removed.find("Sec-CH-UA-Model") != std::string::npos,
+        "the device model is removed: " + removed);
+  Check(removed.find("Sec-CH-UA-Full-Version-List") != std::string::npos,
+        "the full version list is removed: " + removed);
+  Check(removed.find("Sec-CH-UA-Platform ") == std::string::npos &&
+            removed.find("Sec-CH-UA ") == std::string::npos,
+        "the low-entropy hints are kept: " + removed);
+  Check(removed.find("Accept") == std::string::npos,
+        "a header that is not a hint is never touched: " + removed);
+}
+
+// A header Chromium did not send is not "removed" — returning names that were
+// never there would make the patch fight phantom headers and the log lie.
+void OnlyPresentHeadersAreEverReturned() {
+  OutgoingHeaderRequest request = HeaderRequest();
+  request.present_headers = {"Accept", "Sec-CH-UA"};
+  const OutgoingHeaderDecision decision = DecideHeaders(request);
+  Check(decision.remove_headers.empty(),
+        "nothing to remove when no refused hint is present");
+}
+
+// Same reasoning as blocking: without a known top-level document the hook has
+// no site to protect and leaves the request exactly as Chromium built it.
+void HeadersAreUntouchedWithoutATopFrame() {
+  OutgoingHeaderRequest request = HeaderRequest();
+  request.top_host.clear();
+  request.top_etld1.clear();
+  const OutgoingHeaderDecision decision = DecideHeaders(request);
+  Check(!decision.referrer_changed && decision.remove_headers.empty(),
+        "no top frame means no header change");
+}
+
 }  // namespace
 
 int main() {
@@ -136,6 +221,11 @@ int main() {
   TrackerAsTheTopLevelDocumentIsAllowed();
   TheBuiltInListParses();
   TheStartupLineIsHonest();
+  CrossSiteReferrerIsCutToTheOrigin();
+  TheDecisionNeverLengthensAReferrer();
+  HighEntropyHintsAreRemovedAndLowEntropyOnesKept();
+  OnlyPresentHeadersAreEverReturned();
+  HeadersAreUntouchedWithoutATopFrame();
   if (failures == 0) {
     std::cout << "network_hook: ok (" << BuiltInRuleCount()
               << " built-in rules)\n";

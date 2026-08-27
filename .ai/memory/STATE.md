@@ -3,7 +3,13 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** build 5 (2026-08-27, `build/ENFORCEMENT.md`) is the first build whose network behaviour
+**As of:** build 6 (2026-08-27) added the outgoing-header floor: `URLLoader::ScheduleStart` asks
+`bedrock::integration::DecideHeaders`, so a page declaring `Referrer-Policy: unsafe-url` leaks no path
+to a third party and high-entropy client hints (measured: `Sec-CH-UA-Full-Version-List` to Google
+origins) are dropped while the three low-entropy ones still go out — and `docs/WIRING.md` +
+`scripts/report_wiring.py` now count what a running browser can reach at all: **5 of 33 modules,
+8 699 of 22 670 overlay lines**, everything else compiled with tests but no call site (PR #57);
+build 5 is the first build whose network behaviour
 Bedrock changes: every subresource request passes through the blocking pipeline via
 `integration/network_hook.h` and one call site in `services/network/url_loader_factory.cc`, and
 requests that build 4 completed (Google Analytics, Facebook, DoubleClick — and three real ad hosts on
