@@ -602,6 +602,7 @@ A gate is a rule the repository enforces on itself. Do not weaken one to make a 
 | `scripts/check_strings.py` | Localization gate (roadmap item 61). |
 | `scripts/check_test_matrix.py` | Gate: the roadmap-74 test matrix stays complete, honest and executable. |
 | `scripts/check_tokens.py` | Design items 31 and 32, as a gate. |
+| `scripts/check_toolchain_limits.py` | Gate: overlay code stays inside what Chromium's toolchain accepts. |
 | `scripts/check_trademarks.py` | Other people's trademarks and other people's interfaces (items 92, 96, 97). |
 | `scripts/check_transparency.py` | Gate: every privacy feature explains itself, including its limits. |
 | `scripts/check_ui_style.py` | Roadmap item 27's taste rules, as a gate. |

@@ -68,6 +68,40 @@ Bedrock objects and the code executes in the browser process.
 Chromium (the startup plan prints each one with the reason it is blocked), no UI is built, and no
 privacy subsystem beyond this pref runs. Exactly one feature is `kEnforced`.
 
+## Build 3 — 2026-08-27 (rebuilt from a fresh checkout, with PR #52 in it)
+
+| | |
+| --- | --- |
+| Why | the sandbox lost `/work/chromium`; the checkout was re-fetched at the pinned revision and everything since phase 2 (PRs up to #52) was compiled for the first time |
+| Chromium revision | `a96602f30358e9b5d256a0464e7e4d4bec223004` (151.0.7922.173), matches [`chromium.pin`](chromium.pin) |
+| GN args | same as Build 1, minus `enable_nacl` (the arg no longer exists in this Chromium) |
+| Full build | 12 h 11 m, 55 919 / 56 297 steps, **failed on one step**: `std::abs` in `bedrock/privacy/network/request_headers.cc` is not visible in Chromium's C++ modules build |
+| Fix | PR #53: the sign of `OneDecimal()` is handled by hand (the old code also printed `0.5` for a DPR of −0.05), plus two regression tests and `scripts/check_toolchain_limits.py` so a `g++`-only test run cannot hide the next one |
+| Rebuild | incremental, 258 steps, 24 m 01 s, exit 0 (link 4 m 21 s) |
+| Binary | `out/Release/chrome`, 194 183 904 bytes |
+| Symbols | `nm -C chrome \| grep bedrock::` → **18 symbols** (`integration::*`, `settings::FactoryDefaults`, `crypto::ToHex`) |
+| Run | headless with a DevTools port; `Runtime.evaluate` returned the rendered text and a screenshot, so the binary really renders and runs JavaScript |
+
+### What this build proves, and what it does not
+
+It proves the overlay as it stands today — 20 PRs after Build 2 — still compiles and links inside
+Chromium, and that the resulting browser starts, renders and enforces the one wired default:
+
+```
+[bedrock] Balanced Privacy: 1 of 12 shipped defaults enforced by this build
+[bedrock] enforcing webrtc_privacy: webrtc.ip_handling_policy = default_public_interface_only
+[bedrock] effective webrtc.ip_handling_policy = default_public_interface_only (want default_public_interface_only: match)
+```
+
+It proves nothing new about any other subsystem. `bedrock::net::RequestHeaderPolicy` (PR #52) is
+**absent** from the binary: nothing in Chromium's network stack calls it yet, so `--gc-sections`
+drops it. Referrer and Client-Hints control is host-tested, not enforced. The enforced list below
+is unchanged at one feature.
+
+The lasting finding is about the *test gap*, not about the code: a 12-hour build was spent to learn
+one thing `g++` could never tell us. Every constraint of that kind now has a gate that runs in
+seconds (`scripts/check_toolchain_limits.py`, invariant 82).
+
 ## Enforced features
 
 | Feature | Enforced since | Where the browser performs it | Evidence |

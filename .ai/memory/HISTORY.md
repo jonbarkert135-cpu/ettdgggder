@@ -4,6 +4,24 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #53 — the build's own bug, and a gate so the next one is cheap
+
+- Chromium was rebuilt from a re-fetched checkout (Build 3, `build/ENFORCEMENT.md`), the first
+  in-tree build since phase 2 and therefore the first for everything up to PR #52. It ran 12 h 11 m
+  and failed on one step out of 56 297: `std::abs` in `privacy/network/request_headers.cc`
+  "must be imported from module `//build/modules:system.std.cstdlib`". Including `<cstdlib>` does
+  not fix it; the sign is now handled by hand. The old expression was also wrong on its own terms —
+  a DPR of −0.05 printed as `0.5` — so two regression tests came with the fix.
+- The lasting finding is the gap, not the line: the host tests use `g++`, which accepts everything
+  Chromium's clang rejects, so this class of error could only ever be found by a 12-hour build.
+  `scripts/check_toolchain_limits.py` (invariant 82) now greps the in-tree overlay for exceptions
+  and for `<cstdlib>` numeric helpers in seconds, ignoring comments and strings so a fix can still
+  explain itself, and skipping `*_test.cc`, which never enters the Chromium build.
+- After the fix: 258 steps, 24 m, exit 0. The binary starts, renders and runs JS (verified over a
+  DevTools port — headless `--dump-dom`/`--screenshot` hang in this sandbox), and still reports
+  `1 of 12 shipped defaults enforced`. `RequestHeaderPolicy` is absent from the binary, as expected:
+  no Chromium call site reaches it yet.
+
 ## PR #52 — referrer policy and client hints, one component
 
 - Top of the research queue. `privacy/network/request_headers`
