@@ -4,6 +4,29 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #56 — the browser blocks something for the first time
+
+Phase 7's first hook. `integration/network_hook.{h,cc}` exposes one function, `DecideRequest`, that
+wraps the blocking pipeline with the shipped protection defaults and an 18-rule starter list we wrote
+ourselves (no EasyList, no subscription). Two patches make it real: `//bedrock` becomes a dependency
+of the network service target, and `URLLoaderFactory::CreateLoaderAndStartWithSyncClient` asks the
+hook before a loader exists, completing blocked requests with `net::ERR_BLOCKED_BY_CLIENT` the same
+way the keepalive-exhaustion path does.
+
+Measured on build 5, not asserted: Google Analytics, Facebook and DoubleClick fetches that completed
+on build 4 now fail, an unlisted CDN still loads, and `bbc.com/news`, Wikipedia and GitHub render
+while three real ad/tracker hosts on the BBC page are blocked with the deciding rule in the log.
+
+Deliberate limits, all stated in the startup line and in `build/ENFORCEMENT.md`: the list is tiny,
+the engine is process-wide with defaults only (the network service cannot read a profile yet, so
+per-site shields do not reach it), and `kPartition`/`kRedirect` verdicts still load because
+partitioned storage and a resource server do not exist.
+
+Two traps worth remembering: a new overlay file needs its symlink in the Chromium tree before it can
+be compiled (`build/sync.py` does it; `--overlay-only` also tries to re-apply patches and fails on a
+dirty tree, so link the new files by hand), and a `BUILD.gn` dependency change costs a ~20 minute
+`gn` regeneration plus ~490 relinks, not the usual 2–4 minutes.
+
 ## PR #55 — two defaults enforced, then un-enforced by their own test
 
 The integration seam only carried string prefs in a profile, so every shipped default living in

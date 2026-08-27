@@ -149,11 +149,59 @@ unenforced list (invariant 83).
 The lasting lesson: "the browser does X and our pref says X" is not evidence. Flip the pref to the
 wrong value and rebuild — if the behaviour does not follow, the pref was never the cause.
 
+## Build 5 — 2026-08-27 (the first feature that changes what the network does)
+
+| | |
+| --- | --- |
+| Change | `src_overrides/bedrock/integration/network_hook.*` plus two patches: `//bedrock` added to the network service target, and one call site in `services/network/url_loader_factory.cc` |
+| Build | `autoninja -C out/Release chrome`, exit 0 (1 h 03 m — a `BUILD.gn` dependency change relinks ~490 shared libraries) |
+| Binary | `chrome` 194 190 072 bytes; 23 `bedrock::` symbols in `chrome`, **51** in `libservices_network_network_service.so` |
+| Run | headless, log `/work/build-logs/verify_run2.log` |
+
+Every subresource request now passes through `bedrock::blocking::BlockingPipeline` before it is
+made. Measured on the running browser, from a page on `example.com`:
+
+```
+[bedrock] network hook: live, 18 built-in rules, shipped defaults only (no profile settings yet)
+[bedrock] blocked www.google-analytics.com on example.com (filter-list: ||google-analytics.com^$third-party)
+[bedrock] blocked connect.facebook.net on example.com (filter-list: ||connect.facebook.net^$third-party)
+[bedrock] blocked static.doubleclick.net on example.com (filter-list: ||doubleclick.net^$third-party)
+```
+
+The same three fetches on build 4 all completed. A fourth fetch in the same probe, a CDN that is
+not on the list (`cdn.jsdelivr.net`), still completed on build 5 — the hook blocks what the list
+names and nothing else.
+
+On a real site (`bbc.com/news`, which loaded and rendered normally):
+
+```
+[bedrock] blocked securepubads.g.doubleclick.net on www.bbc.com (filter-list: ||doubleclick.net^$third-party)
+[bedrock] blocked sb.scorecardresearch.com on www.bbc.com (filter-list: ||scorecardresearch.com^$third-party)
+[bedrock] blocked pagead2.googlesyndication.com on www.bbc.com (filter-list: ||googlesyndication.com^$third-party)
+```
+
+`en.wikipedia.org` and `github.com` also loaded with their titles and content intact, which is the
+other half of the claim: a blocker is only useful if the web still works.
+
+### What this build does not do
+
+* The list is **Bedrock's own 18 rules**, not a subscription. No EasyList, no imported list, no
+  updates yet — so coverage is a fraction of a real blocker's, and the startup line says so.
+* The engine is **process-wide and uses shipped defaults only**. Per-site shields, user rules and
+  the "why is this blocked?" panel exist in the overlay but the network service cannot read a
+  profile yet, so turning protection off for one site does not reach this code path.
+* `kPartition` and `kRedirect` verdicts still load the request: partitioned storage (phase 9) and a
+  neutered-resource server do not exist. Treating them as blocks would break sites; treating them
+  as done would be a lie.
+* Cosmetic filtering, referrer and Client-Hints control (PR #52) and CNAME uncloaking are still not
+  called from anywhere — this hook only asks the network stage of the pipeline.
+
 ## Enforced features
 
 | Feature | Enforced since | Where the browser performs it | Evidence |
 | --- | --- | --- | --- |
-| `webrtc_policy` (`webrtc_privacy` default) | Build 2, 2026-08-23 (re-verified builds 3 and 4) | `chrome/browser/ui/browser_ui_prefs.cc` registers the pref with the Bedrock default; `chrome/browser/renderer_preferences_util.cc` passes it to every renderer | `[bedrock] effective webrtc.ip_handling_policy = default_public_interface_only (want default_public_interface_only: match)` in `/work/build-logs/run2.log`; reproduce with `scripts/resume_build.sh` |
+| `webrtc_policy` (`webrtc_privacy` default) | Build 2, 2026-08-23 (re-verified builds 3, 4 and 5) | `chrome/browser/ui/browser_ui_prefs.cc` registers the pref with the Bedrock default; `chrome/browser/renderer_preferences_util.cc` passes it to every renderer | `[bedrock] effective webrtc.ip_handling_policy = default_public_interface_only (want default_public_interface_only: match)` in `/work/build-logs/run2.log`; reproduce with `scripts/resume_build.sh` |
+| Tracker blocking (`ads` / `trackers` shields defaults, list stage only) | Build 5, 2026-08-27 | `services/network/url_loader_factory.cc` asks `bedrock::integration::DecideRequest` before creating a loader; a blocked request is completed with `net::ERR_BLOCKED_BY_CLIENT` | `[bedrock] blocked ...` lines above in `/work/build-logs/verify_run2.log`, against the same fetches completing on build 4 |
 
 ## Constraints this build discovered
 

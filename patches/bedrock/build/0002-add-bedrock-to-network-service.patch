@@ -1,0 +1,30 @@
+# Bedrock-Patch: 0002-add-bedrock-to-network-service
+# Area: build
+# Upstream-Paths: services/network/BUILD.gn
+# Reason: phase 7 — the blocking pipeline has to be reachable from the process
+#   that makes requests. //chrome/browser:browser (patch 0001) is the browser
+#   process only; the network service is a separate component target, and without
+#   this dependency url_loader_factory.cc cannot link against //bedrock. The
+#   overlay has no deps of its own, so this adds no dependency cycle risk.
+# Owner: build
+# Chromium-Version: 151.0.7922.173
+# Upstream-Bug: none
+# Drop-When: never while the network hook lives in the network service; if the
+#   blocking decision ever moves to the browser process behind a mojo interface,
+#   this dependency goes with it.
+diff --git a/services/network/BUILD.gn b/services/network/BUILD.gn
+index 66c8791784..42ff4a0fe6 100644
+--- a/services/network/BUILD.gn
++++ b/services/network/BUILD.gn
+@@ -378,6 +378,11 @@ component("network_service") {
+     "//mojo/public/cpp/base:protobuf_support",
+     "//mojo/public/cpp/bindings",
+     "//mojo/public/cpp/system",
++
++    # Bedrock overlay (MPL-2.0). The network service asks
++    # //bedrock's integration seam whether a request may be made; see
++    # patches/bedrock/integration/0003-bedrock-network-blocking-hook.patch.
++    "//bedrock",
+     "//net",
+     "//net:extras",
+     "//services/network/ad_auction",
