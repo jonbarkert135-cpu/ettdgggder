@@ -50,6 +50,14 @@ REQUIRED_ARGS = {
 
 ALLOWED_STRING_CONTEXT = re.compile(r"^\s*(//|\*|/\*)")
 
+# A filter-list rule that names a tracker host is the opposite of phoning home:
+# it is the instruction not to contact it. Only this exact shape is allowed —
+# a quoted rule, domain-anchored, party-scoped, nothing else on the line — so
+# "https://google-analytics.com/collect" is still a failure, and so is a bare
+# hostname in a URL, a header or a config value.
+ALLOWED_BLOCK_RULE = re.compile(
+    r'^\s*"(?:!\s[^"]*|\|\|[a-z0-9.\-]+\^\$[a-z\-]+)\\n"\s*$')
+
 
 def scan_sources() -> list[str]:
     errors = []
@@ -63,6 +71,8 @@ def scan_sources() -> list[str]:
         for number, line in enumerate(path.read_text().splitlines(), 1):
             if ALLOWED_STRING_CONTEXT.match(line):
                 continue  # a comment may name what we do not do
+            if ALLOWED_BLOCK_RULE.match(line):
+                continue  # a block rule names a host in order to refuse it
             for symbol in BANNED_SYMBOLS:
                 if symbol in line:
                     errors.append(

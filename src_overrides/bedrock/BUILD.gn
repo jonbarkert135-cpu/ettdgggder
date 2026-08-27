@@ -59,6 +59,8 @@ source_set("bedrock") {
     "extensions/extension_registry.h",
     "history/history_store.cc",
     "history/history_store.h",
+    "integration/network_hook.cc",
+    "integration/network_hook.h",
     "integration/startup.cc",
     "integration/startup.h",
     "omnibox/input_parser.cc",

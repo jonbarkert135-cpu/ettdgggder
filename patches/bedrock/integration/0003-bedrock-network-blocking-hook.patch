@@ -1,0 +1,173 @@
+# Bedrock-Patch: 0003-bedrock-network-blocking-hook
+# Area: integration
+# Upstream-Paths: services/network/url_loader_factory.cc
+# Reason: phase 7 — the one call site that makes the blocking pipeline real. Every
+#   subresource request enters URLLoaderFactory::CreateLoaderAndStartWithSyncClient,
+#   which is before a URLLoader exists, so a blocked request needs no unwinding:
+#   the client is completed with net::ERR_BLOCKED_BY_CLIENT exactly the way the
+#   existing keepalive-exhaustion path does it.
+#   The patch carries no policy. It maps RequestDestination to Bedrock's own
+#   RequestKind (explicitly, so a new upstream value is a compile error rather
+#   than a silent "other"), takes the registrable domain from Chromium's
+#   public-suffix list, reads the top-level document from the request's or the
+#   factory's IsolationInfo, and asks bedrock::integration::DecideRequest. The
+#   verdict, the built-in list and the reason strings all live in
+#   src_overrides/bedrock, host-tested by network_hook_test.
+#   It logs one [bedrock] line per block naming the rule, and one line at first
+#   use stating how many rules are loaded and that profile settings are not
+#   wired in yet — see build/ENFORCEMENT.md, build 5.
+# Owner: integration
+# Chromium-Version: 151.0.7922.173
+# Upstream-Bug: none
+# Drop-When: the profile's protection settings reach the network service (then the
+#   engine is per-NetworkContext, not process-wide), or upstream grows a
+#   supported request-blocking extension point we can use instead.
+diff --git a/services/network/url_loader_factory.cc b/services/network/url_loader_factory.cc
+index ef93f794f3..ed38da42e3 100644
+--- a/services/network/url_loader_factory.cc
++++ b/services/network/url_loader_factory.cc
+@@ -11,12 +11,17 @@
+ 
+ #include "base/check_op.h"
+ #include "base/functional/bind.h"
++#include "base/logging.h"
+ #include "base/metrics/histogram_functions.h"
+ #include "base/notreached.h"
+ #include "base/time/time.h"
+ #include "components/content_settings/core/common/content_settings.h"
+ #include "mojo/public/cpp/bindings/message.h"
++#include "bedrock/integration/network_hook.h"
++#include "bedrock/integration/startup.h"
+ #include "net/base/isolation_info.h"
++#include "net/base/net_errors.h"
++#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+ #include "net/cookies/cookie_constants.h"
+ #include "net/cookies/cookie_setting_override.h"
+ #include "net/url_request/url_request_context.h"
+@@ -44,6 +49,105 @@ namespace network {
+ 
+ namespace {
+ 
++// Bedrock: translation only. The registrable domain comes from Chromium's
++// public-suffix list because a blocker that guesses at registrable domains
++// treats co.uk as a site, and the request kind is mapped explicitly so that a
++// new upstream RequestDestination is a compile error here instead of silently
++// becoming "other".
++std::string BedrockRegistrableDomain(const std::string& host) {
++  return net::registry_controlled_domains::GetDomainAndRegistry(
++      host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
++}
++
++bedrock::integration::RequestKind BedrockRequestKind(
++    network::mojom::RequestDestination destination) {
++  using Kind = bedrock::integration::RequestKind;
++  switch (destination) {
++    case network::mojom::RequestDestination::kDocument:
++      return Kind::kDocument;
++    case network::mojom::RequestDestination::kFrame:
++    case network::mojom::RequestDestination::kIframe:
++    case network::mojom::RequestDestination::kFencedframe:
++      return Kind::kSubdocument;
++    case network::mojom::RequestDestination::kScript:
++    case network::mojom::RequestDestination::kServiceWorker:
++    case network::mojom::RequestDestination::kSharedWorker:
++    case network::mojom::RequestDestination::kWorker:
++    case network::mojom::RequestDestination::kAudioWorklet:
++    case network::mojom::RequestDestination::kPaintWorklet:
++    case network::mojom::RequestDestination::kSharedStorageWorklet:
++      return Kind::kScript;
++    case network::mojom::RequestDestination::kStyle:
++    case network::mojom::RequestDestination::kXslt:
++      return Kind::kStylesheet;
++    case network::mojom::RequestDestination::kImage:
++      return Kind::kImage;
++    case network::mojom::RequestDestination::kFont:
++      return Kind::kFont;
++    case network::mojom::RequestDestination::kAudio:
++    case network::mojom::RequestDestination::kVideo:
++    case network::mojom::RequestDestination::kTrack:
++      return Kind::kMedia;
++    case network::mojom::RequestDestination::kEmpty:
++    case network::mojom::RequestDestination::kJson:
++      return Kind::kXhr;
++    case network::mojom::RequestDestination::kReport:
++    case network::mojom::RequestDestination::kSpeculationRules:
++      return Kind::kPing;
++    default:
++      return Kind::kOther;
++  }
++}
++
++// Asks the Bedrock pipeline about one request. Returns true when the request
++// must not be made; the caller performs the failure, this function performs
++// nothing.
++bool BedrockBlocksRequest(const network::ResourceRequest& resource_request,
++                          const net::IsolationInfo& factory_isolation_info) {
++  static const bool logged_once = [] {
++    LOG(WARNING) << bedrock::integration::kLogPrefix
++                 << bedrock::integration::NetworkHookStartupLine();
++    return true;
++  }();
++  (void)logged_once;
++
++  if (!resource_request.url.SchemeIsHTTPOrHTTPS()) {
++    return false;
++  }
++
++  const std::optional<url::Origin>* top_frame_origin = nullptr;
++  if (resource_request.trusted_params) {
++    top_frame_origin = &resource_request.trusted_params->isolation_info
++                            .top_frame_origin();
++  }
++  if (top_frame_origin == nullptr || !top_frame_origin->has_value()) {
++    top_frame_origin = &factory_isolation_info.top_frame_origin();
++  }
++
++  bedrock::integration::NetworkRequest request;
++  request.url = resource_request.url.spec();
++  request.host = resource_request.url.host();
++  request.etld1 = BedrockRegistrableDomain(request.host);
++  if (top_frame_origin->has_value() && !(*top_frame_origin)->opaque()) {
++    request.top_host = (*top_frame_origin)->host();
++    request.top_etld1 = BedrockRegistrableDomain(request.top_host);
++  }
++  request.kind = BedrockRequestKind(resource_request.destination);
++
++  const bedrock::integration::NetworkDecision decision =
++      bedrock::integration::DecideRequest(request);
++  if (!decision.blocked) {
++    return false;
++  }
++  LOG(WARNING) << bedrock::integration::kLogPrefix << "blocked "
++               << request.host << " on " << request.top_host << " ("
++               << decision.reason << ": " << decision.detail << ")";
++  return true;
++}
++}  // namespace
++
++namespace {
++
+ // Helper function template to create ObserverWrapper instances.
+ // Encapsulates the logic of potentially moving a PendingRemote from
+ // TrustedParams based on a member pointer, or using a fallback pointer.
+@@ -209,6 +313,20 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
+   // have been rejected at the CorsURLLoader layer.
+   DCHECK(!resource_request.trusted_params || params_->is_trusted);
+ 
++  // Bedrock: one decision point, before the loader exists (phase 7). The
++  // pipeline in bedrock::integration owns the policy; this block only fills in
++  // the request and performs the failure the pipeline asked for. Blocking here
++  // rather than inside URLLoader means no partially started request has to be
++  // unwound.
++  if (BedrockBlocksRequest(resource_request, params_->isolation_info)) {
++    URLLoaderCompletionStatus status;
++    status.error_code = net::ERR_BLOCKED_BY_CLIENT;
++    status.exists_in_cache = false;
++    status.completion_time = base::TimeTicks::Now();
++    mojo::Remote<mojom::URLLoaderClient>(std::move(client))->OnComplete(status);
++    return;
++  }
++
+   if (resource_request.web_bundle_token_params.has_value() &&
+       resource_request.destination !=
+           network::mojom::RequestDestination::kWebBundle) {

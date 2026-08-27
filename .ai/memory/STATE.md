@@ -3,7 +3,14 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** build 4 (2026-08-27, `build/ENFORCEMENT.md`) extended the integration seam to typed and
+**As of:** build 5 (2026-08-27, `build/ENFORCEMENT.md`) is the first build whose network behaviour
+Bedrock changes: every subresource request passes through the blocking pipeline via
+`integration/network_hook.h` and one call site in `services/network/url_loader_factory.cc`, and
+requests that build 4 completed (Google Analytics, Facebook, DoubleClick — and three real ad hosts on
+bbc.com) are now blocked with the deciding rule in the log while the sites still render; the list is
+Bedrock's own 18 rules with no subscription, the engine is process-wide with shipped defaults only,
+and `kPartition`/`kRedirect` verdicts still load — all of it stated in the startup line (PR #56);
+build 4 extended the integration seam to typed and
 scoped prefs — booleans and Local State prefs, not only profile strings — and then *withdrew* the
 claim it was built for: `telemetry` and `crash_reporting` map to one Chromium consent pref, but an
 unbranded build ignores that pref (`MetricsServiceAccessor::IsMetricsReportingEnabled` returns false
@@ -101,8 +108,9 @@ pre-release `v0.0.1-dev` (Linux x64, PR #27).
   `webrtc.ip_handling_policy` from `settings/defaults.h` and a running browser hands
   `default_public_interface_only` to its renderers — measured inside `UpdateFromSystemSettings`,
   recorded as "Build 2" in `build/ENFORCEMENT.md`. The other 29 features are policy only.
-- **The overlay runs inside Chromium** (phase 2): `nm -C out/Release/chrome | grep bedrock::` finds
-  **23** symbols (build 4) and the browser prints `[bedrock]` lines at startup. Phase 1 had proven
+- **The overlay runs inside Chromium** (phases 2 and 7): `nm -C out/Release/chrome | grep bedrock::`
+  finds **23** symbols and `libservices_network_network_service.so` a further **51** (build 5); the
+  browser prints `[bedrock]` lines at startup and one per blocked request. Phase 1 had proven
   compilation only; with no call site the linker had discarded every overlay object.
 - **A downloadable artifact exists:** GitHub pre-release `v0.0.1-dev`, `bedrock-0.0.1-dev-linux-x64.tar.zst`
   (313 MB, sha256 `54be5449…`), notes in `docs/releases/0.0.1-dev.md`. Component build, Linux only,
