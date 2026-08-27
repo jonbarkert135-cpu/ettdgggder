@@ -95,4 +95,5 @@ change, or change the gate in its own PR with a line in `DECISIONS.md`.
 | 79 | Another vendor's name may describe their product, never ours, and never near words implying endorsement; no foreign mark or CSS vocabulary in the tree | `scripts/check_trademarks.py` |
 | 80 | Every research note under `docs/research/` has a stance in `docs/IDENTITY.md` | `scripts/check_trademarks.py` |
 | 81 | Networking machinery only in a module declared in `remote_features.cc`; no host under our own name anywhere in the tree | `scripts/check_remote_features.py` |
+| 82 | In-tree overlay code uses no exceptions and no `<cstdlib>` numeric helper — what `g++` accepts is not what Chromium's clang accepts | `scripts/check_toolchain_limits.py` |
 

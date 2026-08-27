@@ -76,9 +76,17 @@ std::string MajorVersion(const std::string& full_version) {
 std::string Int(int value) { return std::to_string(value); }
 
 // One decimal place, without <sstream> or the locale-dependent printf path.
+// The sign is handled by hand: std::abs() is not visible in Chromium's C++
+// modules build unless <cstdlib> is imported as a module, and dividing a
+// negative scaled value would otherwise print "0.5" for -0.05.
 std::string OneDecimal(double value) {
-  const long scaled = static_cast<long>(value * 10.0 + (value < 0 ? -0.5 : 0.5));
-  return std::to_string(scaled / 10) + "." + std::to_string(std::abs(scaled % 10));
+  long scaled = static_cast<long>(value * 10.0 + (value < 0 ? -0.5 : 0.5));
+  std::string sign;
+  if (scaled < 0) {
+    sign = "-";
+    scaled = -scaled;
+  }
+  return sign + std::to_string(scaled / 10) + "." + std::to_string(scaled % 10);
 }
 
 }  // namespace

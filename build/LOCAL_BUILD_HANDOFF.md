@@ -4,7 +4,7 @@ Purpose: let the **next AI agent** (or human) continue without rebuilding
 Chromium from scratch. Read this before touching anything under
 `/work/chromium`.
 
-Status date: 2026-08-23. Chromium pin: see `build/chromium.pin`
+Status date: 2026-08-27. Chromium pin: see `build/chromium.pin`
 (151.0.7922.173, commit `a96602f30358e9b5d256a0464e7e4d4bec223004`).
 
 ---
@@ -13,7 +13,7 @@ Status date: 2026-08-23. Chromium pin: see `build/chromium.pin`
 
 | Item | Path (agent sandbox) |
 |---|---|
-| depot_tools | `/work/depot_tools` |
+| depot_tools | `/work/chromium/depot_tools` |
 | Chromium checkout | `/work/chromium/src` |
 | Build output (~8.7 GB) | `/work/chromium/src/out/Release` |
 | Built binary | `/work/chromium/src/out/Release/chrome` (~194 MB) |
@@ -28,10 +28,25 @@ The Chromium checkout and `out/` are **not** in git and cannot be: the repo
 limit is 100 MB per file. Binaries will be published through GitHub Releases
 at phase 16, not committed.
 
+If the sandbox has been reset and `/work/chromium/src` is gone, re-create it before
+building (this is the expensive path — about 40 min of fetching):
+
+```bash
+export PATH=/work/tools/bin:/work/chromium/depot_tools:$PATH
+cd /work/chromium && fetch --nohooks --no-history chromium   # retry on network errors
+cd src && git checkout --detach a96602f30358e9b5d256a0464e7e4d4bec223004
+gclient sync -D --force --reset && gclient runhooks
+cd /work/repos/ettdgggder && python3 build/sync.py --workspace /work/chromium --overlay-only
+cd /work/chromium/src && gn gen out/Release --args='…'   # args below, minus enable_nacl
+```
+
+`enable_nacl` no longer exists in this Chromium; passing it makes `gn gen` fail. `build/sync.py`
+needs `--workspace /work/chromium` (`scripts/resume_build.sh` omits it and exits 5).
+
 Always export first:
 
 ```bash
-export PATH=/work/tools/bin:/work/depot_tools:$PATH
+export PATH=/work/tools/bin:/work/chromium/depot_tools:$PATH
 ```
 
 ## 2. How the Bedrock code gets into Chromium
@@ -50,7 +65,7 @@ into `src_overrides/bedrock/BUILD.gn` (one `source_set("bedrock")`), and
 
 ```bash
 cd /work/chromium/src
-export PATH=/work/tools/bin:/work/depot_tools:$PATH
+export PATH=/work/tools/bin:/work/chromium/depot_tools:$PATH
 autoninja -C out/Release chrome            # normal path
 ```
 
@@ -106,7 +121,14 @@ use_remoteexec=false is_chrome_branded=false chrome_pgo_phase=0`
    needs the output directory: run with
    `LD_LIBRARY_PATH=/work/chromium/src/out/Release` (as `scripts/resume_build.sh`
    does) or `cd` into it first.
-11. **Link timing.** The first (cold) mold link of `chrome` took **21 min 39 s**;
+11. **`std::abs` is not visible in the modules build** (2026-08-27). Build 3 failed on its
+   *last* step with `declaration of 'abs' must be imported from module
+   '//build/modules:system.std.cstdlib' before it is required`, in
+   `bedrock/privacy/network/request_headers.cc`. Including `<cstdlib>` does not help; the module
+   has to be imported. Handle the sign by hand instead — and note the host tests (plain `g++`)
+   cannot see this class of error at all, which is why `scripts/check_toolchain_limits.py` now
+   greps for it before a push.
+12. **Link timing.** The first (cold) mold link of `chrome` took **21 min 39 s**;
    every later link takes **13–15 s**. Do not assume a hang.
 
 ## 5. Verifying that Bedrock code is really inside the browser
@@ -119,7 +141,23 @@ rm -rf /tmp/bd && LD_LIBRARY_PATH=$PWD ./chrome --user-data-dir=/tmp/bd \
   --virtual-time-budget=4000 about:blank 2>&1 | grep '\[bedrock\]'
 ```
 
-Both checks passed on 2026-08-23 (phase 2). `nm` finds **17** `bedrock::` symbols,
+In a sandbox without D-Bus, a GPU or a working network, `--dump-dom` and `--screenshot` never
+return: headless waits on shutdown work it cannot finish, and the process has to be killed
+(exit 124). That is **not** a defect of the build. Drive the browser over DevTools instead — it
+answers immediately:
+
+```bash
+LD_LIBRARY_PATH=$PWD ./chrome --user-data-dir=/tmp/bd --no-sandbox --headless=new --disable-gpu \
+  --disable-dev-shm-usage --no-first-run --disable-component-update --disable-sync \
+  --disable-background-networking --remote-debugging-port=9333 about:blank &
+curl -s http://127.0.0.1:9333/json/version     # Chrome/151.0.7922.173, V8 15.1.206.23
+```
+
+Then `Target.createTarget` on a `data:` URL and `Runtime.evaluate` / `Page.captureScreenshot` over
+the WebSocket (a WebSocket client must send no `Origin` header, or DevTools answers 403). This is
+how Build 3 was verified to render and to run JavaScript.
+
+Both checks passed again on 2026-08-27 (Build 3). `nm` finds **18** `bedrock::` symbols,
 and the running browser prints:
 
 ```

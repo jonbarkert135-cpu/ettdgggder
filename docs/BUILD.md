@@ -231,12 +231,17 @@ all three were found the hard way by the first in-tree build:
 | `-fno-exceptions` | `std::stoi`, `std::stod`, any `try`/`catch` | parse with `strtol`/`strtod` and return a failure value |
 | `chromium-rawptr` clang plugin | raw pointer *fields* in classes | `//bedrock` removes `find_bad_constructs` and documents its non-owning back-pointers; a target that depends on `//base` must use `raw_ptr<T>` |
 | C++20 standard-library modules | a standard symbol used without including its own header — libstdc++ hides this, clang does not | include `<utility>`, `<cstdint>`, `<cstddef>`, … in every file that names a symbol from it |
+| C++20 standard-library modules, again | `std::abs`, `std::labs`, `std::div` — clang wants `//build/modules:system.std.cstdlib` imported, and including `<cstdlib>` is not enough | do the sign or the division by hand (`OneDecimal()` in `privacy/network/request_headers.cc` is the pattern) |
 
-Check the first two before pushing, without a Chromium checkout:
+Check all of these before pushing, without a Chromium checkout — `scripts/run_host_tests.sh`
+runs the same gate:
 
 ```bash
-grep -rn 'std::sto[id]\|catch (' src_overrides/   # must find nothing outside comments
+python3 scripts/check_toolchain_limits.py
 ```
+
+It scans `src_overrides/` minus `*_test.cc` (host tests are built by `g++` alone and never enter
+the Chromium build), ignores comments and strings, and names the replacement for each hit.
 
 `scripts/gen_build_gn.py` owns `src_overrides/bedrock/BUILD.gn`; add a source file and re-run it
 with `--write`. The gate in `scripts/run_host_tests.sh` fails if the generated file is stale, so a

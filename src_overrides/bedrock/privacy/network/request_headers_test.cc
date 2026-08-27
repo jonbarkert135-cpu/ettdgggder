@@ -284,6 +284,20 @@ void TestClientHintValues() {
   CheckEq(HeaderOf(raw, "Sec-CH-UA-Platform-Version"), "\"10.0.19045\"",
           "kCompatibility reports the platform version as it is");
   CheckEq(HeaderOf(raw, "DPR"), "2.0", "kCompatibility reports the real DPR");
+
+  // One decimal place, sign handled by hand (no std::abs: it is not visible in
+  // the C++ modules build). A fractional and a nonsense negative DPR must both
+  // round-trip as written, not silently lose their sign.
+  DeviceFacts fractional = facts;
+  fractional.dpr = 1.5;
+  CheckEq(HeaderOf(policy.HintHeadersFor(SameSiteNav(), accepted, fractional),
+                   "DPR"),
+          "1.5", "a fractional DPR keeps its one decimal place");
+  DeviceFacts negative = facts;
+  negative.dpr = -0.05;
+  CheckEq(HeaderOf(policy.HintHeadersFor(SameSiteNav(), accepted, negative),
+                   "DPR"),
+          "-0.1", "a negative DPR keeps its sign instead of printing as 0.1");
   CheckEq(policy.AcceptLanguage(facts), "en-GB",
           "Accept-Language is the real one with the shims off");
 
