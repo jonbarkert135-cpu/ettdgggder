@@ -4,6 +4,25 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #55 — two defaults enforced, then un-enforced by their own test
+
+The integration seam only carried string prefs in a profile, so every shipped default living in
+Local State was unreachable. `PrefAssignment` now has a scope (profile / Local State), a type
+(string / boolean) and a `decides_behavior` flag, `AssignmentsForScope` hands the registration patch
+one scope at a time, and `patches/bedrock/integration/0002-bedrock-local-state-defaults.patch` walks
+that list in `RegisterLocalState`, calling `SetDefaultPrefValue` for each pref upstream registered
+and logging the ones it skips.
+
+The point was to enforce `telemetry` and `crash_reporting` — one Chromium consent pref covers both.
+Build 4 tested the claim by asking for `true` and rebuilding: the browser still reported `false`,
+because `MetricsServiceAccessor::IsMetricsReportingEnabled` ignores the pref entirely unless
+`GOOGLE_CHROME_BRANDING` is set. So both defaults stay unenforced with that measurement as their
+reason, the startup log distinguishes `registering (not decisive in this build)` from `enforcing`,
+and the enforced count stays at 1 of 12. Invariant 83 and a host test keep it that way.
+
+Method worth keeping: to prove a pref causes a behaviour, set it to the *wrong* value and check the
+behaviour follows. "Pref says X, browser does X" is a coincidence until then.
+
 ## PR #54 — the resume script that could not resume
 
 `scripts/resume_build.sh` was the documented one-command way back into the build, and it did not

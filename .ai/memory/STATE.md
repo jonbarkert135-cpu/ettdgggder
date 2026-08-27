@@ -3,7 +3,29 @@
 Tier 1, part 2. Read straight after [`../MEMORY.md`](../MEMORY.md).
 Rewritten (not appended to) at the end of every change — it describes *now*.
 
-**As of:** the overlay has been rebuilt inside Chromium for the first time since phase 2 — Build 3 (2026-08-27, `build/ENFORCEMENT.md`) compiles everything up to PR #52, and the browser starts, renders and still enforces exactly one default; the build found one real defect (`std::abs` is invisible in Chromium's C++ modules build) which PR #53 fixed and turned into a seconds-long gate, `scripts/check_toolchain_limits.py`; `scripts/resume_build.sh` now actually runs — it passes `--workspace` to `sync.py`, takes the workspace root from `$BEDROCK_WORKSPACE`, and verifies startup over the DevTools port instead of headless mode, which never returns in a sandbox (PR #54); the referrer and client-hint headers are one component — `privacy/network/request_headers` decides both before a request leaves, a site may ask for less and never for more, and no `Sec-CH-UA-*` identity hint goes on the wire from level 1 (PR #52, `referrer_control` now policy-landed); the build path has a laptop variant — `build/args/bedrock-lowmem.gn`, `docs/BUILD.md` → "Building on 8 GB", and `sync.py` copies overrides where symlinks are refused and can fetch without history (PR #44); letterboxing is real geometry — the page renders into the quantised box with centred margins, with a 200x100 floor and a 60%-of-pixels guard (PR #41); the first full security audit is on record (`docs/security/AUDIT-2026-08-25.md`, PR #42) — four defects fixed (prefix-matched LAN detection downgrading HTTPS, shields outranking HTTPS-Only, incomplete site deletion, silently refused strict DNS), and the two cryptographic ones now fixed too (F3 envelope-encrypted master password, F4 keyed one-way seed derivation, both on `bedrock/crypto`); CNAME uncloaking is a stage of the blocking pipeline, cache-only by design (PR #40); the Strict preset keeps first-party cookies and makes storage ephemeral instead of blocking cookies outright, and presets now set the storage lifetime as well as the controls (PR #39); `docs/BUILD_ON_YOUR_MACHINE.md` prices the one full build that phase 3 needs (PR #38); link cleaning + redirect debouncing (`privacy/tracker_blocker/url_cleaner`) and "forget about this site" (`privacy/core/forget_site`) landed as host-tested logic, two items off the research queue (PR #37); the interface is written against a semantic token vocabulary, enforced by `scripts/check_tokens.py`, and the background composition (light source plus grain) is generated into tokens.css (PR #35); window modes, the profile menu and the theme-to-CSS bridge exist (PR #34); settings, the Privacy Center and the extensions panel have pages and tested models (PR #33); the privacy panel, three tab layouts and the vendored type system landed (PR #32); the new tab page, its state object and the chrome composition exist (PR #31); the dark surface system is the shipped default and tokens.css is generated from the tokens (PR #30); the first-run page renders the flow (PR #29); roadmap 90–101 audited (`docs/ACCEPTANCE.md`) and first run / search disclosure landed; phase 2 done — Bedrock code runs inside the built browser; first feature enforced (PR #26), and the first downloadable build is published as pre-release `v0.0.1-dev` (Linux x64, PR #27).
+**As of:** build 4 (2026-08-27, `build/ENFORCEMENT.md`) extended the integration seam to typed and
+scoped prefs — booleans and Local State prefs, not only profile strings — and then *withdrew* the
+claim it was built for: `telemetry` and `crash_reporting` map to one Chromium consent pref, but an
+unbranded build ignores that pref (`MetricsServiceAccessor::IsMetricsReportingEnabled` returns false
+unless `GOOGLE_CHROME_BRANDING`), proven by flipping the value to `true` and watching the browser
+keep reporting `false`; both defaults therefore stay unenforced, the log says `registering (not
+decisive in this build)`, and the enforced count is still **1 of 12** (invariant 83 keeps it honest,
+PR #55); `scripts/resume_build.sh` is the one command back into the build — sync, build, symbol
+count, live DevTools startup check — fixed and verified end to end (PR #54); the `std::abs` defect
+that build 1 found is fixed and turned into a seconds-long gate, `scripts/check_toolchain_limits.py`
+(PR #53); the referrer and client-hint headers are one component — `privacy/network/request_headers`
+decides both before a request leaves, a site may ask for less and never for more, and no
+`Sec-CH-UA-*` identity hint goes on the wire from level 1 (PR #52, `referrer_control` policy-landed);
+the build path has a laptop variant — `build/args/bedrock-lowmem.gn`, `docs/BUILD.md` → "Building on
+8 GB" (PR #44); letterboxing is real geometry (PR #41); the first full security audit is on record
+(`docs/security/AUDIT-2026-08-25.md`, PR #42) with F1–F10 fixed except the part of F8 needing the
+profile layer; CNAME uncloaking is a stage of the blocking pipeline, cache-only by design (PR #40);
+the Strict preset keeps first-party cookies and makes storage ephemeral (PR #39); link cleaning,
+redirect debouncing and "forget about this site" are host-tested logic (PR #37); the interface is
+written against a semantic token vocabulary enforced by `scripts/check_tokens.py` (PR #35); window
+modes, the profile menu and the theme-to-CSS bridge exist (PR #34); settings, the Privacy Center and
+the extensions panel have pages and tested models (PR #33); the first downloadable build is
+pre-release `v0.0.1-dev` (Linux x64, PR #27).
 
 ## Position on the roadmap
 
@@ -80,19 +102,22 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
   `default_public_interface_only` to its renderers — measured inside `UpdateFromSystemSettings`,
   recorded as "Build 2" in `build/ENFORCEMENT.md`. The other 29 features are policy only.
 - **The overlay runs inside Chromium** (phase 2): `nm -C out/Release/chrome | grep bedrock::` finds
-  17 symbols and the browser prints `[bedrock]` lines at startup. Phase 1 had proven compilation
-  only; with no call site the linker had discarded every overlay object.
+  **23** symbols (build 4) and the browser prints `[bedrock]` lines at startup. Phase 1 had proven
+  compilation only; with no call site the linker had discarded every overlay object.
 - **A downloadable artifact exists:** GitHub pre-release `v0.0.1-dev`, `bedrock-0.0.1-dev-linux-x64.tar.zst`
   (313 MB, sha256 `54be5449…`), notes in `docs/releases/0.0.1-dev.md`. Component build, Linux only,
   unbranded, one enforced protection — never call it a product release. [github, 2026-08-23]
-- **The local Chromium checkout and build no longer exist in any sandbox** (checked 2026-08-24),
-  and the current one has 1 core. Turning a `policy` feature into an enforced one is blocked on
-  hardware, not on code: see `docs/BUILD_ON_YOUR_MACHINE.md` for what to rent and what it costs.
+- **A local Chromium checkout and a built `chrome` exist again** [sandbox, 2026-08-27]: builds 3 and
+  4 were produced there (`/work/chromium/src/out/Release`, ~194 MB binary, 17 cores via
+  `os.sched_getaffinity` — `nproc` reports 1 and is wrong). An incremental overlay change costs
+  2–4 minutes, a cold build ~12 hours. `scripts/resume_build.sh` is the entry point;
+  `build/LOCAL_BUILD_HANDOFF.md` is the handoff. Nothing about that sandbox is permanent, so
+  `docs/BUILD_ON_YOUR_MACHINE.md` still prices the machine the project needs.
 - **The local build is not in git** (8.7 GB). `build/LOCAL_BUILD_HANDOFF.md` is the handoff: what
   exists on disk, what must never be rebuilt, the 11 errors hit so far, and
   `scripts/resume_build.sh` which syncs, builds and verifies in one command.
-- **Runs in CI today:** 66 host test binaries, 10 fuzz smoke harnesses (~860
-  inputs each), 7 measured performance metrics, 29 static gates. (Counted from a full `run_host_tests.sh` on 2026-08-26; the line had said 52 binaries for several PRs.)
+- **Runs in CI today:** 66 host test binaries, 10 fuzz smoke harnesses (~860 inputs each), 7
+  measured performance metrics, **31** static gates. [run_host_tests.sh, 2026-08-27]
 - **Runs against a real browser binary (not in CI):**
   `tests/browser/run.py` (5/5 pass on Chrome-for-Testing 151) and
   `tests/privacy/run.py` (13 scenarios; stock-Chromium baseline committed as
@@ -126,6 +151,10 @@ Rewritten (not appended to) at the end of every change — it describes *now*.
   or they are lost.
 - Defaults must equal the Balanced preset exactly, or the browser starts in a
   state its own settings call "Custom".
+- **A pref that matches the wanted value is not proof the pref caused it.** Chromium disables
+  metrics and crash upload in code in unbranded builds whatever the consent pref says, which the
+  build-4 probe found only by setting the pref to the *wrong* value and rebuilding. Any future
+  enforcement claim gets the same treatment.
 
 ## Open threads
 

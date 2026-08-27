@@ -1,0 +1,103 @@
+# Bedrock-Patch: 0002-bedrock-local-state-defaults
+# Area: integration
+# Upstream-Paths: chrome/browser/prefs/browser_prefs.cc,
+#   chrome/browser/metrics/chrome_metrics_services_manager_client.cc
+# Reason: the startup hook could only carry string prefs in a profile, so every
+#   shipped default that lives in Local State or is not a string was unreachable.
+#   RegisterLocalState now walks bedrock::integration::AssignmentsForScope
+#   (kLocalState) and calls PrefRegistry::SetDefaultPrefValue for each pref that
+#   upstream registered; a pref that no longer exists is skipped and logged.
+#   ChromeMetricsServicesManagerClient logs the reporting-consent value the
+#   metrics/Crashpad gate actually reads, which is how build 4 established that
+#   an unbranded build ignores that pref entirely (see build/ENFORCEMENT.md) —
+#   the reason telemetry and crash_reporting stay unenforced.
+#   As with patch 0001 the patch carries no policy: values, scopes and wording
+#   come from src_overrides/bedrock/integration/startup.* and are host-tested.
+# Owner: integration
+# Chromium-Version: 151.0.7922.173
+# Upstream-Bug: none
+# Drop-When: the settings system owns pref registration end to end (phase 5), or
+#   user_experience_metrics.reporting_enabled is renamed — the loop then logs
+#   "skipping ...: not registered upstream" instead of writing a stale pref.
+diff --git a/chrome/browser/metrics/chrome_metrics_services_manager_client.cc b/chrome/browser/metrics/chrome_metrics_services_manager_client.cc
+index e8ac389664..38d3d25673 100644
+--- a/chrome/browser/metrics/chrome_metrics_services_manager_client.cc
++++ b/chrome/browser/metrics/chrome_metrics_services_manager_client.cc
+@@ -12,12 +12,14 @@
+ #include "base/feature_list.h"
+ #include "base/files/file_path.h"
+ #include "base/functional/bind.h"
++#include "base/logging.h"
+ #include "base/memory/raw_ptr.h"
+ #include "base/metrics/field_trial_params.h"
+ #include "base/metrics/histogram_functions.h"
+ #include "base/path_service.h"
+ #include "base/strings/string_number_conversions.h"
+ #include "base/task/thread_pool.h"
++#include "bedrock/integration/startup.h"
+ #include "build/build_config.h"
+ #include "cc/base/switches.h"
+ #include "chrome/browser/browser_process.h"
+@@ -190,6 +192,14 @@ ChromeMetricsServicesManagerClient::ChromeMetricsServicesManagerClient(
+           std::make_unique<ChromeEnabledStateProvider>(local_state)),
+       local_state_(local_state) {
+   DCHECK(local_state);
++  // Bedrock: report the consent value the reporting machinery itself reads.
++  // This is the answer that decides whether any metrics or crash upload
++  // happens, so it is the only honest evidence for the shipped `telemetry` and
++  // `crash_reporting` defaults.
++  LOG(WARNING) << bedrock::integration::EffectiveBooleanPrefLine(
++      metrics::prefs::kMetricsReportingEnabled,
++      ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled(
++          local_state));
+ }
+ 
+ ChromeMetricsServicesManagerClient::~ChromeMetricsServicesManagerClient() =
+diff --git a/chrome/browser/prefs/browser_prefs.cc b/chrome/browser/prefs/browser_prefs.cc
+index 48394ef7d6..9e9b355081 100644
+--- a/chrome/browser/prefs/browser_prefs.cc
++++ b/chrome/browser/prefs/browser_prefs.cc
+@@ -13,8 +13,11 @@
+ #include "base/files/file_path.h"
+ #include "base/files/file_util.h"
+ #include "base/json/values_util.h"
++#include "base/logging.h"
+ #include "base/time/time.h"
+ #include "base/trace_event/trace_event.h"
++#include "base/values.h"
++#include "bedrock/integration/startup.h"
+ #include "build/android_buildflags.h"
+ #include "build/branding_buildflags.h"
+ #include "build/build_config.h"
+@@ -1701,6 +1704,31 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
+       policy::policy_prefs::kLocalNetworkAccessPermissionsPolicyDefaultEnabled,
+       false);
+ 
++  // Bedrock: apply the shipped defaults that live in Local State. The values
++  // come from src_overrides/bedrock/settings/defaults.cc through
++  // bedrock::integration; this loop is plumbing only. A pref no subsystem
++  // registered is skipped and logged, so an upstream rename degrades into a
++  // visible line and a failing phase check instead of a CHECK failure.
++  for (const bedrock::integration::PrefAssignment& bedrock_pref :
++       bedrock::integration::AssignmentsForScope(
++           bedrock::integration::PrefScope::kLocalState)) {
++    if (!registry->defaults()->GetValue(bedrock_pref.pref_name, nullptr)) {
++      LOG(WARNING) << bedrock::integration::kLogPrefix << "skipping "
++                   << bedrock_pref.pref_name << ": not registered upstream";
++      continue;
++    }
++    switch (bedrock_pref.type) {
++      case bedrock::integration::PrefType::kBoolean:
++        registry->SetDefaultPrefValue(bedrock_pref.pref_name,
++                                      base::Value(bedrock_pref.boolean_value));
++        break;
++      case bedrock::integration::PrefType::kString:
++        registry->SetDefaultPrefValue(bedrock_pref.pref_name,
++                                      base::Value(bedrock_pref.value));
++        break;
++    }
++  }
++
+   // This is intentionally last.
+   RegisterLocalStatePrefsForMigration(registry);
+ }
