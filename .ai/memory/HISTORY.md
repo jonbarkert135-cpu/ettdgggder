@@ -4,6 +4,25 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #54 — the resume script that could not resume
+
+`scripts/resume_build.sh` was the documented one-command way back into the build, and it did not
+work: it called `build/sync.py` without `--workspace`, which exits 5, and its PATH pointed at
+`/work/depot_tools` instead of `/work/chromium/depot_tools`. Its verification step used headless
+mode, which never returns in a sandbox without D-Bus, a GPU or a network, so even a good build
+looked broken.
+
+Fixed all three. The workspace root is now `$BEDROCK_WORKSPACE` (default `/work/chromium`) and is
+used for depot_tools, the source tree and `--workspace` alike, so nothing hardcodes one machine's
+layout twice. The startup check launches the browser with `--remote-debugging-port` and asks
+`/json/version` over curl — no extra dependencies — then greps the launch log for `[bedrock]`
+lines, and fails if the browser never answers. `BUILD_RC` is echoed, and a failed build stops
+before the verification step rather than reporting confusing symbol counts.
+
+`build/LOCAL_BUILD_HANDOFF.md` no longer warns about the `--workspace` bug (there is nothing to
+warn about) and documents the port override; `docs/ACCEPTANCE.md` item 28 now cites Build 3.
+
+
 ## PR #53 — the build's own bug, and a gate so the next one is cheap
 
 - Chromium was rebuilt from a re-fetched checkout (Build 3, `build/ENFORCEMENT.md`), the first
