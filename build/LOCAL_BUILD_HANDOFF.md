@@ -41,7 +41,8 @@ cd /work/chromium/src && gn gen out/Release --args='…'   # args below, minus e
 ```
 
 `enable_nacl` no longer exists in this Chromium; passing it makes `gn gen` fail. `build/sync.py`
-needs `--workspace /work/chromium` (`scripts/resume_build.sh` omits it and exits 5).
+needs `--workspace /work/chromium`; `scripts/resume_build.sh` passes it (it used to omit it and
+exit 5) and takes the workspace root from `$BEDROCK_WORKSPACE`, default `/work/chromium`.
 
 Always export first:
 
@@ -136,9 +137,7 @@ use_remoteexec=false is_chrome_branded=false chrome_pgo_phase=0`
 ```bash
 cd /work/chromium/src/out/Release
 nm -C chrome | grep bedrock:: | head
-rm -rf /tmp/bd && LD_LIBRARY_PATH=$PWD ./chrome --user-data-dir=/tmp/bd \
-  --enable-logging=stderr --no-sandbox --headless=new --disable-gpu \
-  --virtual-time-budget=4000 about:blank 2>&1 | grep '\[bedrock\]'
+# for the startup log, launch it the same way as the DevTools snippet below
 ```
 
 In a sandbox without D-Bus, a GPU or a working network, `--dump-dom` and `--screenshot` never
@@ -171,7 +170,11 @@ The third line is the one that matters: it is measured inside
 renderers, not a value the overlay printed to itself. Full log:
 `/work/build-logs/run2.log`.
 
-`scripts/resume_build.sh` runs sync + build + both checks in one go.
+`scripts/resume_build.sh` runs sync + build + both checks in one go. Its startup check launches
+the browser exactly as in the second snippet above (`--headless=new` plus the sandbox-safe flags)
+and then asks it over the DevTools port (`--remote-debugging-port`, default 9333, override with
+`$BEDROCK_DEVTOOLS_PORT`), waiting up to 60s. It never uses `--dump-dom`/`--screenshot`, which
+hang here (see the note above). Verified end-to-end on 2026-08-27: `SCRIPT_RC=0`.
 
 As long as `nm` prints no Bedrock symbols, nothing may be marked `kEnforced` in
 `build/ENFORCEMENT.md` — that rule is enforced by

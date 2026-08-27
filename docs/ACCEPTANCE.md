@@ -42,7 +42,7 @@ gate counts refreshed 2026-08-25.
 | 25 | Licensing documented | yes | `LICENSING.md` + `check_provenance.py` (9 dependencies, 9 notices, per-file records) |
 | 26 | Third-party components documented | yes | `THIRD_PARTY.md` (projects) + `PROVENANCE.md` (files, item 91), both machine-checked against each other |
 | 27 | Tests pass | yes, for what they cover | 64 host tests, 9 fuzz smoke harnesses, 31 gates in CI; sanitizers, libFuzzer campaigns and browser tests need a Chromium build and have no numbers |
-| 28 | Build instructions work | yes, on Linux | `BUILD.md` + `scripts/resume_build.sh` reproduce build 2; Windows instructions are untested |
+| 28 | Build instructions work | yes, on Linux | `BUILD.md` + `scripts/resume_build.sh` reproduce build 3 (2026-08-27); Windows instructions are untested |
 | 29 | Security documentation exists | yes | `SECURITY.md`, `docs/security/` |
 | 30 | Threat model exists | yes | `docs/security/THREAT_MODEL.md` |
 | 31 | Upstream strategy exists | yes | `docs/UPSTREAM_SYNC.md`, `PATCHES.md`, `scripts/upstream_sync.py` |
