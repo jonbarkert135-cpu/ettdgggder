@@ -13,19 +13,34 @@
 
 ## Download and run it
 
-**[bedrock-0.0.1-dev-linux-x64.tar.zst](https://github.com/jonbarkert135-cpu/ettdgggder/releases/tag/v0.0.1-dev)** — the first runnable build (Linux x64, 313 MB, developer preview).
+**[bedrock-0.0.2-dev-linux-x64.tar.zst](https://github.com/jonbarkert135-cpu/ettdgggder/releases/tag/v0.0.2-dev)** — the current developer build (Linux x64, 268 MB).
 
 ```bash
-tar -xf bedrock-0.0.1-dev-linux-x64.tar.zst
-cd bedrock-0.0.1-dev-linux-x64
+tar -xf bedrock-0.0.2-dev-linux-x64.tar.zst
+cd bedrock-0.0.2-dev-linux-x64
 ./run-bedrock.sh
 ```
 
-It is a Chromium 151 build with the Bedrock overlay compiled in and **one** protection actually
-enforced (WebRTC does not expose local network addresses); the browser prints `[bedrock]` lines on
-stderr to prove it. There is no Bedrock branding, no Bedrock UI, no installer, and no Windows
-build. Read [the release notes](docs/releases/0.0.1-dev.md) before assuming anything else works —
-the project's rule is that a protection is only real once a running build performs it.
+It is a Chromium 151 build with the Bedrock overlay compiled in and **three** protections actually
+enforced by the running browser: tracker and ad requests are blocked inside the network service, the
+outgoing-header floor refuses `unsafe-url` referrers and high-entropy client hints, and WebRTC does
+not expose local network addresses. Run it with `--enable-logging=stderr` and the browser prints
+`[bedrock]` lines saying what it did.
+
+There is no Bedrock branding, no Bedrock UI, no installer, no Windows build, and no fingerprinting or
+storage protection yet — [`docs/WIRING.md`](docs/WIRING.md) counts exactly how much of the overlay a
+running browser reaches (5 of 33 modules), and [the release notes](docs/releases/0.0.2-dev.md) list
+what still does not work. The project's rule is that a protection is only real once a running build
+performs it.
+
+Verify the download against the manifest attached to the release before trusting it:
+
+```bash
+python3 scripts/verify_release.py --manifest manifest.json \
+    --artifact bedrock-0.0.2-dev-linux-x64.tar.zst
+```
+
+Older builds stay published: [`v0.0.1-dev`](docs/releases/0.0.1-dev.md) (one enforced protection).
 
 ## What this is
 

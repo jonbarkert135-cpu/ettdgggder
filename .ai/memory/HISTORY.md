@@ -4,6 +4,27 @@ Newest first. One entry per merged change: what landed, and anything a future
 reader would otherwise have to rediscover. Keep entries short — this file is
 read, not skimmed. Anything longer belongs in a doc, linked from here.
 
+## PR #58 — Second downloadable build, and a packaging script instead of a ritual
+
+`v0.0.2-dev` published as a GitHub pre-release: `bedrock-0.0.2-dev-linux-x64.tar.zst`, 268 022 438
+bytes, sha256 `e768da66…`, plus the `manifest.json` that `scripts/verify_release.py` checks. The
+first release was assembled by hand; `scripts/package_release.py` now derives the shipped library
+list from the binaries themselves (transitive `ldd`, keeping only libraries inside the out directory
+— 513 of them), so a build that grows a dependency ships it without anyone remembering.
+
+The archive was unpacked into a clean directory and run from there before publishing, because
+"it works on the build machine" is not the claim a release makes: Google Analytics, Facebook and
+`securepubads.g.doubleclick.net` failed while bbc.com and a jsDelivr script loaded, the startup lines
+printed `1 of 12 shipped defaults enforced`, and `[bedrock] referrer origin-only …` appeared for real
+BBC third parties. Two packaging bugs were caught this way: `THIRD_PARTY_NOTICES` is a directory of
+per-project notices (`copy2` failed), and `[bedrock]` lines need `--enable-logging=stderr`, which the
+first run of the packaged build omitted — the protections were active, the evidence simply was not
+being printed.
+
+`docs/releases/0.0.2-dev.md` states the three enforced protections with their measurements and lists
+what still does not work, including the Chromium base now being weeks behind upstream stable. The
+README download section points at 0.0.2 and keeps 0.0.1 listed.
+
 ## PR #57 — the header floor, and a count of how much of the overlay runs
 
 `DecideHeaders` joins the network hook: given the referrer Chromium computed, the target, the

@@ -118,7 +118,12 @@ pre-release `v0.0.1-dev` (Linux x64, PR #27).
   finds **23** symbols and `libservices_network_network_service.so` a further **51** (build 5); the
   browser prints `[bedrock]` lines at startup and one per blocked request. Phase 1 had proven
   compilation only; with no call site the linker had discarded every overlay object.
-- **A downloadable artifact exists:** GitHub pre-release `v0.0.1-dev`, `bedrock-0.0.1-dev-linux-x64.tar.zst`
+- **Current download:** GitHub pre-release `v0.0.2-dev` (2026-08-28), `bedrock-0.0.2-dev-linux-x64.tar.zst`,
+  268 022 438 bytes, sha256 `e768da66ce5fabc75b96a8f446a0e6f9ed15e610f975238970e6d925bd654c83`, built from
+  overlay `76a7364` by `scripts/package_release.py` (513 libraries derived via transitive `ldd`) and
+  verified by unpacking and running the archive itself: blocking, header floor and the startup lines all
+  behaved as in the build tree. `manifest.json` attached for `scripts/verify_release.py`.
+  Notes: `docs/releases/0.0.2-dev.md`. Superseded but still published: `v0.0.1-dev`, `bedrock-0.0.1-dev-linux-x64.tar.zst`
   (313 MB, sha256 `54be5449…`), notes in `docs/releases/0.0.1-dev.md`. Component build, Linux only,
   unbranded, one enforced protection — never call it a product release. [github, 2026-08-23]
 - **A local Chromium checkout and a built `chrome` exist again** [sandbox, 2026-08-27]: builds 3 and
